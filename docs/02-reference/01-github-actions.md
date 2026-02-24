@@ -48,6 +48,7 @@ Push to main. Your site deploys to GitHub Pages.
 | `output_dir` | `_site` | Build output directory |
 | `moat_version` | `latest` | moat release version (e.g. `v0.2.0`) |
 | `go_version` | `1.24` | Go version for building moat |
+| `from_source` | `false` | Build moat from source instead of `go install` |
 
 ## Example with all options
 

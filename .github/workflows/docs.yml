@@ -6,7 +6,7 @@ on:
     paths:
       - '**.go'
       - 'docs/**'
-      - '.github/workflows/docs.yml'
+      - '.github/workflows/**'
   pull_request:
     paths:
       - '**.go'
@@ -18,40 +18,9 @@ permissions:
   pages: write
   id-token: write
 
-concurrency:
-  group: pages
-  cancel-in-progress: false
-
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-go@v5
-        with:
-          go-version: '1.24'
-
-      - name: Build moat
-        run: go build -o moat .
-
-      - name: Build site
-        run: ./moat build docs/ _site/ --site-name moat --base-path /moat
-
-      - name: Upload artifact
-        if: github.ref == 'refs/heads/main'
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: _site/
-
-  deploy:
-    needs: build
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+  docs:
+    uses: ./.github/workflows/build-docs.yml
+    with:
+      docs_dir: docs
+      from_source: true

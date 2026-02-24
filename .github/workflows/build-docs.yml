@@ -23,6 +23,11 @@ on:
         required: false
         default: '1.24'
         type: string
+      from_source:
+        description: 'Build moat from source (for moat repo itself)'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -43,8 +48,13 @@ jobs:
         with:
           go-version: ${{ inputs.go_version }}
 
-      - name: Install moat
+      - name: Install moat (release)
+        if: ${{ !inputs.from_source }}
         run: go install github.com/oddship/moat@${{ inputs.moat_version }}
+
+      - name: Build moat (from source)
+        if: ${{ inputs.from_source }}
+        run: go build -o moat . && sudo mv moat /usr/local/bin/
 
       - name: Build site
         run: moat build ${{ inputs.docs_dir }}/ ${{ inputs.output_dir }}/
