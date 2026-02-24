@@ -1,15 +1,15 @@
 # moat
 
-Docs are your project's moat. A static site generator in one Go binary.
+Markdown + [oat](https://oat.ink). A static site generator in one Go binary.
 
-**[Documentation](https://oddship.github.io/moat/)**
+**[Documentation](https://oddship.github.io/moat/)** · **[oat CSS](https://oat.ink)**
 
 ```bash
 moat build docs/ _site/
 moat serve _site/
 ```
 
-Reads markdown, wraps it in a layout template, generates sidebar nav, writes static HTML. Convention over config.
+Reads markdown, wraps it in a Go template layout, generates sidebar nav, writes static HTML. Designed to pair with [oat](https://github.com/knadh/oat) — the ultra-lightweight CSS library — for beautiful docs with zero JavaScript complexity.
 
 ## Install
 
@@ -21,6 +21,7 @@ Or grab a binary from [releases](https://github.com/oddship/moat/releases).
 
 ## Features
 
+- **Built for oat** — layout patterns match oat's sidebar, topnav, and theme toggle out of the box
 - **Convention-based** — directory structure is the config, number prefixes control ordering
 - **Syntax highlighting** — 70 Chroma themes with automatic light/dark mode
 - **Layout inheritance** — base layout with `{{ block }}`/`{{ define }}` variants
@@ -100,7 +101,9 @@ jobs:
 - [yaml.v3](https://pkg.go.dev/gopkg.in/yaml.v3) — YAML frontmatter
 - [toml](https://github.com/BurntSushi/toml) — Config file
 
-Pairs well with [oat](https://github.com/knadh/oat) for styling.
+## Why oat?
+
+[oat](https://oat.ink) is an ultra-lightweight (~8KB) CSS + JS library with semantic HTML styling, dark mode, sidebar layouts, and zero dependencies. moat's layout system is designed around oat's patterns — `data-sidebar-layout`, `data-topnav`, theme toggle, collapsible nav sections. You get a site that looks like [oat.ink](https://oat.ink) with just markdown files.
 
 ## License
 
