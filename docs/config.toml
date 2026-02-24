@@ -5,6 +5,10 @@ base_path = "/moat"
 light = "github"
 dark  = "github-dark"
 
+[[links]]
+title = "GitHub"
+url = "https://github.com/oddship/moat"
+
 [extra]
 tagline = "docs are your project's moat"
-repo = "https://github.com/oddship/moat"
+footer = '&copy; <a href="https://github.com/oddship">oddship</a>'

@@ -50,12 +50,7 @@
   </nav>
 
   <aside data-sidebar class="main-sidebar">
-    <nav>
-      <ul>
-        <li><a href="https://github.com/oddship/moat">GitHub</a></li>
-      </ul>
-      {{ .Nav }}
-    </nav>
+    {{ .Nav }}
     <footer>
       <button class="outline small" onclick="toggleTheme()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-light">
@@ -78,9 +73,11 @@
       {{ block "content" . }}
       <article>{{ .Content }}</article>
       {{ end }}
+      {{ if index .Site "footer" }}
       <footer class="text-light" style="margin: var(--space-6) 0;">
-        <small>&copy; <a href="https://github.com/oddship">oddship</a></small>
+        <small>{{ index .Site "footer" | safeHTML }}</small>
       </footer>
+      {{ end }}
     </div>
   </main>
 </body>

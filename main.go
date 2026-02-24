@@ -94,6 +94,16 @@ func main() {
 			os.Exit(1)
 		}
 
+	case "init":
+		dir := "docs"
+		if len(os.Args) >= 3 {
+			dir = os.Args[2]
+		}
+		if err := Init(dir); err != nil {
+			fmt.Fprintf(os.Stderr, "error: %v\n", err)
+			os.Exit(1)
+		}
+
 	case "version":
 		fmt.Printf("moat %s\n", version)
 
@@ -107,7 +117,8 @@ func printUsage() {
 	fmt.Fprintf(os.Stderr, `moat %s — markdown + oat static site generator
 
 Usage:
-  moat build <src> <dst> [flags]               Build static site
+  moat init [dir]                             Scaffold a docs directory (default: docs/)
+  moat build <src> <dst> [flags]              Build static site
     --config PATH      Config file (default: <src>/config.toml)
     --site-name NAME   Site name for templates (default: "Site")
     --base-path PATH   URL prefix for GitHub project pages (e.g. /moat)

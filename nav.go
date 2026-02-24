@@ -84,9 +84,15 @@ func BuildNav(pages []Page) []NavItem {
 // RenderNav generates HTML for the navigation sidebar.
 // Uses oat's sidebar nav patterns: <ul> lists, <details> for sections, aria-current for active.
 // basePath is prepended to all href values (e.g. "/moat" for GitHub project pages).
-func RenderNav(items []NavItem, currentPath, basePath string) string {
+// links are extra items rendered at the top of the nav (e.g. GitHub link).
+func RenderNav(items []NavItem, currentPath, basePath string, links []LinkConfig) string {
 	var b strings.Builder
 	b.WriteString("<nav>\n<ul>\n")
+
+	// Extra links first (e.g. GitHub)
+	for _, link := range links {
+		b.WriteString(fmt.Sprintf("  <li><a href=\"%s\">%s</a></li>\n", link.URL, link.Title))
+	}
 
 	for _, item := range items {
 		if len(item.Children) > 0 {

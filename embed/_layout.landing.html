@@ -1,4 +1,4 @@
-{{ define "title" }}{{ .SiteName }} — docs are your project's moat{{ end }}
+{{ define "title" }}{{ .SiteName }}{{ if index .Site "tagline" }} — {{ index .Site "tagline" }}{{ end }}{{ end }}
 
 {{ define "head" }}
 <style>

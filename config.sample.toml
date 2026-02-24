@@ -24,7 +24,12 @@ dark  = "github-dark"     # Used when [data-theme="dark"]
 #   xcode / xcode-dark
 #   modus-operandi / modus-vivendi
 
+# Sidebar links — rendered above the page navigation
+# [[links]]
+# title = "GitHub"
+# url = "https://github.com/you/project"
+
 # Extra variables — available in templates as {{ .Site.key }}
 # [extra]
 # tagline = "My project tagline"
-# repo = "https://github.com/you/project"
+# footer = '&copy; <a href="https://example.com">You</a>'

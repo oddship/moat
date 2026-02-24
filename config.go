@@ -12,7 +12,14 @@ type Config struct {
 	SiteName  string            `toml:"site_name"`
 	BasePath  string            `toml:"base_path"`
 	Highlight HighlightConfig   `toml:"highlight"`
+	Links     []LinkConfig      `toml:"links"`
 	Extra     map[string]any    `toml:"extra"`
+}
+
+// LinkConfig is a sidebar link above the nav.
+type LinkConfig struct {
+	Title string `toml:"title"`
+	URL   string `toml:"url"`
 }
 
 // HighlightConfig controls syntax highlighting themes.

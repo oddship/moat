@@ -111,7 +111,7 @@ func Build(src, dst, siteName, basePath string, cfg Config) error {
 		prefixedPath := basePath + currentPath
 		outPath := outputPathFromURL(dst, currentPath)
 
-		navHTML := RenderNav(nav, prefixedPath, basePath)
+		navHTML := RenderNav(nav, prefixedPath, basePath, cfg.Links)
 
 		title := page.Frontmatter.Title
 		if title == "" {

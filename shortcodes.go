@@ -27,39 +27,36 @@ type shortcodeRegistry struct {
 	templates map[string]*template.Template
 }
 
-// loadShortcodes discovers shortcode templates from _shortcodes/ directory.
+// loadShortcodes discovers shortcode templates from _shortcodes/ directory,
+// falling back to embedded defaults for any not provided.
 func loadShortcodes(src string) (*shortcodeRegistry, error) {
 	reg := &shortcodeRegistry{templates: make(map[string]*template.Template)}
 
+	// Load from source directory
 	dir := filepath.Join(src, "_shortcodes")
 	entries, err := os.ReadDir(dir)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return reg, nil // No shortcodes directory — that's fine
-		}
-		return nil, fmt.Errorf("reading _shortcodes/: %w", err)
-	}
+	if err == nil {
+		for _, entry := range entries {
+			name := entry.Name()
+			if entry.IsDir() || !strings.HasSuffix(name, ".html") {
+				continue
+			}
 
-	for _, entry := range entries {
-		name := entry.Name()
-		if entry.IsDir() || !strings.HasSuffix(name, ".html") {
-			continue
-		}
+			scName := strings.TrimSuffix(name, ".html")
+			path := filepath.Join(dir, name)
+			data, err := os.ReadFile(path)
+			if err != nil {
+				return nil, fmt.Errorf("reading shortcode %s: %w", name, err)
+			}
 
-		scName := strings.TrimSuffix(name, ".html")
-		path := filepath.Join(dir, name)
-		data, err := os.ReadFile(path)
-		if err != nil {
-			return nil, fmt.Errorf("reading shortcode %s: %w", name, err)
-		}
+			tmpl, err := template.New(scName).Parse(string(data))
+			if err != nil {
+				return nil, fmt.Errorf("parsing shortcode %s: %w", name, err)
+			}
 
-		tmpl, err := template.New(scName).Parse(string(data))
-		if err != nil {
-			return nil, fmt.Errorf("parsing shortcode %s: %w", name, err)
+			reg.templates[scName] = tmpl
+			fmt.Printf("  Shortcode: %s\n", scName)
 		}
-
-		reg.templates[scName] = tmpl
-		fmt.Printf("  Shortcode: %s\n", scName)
 	}
 
 	return reg, nil

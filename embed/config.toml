@@ -1,0 +1,14 @@
+site_name = "My Project"
+# base_path = "/my-project"
+
+[highlight]
+light = "github"
+dark  = "github-dark"
+
+# [[links]]
+# title = "GitHub"
+# url = "https://github.com/you/project"
+
+# [extra]
+# tagline = "My project tagline"
+# footer = '&copy; <a href="https://example.com">You</a>'
