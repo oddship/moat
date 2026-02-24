@@ -1,77 +1,73 @@
 ---
 title: moat
-description: A static site generator in one binary
+layout: landing
+description: A static site generator in one Go binary. Markdown + oat.
 ---
 
 # moat
 
-Markdown + [oat](https://github.com/knadh/oat). A static site generator in one binary.
+<h3 class="tagline text-light">Docs are your project's moat. Build them from markdown in one command.</h3>
 
-```
-moat build docs/ _site/
-moat serve _site/
-```
+<div class="hstack">
+  <a href="guide/quickstart/" class="button">Get started</a>
+  <a href="https://github.com/oddship/moat" class="button outline">GitHub</a>
+</div>
 
-Reads markdown files from a directory, converts them to HTML, wraps them in a layout template, generates a sidebar nav, and writes static HTML. That's it.
+<br>
 
-## Install
+<div class="features">
+<article class="card">
+<header><h3>Convention over config</h3></header>
 
-```bash
-go install github.com/oddship/moat@latest
-```
+Directory structure is the config. Number prefixes control ordering.
+No YAML config sprawl.
+</article>
 
-Or grab a binary from [releases](https://github.com/oddship/moat/releases).
+<article class="card">
+<header><h3>One binary</h3></header>
+
+Single Go binary. No Node.js, no npm, no Ruby.
+`go install` or grab a release binary.
+</article>
+
+<article class="card">
+<header><h3>Syntax highlighting</h3></header>
+
+70 Chroma themes with automatic light/dark mode.
+Configure in `config.toml` — CSS classes, not inline styles.
+</article>
+
+<article class="card">
+<header><h3>Layouts & shortcodes</h3></header>
+
+Multiple layouts via Go template `block`/`define`. Shortcodes for reusable
+components in markdown. Like Zola, without the complexity.
+</article>
+</div>
 
 ## Quick start
 
-```
-mkdir docs
-```
-
-Create `docs/_layout.html`:
-
-```html
-<!DOCTYPE html>
-<html>
-<head>
-  <title>{{ .Title }}</title>
-  <link rel="stylesheet" href="https://unpkg.com/@knadh/oat/oat.min.css">
-</head>
-<body>
-  <nav>{{ .Nav }}</nav>
-  <main>{{ .Content }}</main>
-</body>
-</html>
-```
-
-Create `docs/index.md`:
-
-```markdown
-# Hello
-
-This is my site.
-```
-
-Build and serve:
-
 ```bash
+go install github.com/oddship/moat@latest
+mkdir docs
 moat build docs/ _site/
 moat serve _site/
 ```
 
-## What you get
+## What it does
 
-- **Clean URLs** — `guide/01-intro.md` becomes `/guide/intro/`
-- **Auto nav** — sidebar generated from directory structure
-- **Frontmatter** — title, description, custom URLs
-- **Sections** — directories become collapsible nav groups
-- **Number prefixes** — `01-`, `02-` control order, stripped from URLs
-- **Static assets** — `_static/` directory copied as-is
-- **Base path** — `--base-path /repo` for GitHub project pages
-- **Zero config** — no config files, just conventions
+Reads markdown files from a directory, converts to HTML, wraps in a layout template, generates sidebar nav, writes static HTML. That's it.
 
-## Why
+```
+docs/
+├── config.toml           # Site config (optional)
+├── _layout.html          # Go template (required)
+├── _shortcodes/          # Reusable components
+├── _static/              # Copied as-is
+├── index.md              # → /
+└── 01-guide/
+    ├── 01-intro.md       # → /guide/intro/
+    └── 02-config.md      # → /guide/config/
+```
 
-Static site generators are either too simple (no nav, no sections) or too complex (config files, themes, plugins, build chains). moat sits in between: one binary, one layout file, conventions over configuration.
-
-It pairs well with [oat](https://github.com/knadh/oat) for styling but works with any CSS framework — the layout template is plain HTML.
+Pairs with [oat](https://github.com/knadh/oat) for styling — or use any CSS you want.

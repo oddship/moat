@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ .Title }} — {{ .SiteName }}</title>
+  <title>{{ block "title" . }}{{ .Title }} — {{ .SiteName }}{{ end }}</title>
   {{ if .Description }}<meta name="description" content="{{ .Description }}">{{ end }}
   <link rel="stylesheet" href="https://unpkg.com/@knadh/oat/oat.min.css">
   <link rel="stylesheet" href="{{ .BasePath }}/_syntax.css">
@@ -31,6 +31,7 @@
     .wrap { padding-top: var(--space-12); }
     aside footer button { width: 100%; }
   </style>
+  {{ block "head" . }}{{ end }}
 </head>
 <body data-sidebar-layout>
   <nav data-topnav>
@@ -74,7 +75,9 @@
 
   <main class="wrap">
     <div class="container">
+      {{ block "content" . }}
       <article>{{ .Content }}</article>
+      {{ end }}
       <footer class="text-light" style="margin: var(--space-6) 0;">
         <small>&copy; <a href="https://github.com/oddship">oddship</a></small>
       </footer>

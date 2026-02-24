@@ -18,7 +18,7 @@ type Page struct {
 	RelPath     string      // Relative path from source root, e.g. "guide/02-agents.md"
 	Frontmatter Frontmatter // Parsed YAML frontmatter
 	Body        []byte      // Markdown body (without frontmatter)
-	HTML        []byte      // Rendered HTML
+	HTML        []byte      // Rendered HTML (set after shortcode + markdown processing)
 }
 
 // TemplateData is passed to the layout template.
@@ -44,15 +44,16 @@ func Build(src, dst, siteName, basePath string, cfg Config) error {
 		siteName = "Site"
 	}
 
-	// Load layout template
-	layoutPath := filepath.Join(src, "_layout.html")
-	layoutBytes, err := os.ReadFile(layoutPath)
+	// Load layout templates (base + named variants)
+	layouts, err := loadLayouts(src)
 	if err != nil {
-		return fmt.Errorf("reading _layout.html: %w (expected at %s)", err, layoutPath)
+		return err
 	}
-	tmpl, err := template.New("layout").Parse(string(layoutBytes))
+
+	// Load shortcode templates
+	shortcodes, err := loadShortcodes(src)
 	if err != nil {
-		return fmt.Errorf("parsing _layout.html: %w", err)
+		return err
 	}
 
 	// Discover and parse markdown files
@@ -62,7 +63,6 @@ func Build(src, dst, siteName, basePath string, cfg Config) error {
 			return err
 		}
 
-		// Skip underscore-prefixed dirs/files (except root _layout.html handled above)
 		name := d.Name()
 		if strings.HasPrefix(name, "_") || strings.HasPrefix(name, ".") {
 			if d.IsDir() {
@@ -82,16 +82,12 @@ func Build(src, dst, siteName, basePath string, cfg Config) error {
 		}
 
 		fm, body := ParseFrontmatter(content)
-		html, err := RenderMarkdown(body)
-		if err != nil {
-			return fmt.Errorf("rendering %s: %w", relPath, err)
-		}
 
+		// Body stored raw — shortcodes processed per-page during render
 		pages = append(pages, Page{
 			RelPath:     relPath,
 			Frontmatter: fm,
 			Body:        body,
-			HTML:        html,
 		})
 		return nil
 	})
@@ -125,13 +121,35 @@ func Build(src, dst, siteName, basePath string, cfg Config) error {
 		data := TemplateData{
 			Title:       title,
 			Description: page.Frontmatter.Description,
-			Content:     template.HTML(page.HTML),
 			Nav:         template.HTML(navHTML),
 			CurrentPath: prefixedPath,
 			SiteName:    siteName,
 			BasePath:    basePath,
 			Extra:       page.Frontmatter.Extra,
 			Site:        cfg.Extra,
+		}
+
+		// Process shortcodes in markdown source (before markdown rendering)
+		body, err := shortcodes.ProcessShortcodes(page.Body, &data)
+		if err != nil {
+			return fmt.Errorf("processing shortcodes in %s: %w", page.RelPath, err)
+		}
+
+		// Render markdown to HTML
+		html, err := RenderMarkdown(body)
+		if err != nil {
+			return fmt.Errorf("rendering %s: %w", page.RelPath, err)
+		}
+		data.Content = template.HTML(html)
+
+		// Pick layout: frontmatter "layout: name" → _layout.name.html, default → _layout.html
+		layoutName := page.Frontmatter.Layout
+		tmpl, ok := layouts[layoutName]
+		if !ok {
+			if layoutName == "" {
+				return fmt.Errorf("missing default layout _layout.html")
+			}
+			return fmt.Errorf("page %s requests layout %q but _layout.%s.html not found", page.RelPath, layoutName, layoutName)
 		}
 
 		if err := renderToFile(tmpl, data, outPath); err != nil {
@@ -156,7 +174,6 @@ func Build(src, dst, siteName, basePath string, cfg Config) error {
 
 // outputPathFromURL converts a URL path like "/guide/agents/" to a file path.
 func outputPathFromURL(dst, urlPath string) string {
-	// Strip leading/trailing slashes
 	p := strings.Trim(urlPath, "/")
 	if p == "" {
 		return filepath.Join(dst, "index.html")
@@ -219,7 +236,6 @@ func writeSyntaxCSS(dst string, hl HighlightConfig) error {
 
 	formatter := chromahtml.New(chromahtml.WithClasses(true))
 
-	// Light theme (default)
 	lightStyle := styles.Get(lightName)
 	if lightStyle == nil {
 		lightStyle = styles.Fallback
@@ -228,7 +244,6 @@ func writeSyntaxCSS(dst string, hl HighlightConfig) error {
 		return err
 	}
 
-	// Dark theme — scoped under [data-theme="dark"]
 	darkStyle := styles.Get(darkName)
 	if darkStyle == nil {
 		darkStyle = styles.Fallback
@@ -244,9 +259,7 @@ func writeSyntaxCSS(dst string, hl HighlightConfig) error {
 	return nil
 }
 
-// writeScopedCSS writes chroma CSS rules inside an already-opened scope.
 func writeScopedCSS(f *os.File, formatter *chromahtml.Formatter, style *chroma.Style) error {
-	// Write to a buffer first, then indent each line
 	var buf strings.Builder
 	if err := formatter.WriteCSS(&buf, style); err != nil {
 		return err

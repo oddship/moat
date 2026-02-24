@@ -5,7 +5,7 @@ description: Site-level configuration via config.toml
 
 # Configuration
 
-Place a `config.toml` in your docs directory for site-level settings.
+Place a `config.toml` in your docs directory for site-level settings. It's optional — everything can be set via CLI flags too.
 
 ```toml
 site_name = "My Project"
@@ -49,7 +49,7 @@ The build generates `_syntax.css` in the output directory. Include it in your la
 
 Dark theme styles are scoped under `[data-theme="dark"]`, so they activate when the user switches themes.
 
-### Available theme pairs
+### Theme pairs
 
 | Light | Dark | Family |
 |-------|------|--------|
@@ -61,7 +61,6 @@ Dark theme styles are scoped under `[data-theme="dark"]`, so they activate when 
 | `solarized-light` | `solarized-dark` | Solarized |
 | `xcode` | `xcode-dark` | Xcode |
 | `modus-operandi` | `modus-vivendi` | Modus |
-| `monokailight` | `dracula` | Classic |
 
 See all 70 themes at the [Chroma style gallery](https://xyproto.github.io/splash/docs/).
 
@@ -81,27 +80,18 @@ func main() {
 ```
 
 ```javascript
-// Fetch and render markdown
 async function buildSite(src, dst) {
   const pages = await discoverPages(src);
-  const nav = buildNav(pages);
   for (const page of pages) {
-    const html = render(page, { nav });
+    const html = render(page);
     await fs.writeFile(outputPath(dst, page), html);
   }
 }
 ```
 
-```yaml
-site_name: "moat"
-highlight:
-  light: github
-  dark: github-dark
-```
-
 ```bash
 # Build and preview
-moat build docs/ _site/ --config docs/config.toml
+moat build docs/ _site/
 moat serve _site/ --port 8080
 ```
 
@@ -113,7 +103,6 @@ The `[extra]` section holds arbitrary key-value pairs, available as `{{ .Site }}
 [extra]
 tagline = "docs are your project's moat"
 repo = "https://github.com/oddship/moat"
-version = "0.2.0"
 ```
 
 Access in your layout:

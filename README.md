@@ -4,12 +4,12 @@ Docs are your project's moat. A static site generator in one Go binary.
 
 **[Documentation](https://oddship.github.io/moat/)**
 
-```
+```bash
 moat build docs/ _site/
 moat serve _site/
 ```
 
-Reads markdown, wraps it in a layout template, generates sidebar nav, writes static HTML. No config files — just conventions.
+Reads markdown, wraps it in a layout template, generates sidebar nav, writes static HTML. Convention over config.
 
 ## Install
 
@@ -19,42 +19,88 @@ go install github.com/oddship/moat@latest
 
 Or grab a binary from [releases](https://github.com/oddship/moat/releases).
 
-## Usage
+## Features
+
+- **Convention-based** — directory structure is the config, number prefixes control ordering
+- **Syntax highlighting** — 70 Chroma themes with automatic light/dark mode
+- **Layout inheritance** — base layout with `{{ block }}`/`{{ define }}` variants
+- **Shortcodes** — reusable components inside markdown (`{{< note >}}...{{< /note >}}`)
+- **Config file** — optional `config.toml` for site name, base path, highlight themes
+- **GitHub Actions** — reusable workflow for one-line GitHub Pages deployment
+- **Single binary** — no Node.js, no npm, just Go
+
+## Quick start
 
 ```bash
-moat build <src> <dst> [--site-name NAME] [--base-path PATH]
-moat serve <dir> [--port PORT]
+mkdir docs
+cat > docs/_layout.html << 'EOF'
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ .Title }}</title>
+    <link rel="stylesheet" href="https://unpkg.com/@knadh/oat/oat.min.css">
+    <link rel="stylesheet" href="{{ .BasePath }}/_syntax.css">
+</head>
+<body>
+    <nav>{{ .Nav }}</nav>
+    <main>{{ block "content" . }}<article>{{ .Content }}</article>{{ end }}</main>
+</body>
+</html>
+EOF
+
+echo "# Hello" > docs/index.md
+moat build docs/ _site/
+moat serve _site/
 ```
 
-Source directory contains:
+## Directory structure
 
 ```
 docs/
-├── _layout.html          # Go template (required)
-├── _static/              # Copied as-is
-├── index.md              # → /
-├── quickstart.md         # → /quickstart/
+├── config.toml               # Site config (optional)
+├── _layout.html              # Base layout (required)
+├── _layout.landing.html      # Layout variant (optional)
+├── _shortcodes/              # Shortcode templates
+│   └── note.html
+├── _static/                  # Copied as-is
+├── index.md                  # → /
 └── 01-guide/
-    ├── 01-intro.md       # → /guide/intro/
-    └── 02-advanced.md    # → /guide/advanced/
+    ├── 01-intro.md           # → /guide/intro/
+    └── 02-config.md          # → /guide/config/
 ```
 
-Number prefixes (`01-`, `02-`) control ordering but are stripped from URLs and display names.
+## GitHub Pages
 
-## Template variables
+Deploy with moat's reusable workflow — one file, zero config:
 
-```html
-{{ .Title }}        {{ .Description }}    {{ .Content }}
-{{ .Nav }}          {{ .CurrentPath }}    {{ .SiteName }}
-{{ .BasePath }}
+```yaml
+# .github/workflows/docs.yml
+name: Docs
+on:
+  push:
+    branches: [main]
+    paths: ['docs/**']
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  docs:
+    uses: oddship/moat/.github/workflows/build-docs.yml@main
+    with:
+      docs_dir: docs
 ```
-
-Pairs well with [oat](https://github.com/knadh/oat) for styling — see the [layout guide](https://oddship.github.io/moat/guide/layout/).
 
 ## Dependencies
 
-- [goldmark](https://github.com/yuin/goldmark) — Markdown with GFM tables, strikethrough, autolinks
+- [goldmark](https://github.com/yuin/goldmark) — Markdown with GFM
+- [chroma](https://github.com/alecthomas/chroma) — Syntax highlighting
 - [yaml.v3](https://pkg.go.dev/gopkg.in/yaml.v3) — YAML frontmatter
+- [toml](https://github.com/BurntSushi/toml) — Config file
+
+Pairs well with [oat](https://github.com/knadh/oat) for styling.
 
 ## License
 
