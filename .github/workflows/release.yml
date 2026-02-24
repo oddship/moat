@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  release:
+  build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -33,10 +33,21 @@ jobs:
         env:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.goarch }}
-        run: |
-          go build -o moat-${{ matrix.goos }}-${{ matrix.goarch }} .
+        run: go build -o moat-${{ matrix.goos }}-${{ matrix.goarch }} .
 
-      - name: Upload Release Asset
-        uses: softprops/action-gh-release@v2
+      - uses: actions/upload-artifact@v4
         with:
-          files: moat-${{ matrix.goos }}-${{ matrix.goarch }}
+          name: moat-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: moat-${{ matrix.goos }}-${{ matrix.goarch }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: moat-*
