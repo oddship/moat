@@ -11,7 +11,7 @@ moat is convention-based. No config files needed — the directory structure is 
 
 ```
 docs/
-├── _layout.html          # Required. Go template.
+├── _layout.html          # Optional. Overrides built-in layout.
 ├── _layout.wide.html     # Optional layout variant
 ├── _shortcodes/          # Optional. Shortcode templates.
 │   └── note.html
@@ -28,7 +28,7 @@ docs/
 
 ## Rules
 
-- `_layout.html` is required — it's the Go template that wraps every page
+- `_layout.html` is optional — provide it to override the built-in oat layout
 - `_static/` is copied to the output directory as-is (CSS, images, etc.)
 - Files and directories prefixed with `_` or `.` are skipped
 - `index.md` at any level becomes the directory's root page

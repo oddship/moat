@@ -4,18 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ .Title }} — {{ .SiteName }}</title>
-  <meta name="description" content="{{ .Description }}">
-  <link rel="stylesheet" href="https://unpkg.com/oat.css@0.2.2/dist/oat.css">
-  <script src="https://unpkg.com/oat.css@0.2.2/dist/oat.js" defer></script>
-  <style>
-    body { display: flex; min-height: 100vh; margin: 0; }
-    nav { width: 240px; padding: 1rem; border-right: 1px solid var(--border); flex-shrink: 0; }
-    nav a { display: block; padding: 0.25rem 0.5rem; text-decoration: none; border-radius: 4px; }
-    nav a.active { background: var(--accent-bg); font-weight: 600; }
-    nav details summary { font-weight: 600; padding: 0.5rem 0; cursor: pointer; }
-    nav ul { list-style: none; padding-left: 0.5rem; }
-    main { flex: 1; padding: 2rem; max-width: 48rem; }
-  </style>
+  {{ if .Description }}<meta name="description" content="{{ .Description }}">{{ end }}
+  <link rel="stylesheet" href="https://unpkg.com/@knadh/oat/oat.min.css">
 </head>
 <body>
   {{ .Nav }}

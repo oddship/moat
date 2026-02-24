@@ -1,5 +1,14 @@
 # Binary
 moat
 
-# Build
+# Build output
 _site/
+
+# OS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*~

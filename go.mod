@@ -1,6 +1,6 @@
 module github.com/oddship/moat
 
-go 1.25.5
+go 1.24
 
 require (
 	github.com/yuin/goldmark v1.7.16
