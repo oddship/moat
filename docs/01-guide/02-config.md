@@ -119,7 +119,7 @@ footer = '&copy; <a href="https://github.com/oddship">oddship</a>'
 
 Access in templates:
 
-```html
+```
 {{ if index .Site "tagline" }}
   <p>{{ index .Site "tagline" }}</p>
 {{ end }}

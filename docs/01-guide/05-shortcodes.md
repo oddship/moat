@@ -11,7 +11,7 @@ Shortcodes are reusable HTML components you can call from inside markdown. They'
 
 Create `_shortcodes/note.html`:
 
-```html
+```
 <div role="alert"{{ if .Get "type" }} data-variant="{{ .Get "type" }}"{{ end }}>
 {{ .Inner }}
 </div>
@@ -62,7 +62,7 @@ Templates receive a `ShortcodeContext` with:
 
 `_shortcodes/note.html`:
 
-```html
+```
 <div role="alert"{{ if .Get "type" }} data-variant="{{ .Get "type" }}"{{ end }}>
 {{ .Inner }}
 </div>
@@ -84,7 +84,7 @@ Something went **wrong**. This is an error alert.
 
 `_shortcodes/details.html`:
 
-```html
+```
 <details{{ if .Get "open" }} open{{ end }}>
 <summary>{{ .Get "summary" }}</summary>
 {{ .Inner }}
