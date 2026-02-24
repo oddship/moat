@@ -17,10 +17,10 @@ description: A static site generator in one Go binary. Markdown + oat.
 
 <div class="features">
 <article class="card">
-<header><h3>Convention over config</h3></header>
+<header><h3>Zero config</h3></header>
 
-Directory structure is the config. Number prefixes control ordering.
-No YAML config sprawl.
+Built-in oat layout with sidebar nav, dark mode, and syntax highlighting.
+Just write markdown and build. No layout files needed.
 </article>
 
 <article class="card">
@@ -50,6 +50,7 @@ components in markdown. Like Zola, without the complexity.
 ```bash
 go install github.com/oddship/moat@latest
 mkdir docs
+echo "# Hello" > docs/index.md
 moat build docs/ _site/
 moat serve _site/
 ```
@@ -61,7 +62,7 @@ Reads markdown files from a directory, converts to HTML, wraps in a layout templ
 ```
 docs/
 ├── config.toml           # Site config (optional)
-├── _layout.html          # Go template (required)
+├── _layout.html          # Custom layout (optional)
 ├── _shortcodes/          # Reusable components
 ├── _static/              # Copied as-is
 ├── index.md              # → /
@@ -70,4 +71,4 @@ docs/
     └── 02-config.md      # → /guide/config/
 ```
 
-Example layouts use [oat](https://oat.ink) for styling — sidebar, dark mode, semantic HTML. Or bring any CSS you want.
+Ships with a built-in [oat](https://oat.ink) layout — sidebar, dark mode, semantic HTML. Or provide your own `_layout.html` with any CSS you want.

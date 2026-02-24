@@ -5,11 +5,14 @@ Markdown + [oat](https://oat.ink). A static site generator in one Go binary.
 **[Documentation](https://oddship.github.io/moat/)**
 
 ```bash
+go install github.com/oddship/moat@latest
+mkdir docs
+echo "# Hello" > docs/index.md
 moat build docs/ _site/
 moat serve _site/
 ```
 
-Reads markdown, wraps it in a Go template layout, generates sidebar nav, writes static HTML. Ships with layouts designed for [oat](https://github.com/knadh/oat) — an ultra-lightweight semantic HTML/CSS UI library.
+That's it. No layout files needed — moat has a built-in oat layout with sidebar nav, dark mode, and syntax highlighting.
 
 ## Install
 
@@ -21,37 +24,26 @@ Or grab a binary from [releases](https://github.com/oddship/moat/releases).
 
 ## Features
 
-- **oat-ready** — example layouts use [oat](https://oat.ink) for sidebar, topnav, dark mode out of the box
+- **Zero config** — built-in oat layout, just write markdown and build
 - **Convention-based** — directory structure is the config, number prefixes control ordering
 - **Syntax highlighting** — 70 Chroma themes with automatic light/dark mode
 - **Layout inheritance** — base layout with `{{ block }}`/`{{ define }}` variants
 - **Shortcodes** — reusable components inside markdown (`{{< note >}}...{{< /note >}}`)
-- **Config file** — optional `config.toml` for site name, base path, highlight themes
+- **Config file** — optional `config.toml` for site name, base path, highlight themes, sidebar links
 - **GitHub Actions** — reusable workflow for one-line GitHub Pages deployment
 - **Single binary** — no Node.js, no npm, just Go
 
 ## Quick start
 
 ```bash
+# Zero-config — just markdown
 mkdir docs
-cat > docs/_layout.html << 'EOF'
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ .Title }}</title>
-    <link rel="stylesheet" href="https://unpkg.com/@knadh/oat/oat.min.css">
-    <link rel="stylesheet" href="{{ .BasePath }}/_syntax.css">
-</head>
-<body>
-    <nav>{{ .Nav }}</nav>
-    <main>{{ block "content" . }}<article>{{ .Content }}</article>{{ end }}</main>
-</body>
-</html>
-EOF
-
 echo "# Hello" > docs/index.md
 moat build docs/ _site/
-moat serve _site/
+
+# Or scaffold with layouts you can customize
+moat init docs
+moat build docs/ _site/
 ```
 
 ## Directory structure
@@ -59,7 +51,7 @@ moat serve _site/
 ```
 docs/
 ├── config.toml               # Site config (optional)
-├── _layout.html              # Base layout (required)
+├── _layout.html              # Custom layout (optional — built-in used if absent)
 ├── _layout.landing.html      # Layout variant (optional)
 ├── _shortcodes/              # Shortcode templates
 │   └── note.html
@@ -68,6 +60,26 @@ docs/
 └── 01-guide/
     ├── 01-intro.md           # → /guide/intro/
     └── 02-config.md          # → /guide/config/
+```
+
+## Configuration
+
+Optional `config.toml` in your docs directory:
+
+```toml
+site_name = "My Project"
+base_path = "/my-project"
+
+[highlight]
+light = "github"
+dark  = "github-dark"
+
+[[links]]
+title = "GitHub"
+url = "https://github.com/you/project"
+
+[extra]
+footer = '&copy; <a href="https://example.com">You</a>'
 ```
 
 ## GitHub Pages
@@ -103,7 +115,7 @@ jobs:
 
 ## Why oat?
 
-[oat](https://oat.ink) is an ultra-lightweight (~8KB) semantic HTML/CSS UI library — buttons, forms, cards, sidebar layouts, dark mode, all with zero dependencies. moat doesn't require oat, but the example layouts use it and the nav HTML matches oat's sidebar patterns. Include the CSS and you get a site that looks like [oat.ink](https://oat.ink) with just markdown files. Or use any CSS you prefer.
+[oat](https://oat.ink) is an ultra-lightweight (~8KB) semantic HTML/CSS UI library — buttons, forms, cards, sidebar layouts, dark mode, all with zero dependencies. moat ships a built-in layout designed for oat, but you can use any CSS — just provide your own `_layout.html`.
 
 ## License
 

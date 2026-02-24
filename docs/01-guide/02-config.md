@@ -5,7 +5,7 @@ description: Site-level configuration via config.toml
 
 # Configuration
 
-Place a `config.toml` in your docs directory for site-level settings. It's optional — everything can be set via CLI flags too.
+Place a `config.toml` in your docs directory for site-level settings. It's optional — everything has sensible defaults.
 
 ```toml
 site_name = "My Project"
@@ -15,9 +15,13 @@ base_path = "/my-project"
 light = "github"
 dark  = "github-dark"
 
+[[links]]
+title = "GitHub"
+url = "https://github.com/you/project"
+
 [extra]
 tagline = "Build something great"
-repo = "https://github.com/you/project"
+footer = '&copy; <a href="https://example.com">You</a>'
 ```
 
 ## Fields
@@ -31,6 +35,22 @@ CLI flags `--site-name` and `--base-path` override config values.
 
 Use `--config PATH` to point to a config file outside the docs directory. By default, moat looks for `config.toml` in the source directory.
 
+## Sidebar links
+
+Add links above the page navigation in the sidebar:
+
+```toml
+[[links]]
+title = "GitHub"
+url = "https://github.com/you/project"
+
+[[links]]
+title = "Discord"
+url = "https://discord.gg/your-server"
+```
+
+Links appear at the top of the sidebar nav, before the auto-generated page tree. They render as regular nav items — no special styling needed.
+
 ## Syntax highlighting
 
 moat uses [Chroma](https://github.com/alecthomas/chroma) for syntax highlighting with CSS classes, so light and dark themes work automatically.
@@ -41,7 +61,7 @@ light = "github"
 dark  = "github-dark"
 ```
 
-The build generates `_syntax.css` in the output directory. Include it in your layout:
+The build generates `_syntax.css` in the output directory. The built-in layout includes it automatically. If you use a custom layout, add:
 
 ```html
 <link rel="stylesheet" href="{{ .BasePath }}/_syntax.css">
@@ -66,8 +86,6 @@ See all 70 themes at the [Chroma style gallery](https://xyproto.github.io/splash
 
 ### Example
 
-Here's how highlighted code looks across languages:
-
 ```go
 package main
 
@@ -89,12 +107,6 @@ async function buildSite(src, dst) {
 }
 ```
 
-```bash
-# Build and preview
-moat build docs/ _site/
-moat serve _site/ --port 8080
-```
-
 ## Site extras
 
 The `[extra]` section holds arbitrary key-value pairs, available as `{{ .Site }}` in templates:
@@ -102,13 +114,17 @@ The `[extra]` section holds arbitrary key-value pairs, available as `{{ .Site }}
 ```toml
 [extra]
 tagline = "docs are your project's moat"
-repo = "https://github.com/oddship/moat"
+footer = '&copy; <a href="https://github.com/oddship">oddship</a>'
 ```
 
-Access in your layout:
+Access in templates:
 
 ```html
-{{ if .Site.tagline }}
+{{ if index .Site "tagline" }}
   <p>{{ index .Site "tagline" }}</p>
 {{ end }}
 ```
+
+The built-in layout uses these extras automatically:
+- `tagline` — appended to the site name in the landing page title
+- `footer` — rendered at the bottom of every page (supports HTML via `safeHTML`)

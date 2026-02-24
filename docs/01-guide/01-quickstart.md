@@ -15,42 +15,38 @@ Or grab a binary from [releases](https://github.com/oddship/moat/releases).
 
 ## Create a site
 
-```bash
-mkdir -p docs
-```
-
-Create `docs/_layout.html`:
-
-```html
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ .Title }}</title>
-    <link rel="stylesheet" href="https://unpkg.com/@knadh/oat/oat.min.css">
-</head>
-<body>
-    <nav>{{ .Nav }}</nav>
-    <main>{{ .Content }}</main>
-</body>
-</html>
-```
-
-Create `docs/index.md`:
-
-```markdown
-# Hello
-
-Welcome to my docs.
-```
-
-## Build & serve
+The fastest way — moat has built-in layouts so you don't need to provide any:
 
 ```bash
+mkdir docs
+echo "# Hello" > docs/index.md
 moat build docs/ _site/
 moat serve _site/
 ```
 
-Open [http://localhost:8080](http://localhost:8080).
+Open [http://localhost:8080](http://localhost:8080). You get a full oat-styled site with sidebar nav, dark mode toggle, and syntax highlighting.
+
+## Scaffold with `moat init`
+
+For a more complete starting point:
+
+```bash
+moat init docs
+moat build docs/ _site/
+moat serve _site/
+```
+
+This creates layouts, a sample config, and starter pages you can edit:
+
+```
+docs/
+├── _layout.html          # Base layout (customize or delete to use built-in)
+├── _layout.landing.html  # Landing page variant
+├── config.toml           # Site config
+├── index.md              # Home page
+└── 01-guide/
+    └── 01-getting-started.md
+```
 
 ## Add more pages
 

@@ -5,6 +5,29 @@ description: Command-line interface for moat
 
 # CLI Reference
 
+## `moat init`
+
+Scaffold a docs directory with layouts, config, and starter content.
+
+```bash
+moat init [dir]
+```
+
+Default directory is `docs`. Creates:
+
+- `_layout.html` — copy of the built-in base layout
+- `_layout.landing.html` — landing page variant
+- `config.toml` — sample config with all options commented
+- `index.md` — landing page
+- `01-guide/01-getting-started.md` — starter content
+
+Won't overwrite existing files — run on a new directory.
+
+```bash
+moat init              # creates docs/
+moat init my-docs      # creates my-docs/
+```
+
 ## `moat build`
 
 Build a static site from markdown source.
@@ -31,6 +54,8 @@ moat build docs/ _site/ --config site.toml
 ```
 
 CLI flags override values from `config.toml`.
+
+If no `_layout.html` exists in the source directory, moat uses its built-in oat layout.
 
 ## `moat serve`
 
