@@ -16,7 +16,10 @@ description: The Go template that wraps every page
 | `{{ .Content }}` | HTML | Rendered markdown content |
 | `{{ .Nav }}` | HTML | Generated navigation sidebar |
 | `{{ .CurrentPath }}` | string | Current page URL path (e.g. `/guide/intro/`) |
-| `{{ .SiteName }}` | string | Site name (from `--site-name` flag, default "Site") |
+| `{{ .SiteName }}` | string | Site name (from config or `--site-name` flag) |
+| `{{ .BasePath }}` | string | URL prefix for project pages (e.g. `/moat`) |
+| `{{ .Extra }}` | map | Extra frontmatter fields from the current page |
+| `{{ .Site }}` | map | Site-level `[extra]` from `config.toml` |
 
 ## Minimal example
 

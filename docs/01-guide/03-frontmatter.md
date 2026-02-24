@@ -23,6 +23,18 @@ url: getting-started
 | `description` | string | — | Meta description for the page |
 | `url` | string | Derived from file path | Override the URL path |
 
+Any other fields are passed through as `{{ .Extra }}` in templates:
+
+```yaml
+---
+title: Button
+weight: 50
+icon: box
+---
+```
+
+Access extra fields with `{{ index .Extra "weight" }}` or `{{ .Extra.icon }}`.
+
 ## Title derivation
 
 If no `title` is set, moat derives it from the filename:
