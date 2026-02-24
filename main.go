@@ -22,18 +22,22 @@ func main() {
 	switch os.Args[1] {
 	case "build":
 		if len(os.Args) < 4 {
-			fmt.Fprintf(os.Stderr, "Usage: moat build <src> <dst> [--site-name NAME]\n")
+			fmt.Fprintf(os.Stderr, "Usage: moat build <src> <dst> [--site-name NAME] [--base-path PATH]\n")
 			os.Exit(1)
 		}
 		src := os.Args[2]
 		dst := os.Args[3]
 		siteName := ""
+		basePath := ""
 		for i, arg := range os.Args {
 			if arg == "--site-name" && i+1 < len(os.Args) {
 				siteName = os.Args[i+1]
 			}
+			if arg == "--base-path" && i+1 < len(os.Args) {
+				basePath = os.Args[i+1]
+			}
 		}
-		if err := Build(src, dst, siteName); err != nil {
+		if err := Build(src, dst, siteName, basePath); err != nil {
 			fmt.Fprintf(os.Stderr, "error: %v\n", err)
 			os.Exit(1)
 		}
@@ -68,7 +72,9 @@ func printUsage() {
 	fmt.Fprintf(os.Stderr, `moat %s — markdown + oat static site generator
 
 Usage:
-  moat build <src> <dst> [--site-name NAME]   Build static site
+  moat build <src> <dst> [flags]               Build static site
+    --site-name NAME   Site name for templates (default: "Site")
+    --base-path PATH   URL prefix for GitHub project pages (e.g. /moat)
   moat serve <dir> [--port PORT]              Serve for local preview
   moat version                                Print version
 `, version)

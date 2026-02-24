@@ -25,12 +25,14 @@ type TemplateData struct {
 	Nav         template.HTML
 	CurrentPath string
 	SiteName    string
+	BasePath    string
 }
 
 // Build reads markdown from src, renders HTML, and writes to dst.
-func Build(src, dst, siteName string) error {
+func Build(src, dst, siteName, basePath string) error {
 	src, _ = filepath.Abs(src)
 
+	basePath = strings.TrimRight(basePath, "/")
 	if siteName == "" {
 		siteName = "Site"
 	}
@@ -99,9 +101,10 @@ func Build(src, dst, siteName string) error {
 	// Render each page
 	for _, page := range pages {
 		currentPath := pageURL(page)
+		prefixedPath := basePath + currentPath
 		outPath := outputPathFromURL(dst, currentPath)
 
-		navHTML := RenderNav(nav, currentPath)
+		navHTML := RenderNav(nav, prefixedPath, basePath)
 
 		title := page.Frontmatter.Title
 		if title == "" {
@@ -113,8 +116,9 @@ func Build(src, dst, siteName string) error {
 			Description: page.Frontmatter.Description,
 			Content:     template.HTML(page.HTML),
 			Nav:         template.HTML(navHTML),
-			CurrentPath: currentPath,
+			CurrentPath: prefixedPath,
 			SiteName:    siteName,
+			BasePath:    basePath,
 		}
 
 		if err := renderToFile(tmpl, data, outPath); err != nil {

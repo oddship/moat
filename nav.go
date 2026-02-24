@@ -83,7 +83,8 @@ func BuildNav(pages []Page) []NavItem {
 
 // RenderNav generates HTML for the navigation sidebar.
 // Uses oat's sidebar nav patterns: <ul> lists, <details> for sections, aria-current for active.
-func RenderNav(items []NavItem, currentPath string) string {
+// basePath is prepended to all href values (e.g. "/moat" for GitHub project pages).
+func RenderNav(items []NavItem, currentPath, basePath string) string {
 	var b strings.Builder
 	b.WriteString("<nav>\n<ul>\n")
 
@@ -93,19 +94,21 @@ func RenderNav(items []NavItem, currentPath string) string {
 			b.WriteString(fmt.Sprintf("  <li>\n    <details open>\n      <summary>%s</summary>\n      <ul>\n", item.Title))
 			for _, child := range item.Children {
 				aria := ""
-				if child.Path == currentPath {
+				href := basePath + child.Path
+				if href == currentPath {
 					aria = ` aria-current="page"`
 				}
-				b.WriteString(fmt.Sprintf("        <li><a href=\"%s\"%s>%s</a></li>\n", child.Path, aria, child.Title))
+				b.WriteString(fmt.Sprintf("        <li><a href=\"%s\"%s>%s</a></li>\n", href, aria, child.Title))
 			}
 			b.WriteString("      </ul>\n    </details>\n  </li>\n")
 		} else {
 			// Top-level page
 			aria := ""
-			if item.Path == currentPath {
+			href := basePath + item.Path
+			if href == currentPath {
 				aria = ` aria-current="page"`
 			}
-			b.WriteString(fmt.Sprintf("  <li><a href=\"%s\"%s>%s</a></li>\n", item.Path, aria, item.Title))
+			b.WriteString(fmt.Sprintf("  <li><a href=\"%s\"%s>%s</a></li>\n", href, aria, item.Title))
 		}
 	}
 

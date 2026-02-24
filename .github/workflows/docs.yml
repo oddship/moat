@@ -36,7 +36,7 @@ jobs:
         run: go build -o moat .
 
       - name: Build site
-        run: ./moat build docs/ _site/ --site-name moat
+        run: ./moat build docs/ _site/ --site-name moat --base-path /moat
 
       - name: Upload artifact
         if: github.ref == 'refs/heads/main'
