@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 )
 
-const version = "0.3.0"
+var version = "dev"
 
 func main() {
 	if len(os.Args) < 2 {
