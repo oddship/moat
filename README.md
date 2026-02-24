@@ -2,14 +2,14 @@
 
 Markdown + [oat](https://oat.ink). A static site generator in one Go binary.
 
-**[Documentation](https://oddship.github.io/moat/)** · **[oat CSS](https://oat.ink)**
+**[Documentation](https://oddship.github.io/moat/)**
 
 ```bash
 moat build docs/ _site/
 moat serve _site/
 ```
 
-Reads markdown, wraps it in a Go template layout, generates sidebar nav, writes static HTML. Designed to pair with [oat](https://github.com/knadh/oat) — the ultra-lightweight CSS library — for beautiful docs with zero JavaScript complexity.
+Reads markdown, wraps it in a Go template layout, generates sidebar nav, writes static HTML. Ships with layouts designed for [oat](https://github.com/knadh/oat) — an ultra-lightweight semantic HTML/CSS UI library.
 
 ## Install
 
@@ -21,7 +21,7 @@ Or grab a binary from [releases](https://github.com/oddship/moat/releases).
 
 ## Features
 
-- **Built for oat** — layout patterns match oat's sidebar, topnav, and theme toggle out of the box
+- **oat-ready** — example layouts use [oat](https://oat.ink) for sidebar, topnav, dark mode out of the box
 - **Convention-based** — directory structure is the config, number prefixes control ordering
 - **Syntax highlighting** — 70 Chroma themes with automatic light/dark mode
 - **Layout inheritance** — base layout with `{{ block }}`/`{{ define }}` variants
@@ -103,7 +103,7 @@ jobs:
 
 ## Why oat?
 
-[oat](https://oat.ink) is an ultra-lightweight (~8KB) CSS + JS library with semantic HTML styling, dark mode, sidebar layouts, and zero dependencies. moat's layout system is designed around oat's patterns — `data-sidebar-layout`, `data-topnav`, theme toggle, collapsible nav sections. You get a site that looks like [oat.ink](https://oat.ink) with just markdown files.
+[oat](https://oat.ink) is an ultra-lightweight (~8KB) semantic HTML/CSS UI library — buttons, forms, cards, sidebar layouts, dark mode, all with zero dependencies. moat doesn't require oat, but the example layouts use it and the nav HTML matches oat's sidebar patterns. Include the CSS and you get a site that looks like [oat.ink](https://oat.ink) with just markdown files. Or use any CSS you prefer.
 
 ## License
 

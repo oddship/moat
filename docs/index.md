@@ -6,11 +6,10 @@ description: A static site generator in one Go binary. Markdown + oat.
 
 # moat
 
-<h3 class="tagline text-light">Markdown + <a href="https://oat.ink">oat</a>. Build docs from markdown in one command.</h3>
+<h3 class="tagline text-light">Markdown + <a href="https://oat.ink">oat</a>. A static site generator in one Go binary.</h3>
 
 <div class="hstack">
   <a href="guide/quickstart/" class="button">Get started</a>
-  <a href="https://oat.ink" class="button outline">oat CSS</a>
   <a href="https://github.com/oddship/moat" class="button outline">GitHub</a>
 </div>
 
@@ -71,4 +70,4 @@ docs/
     └── 02-config.md      # → /guide/config/
 ```
 
-Designed to pair with [oat](https://oat.ink) for styling — sidebar layouts, dark mode, and semantic HTML out of the box.
+Example layouts use [oat](https://oat.ink) for styling — sidebar, dark mode, semantic HTML. Or bring any CSS you want.
