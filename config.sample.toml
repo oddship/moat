@@ -1,0 +1,30 @@
+# moat site configuration
+# Place as config.toml in your docs/ directory.
+
+# Site name — used in templates as {{ .SiteName }}
+site_name = "My Project"
+
+# Base path — for GitHub project pages served under /repo-name/
+# Leave empty for custom domains or root-level sites.
+# base_path = "/my-project"
+
+# Syntax highlighting themes (Chroma)
+# See all themes: https://xyproto.github.io/splash/docs/
+[highlight]
+light = "github"          # Used by default
+dark  = "github-dark"     # Used when [data-theme="dark"]
+
+# Popular pairs:
+#   github / github-dark
+#   catppuccin-latte / catppuccin-mocha
+#   tokyonight-day / tokyonight-night
+#   gruvbox-light / gruvbox
+#   rose-pine-dawn / rose-pine-moon
+#   solarized-light / solarized-dark
+#   xcode / xcode-dark
+#   modus-operandi / modus-vivendi
+
+# Extra variables — available in templates as {{ .Site.key }}
+# [extra]
+# tagline = "My project tagline"
+# repo = "https://github.com/you/project"

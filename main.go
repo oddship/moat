@@ -9,9 +9,10 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 )
 
-const version = "0.1.0"
+const version = "0.2.0"
 
 func main() {
 	if len(os.Args) < 2 {
@@ -22,22 +23,56 @@ func main() {
 	switch os.Args[1] {
 	case "build":
 		if len(os.Args) < 4 {
-			fmt.Fprintf(os.Stderr, "Usage: moat build <src> <dst> [--site-name NAME] [--base-path PATH]\n")
+			fmt.Fprintf(os.Stderr, "Usage: moat build <src> <dst> [--config PATH] [--site-name NAME] [--base-path PATH]\n")
 			os.Exit(1)
 		}
 		src := os.Args[2]
 		dst := os.Args[3]
 		siteName := ""
 		basePath := ""
+		configPath := ""
+		hasSiteName := false
+		hasBasePath := false
 		for i, arg := range os.Args {
 			if arg == "--site-name" && i+1 < len(os.Args) {
 				siteName = os.Args[i+1]
+				hasSiteName = true
 			}
 			if arg == "--base-path" && i+1 < len(os.Args) {
 				basePath = os.Args[i+1]
+				hasBasePath = true
+			}
+			if arg == "--config" && i+1 < len(os.Args) {
+				configPath = os.Args[i+1]
 			}
 		}
-		if err := Build(src, dst, siteName, basePath); err != nil {
+
+		// Auto-detect config.toml in src directory if --config not given
+		if configPath == "" {
+			candidate := filepath.Join(src, "config.toml")
+			if _, err := os.Stat(candidate); err == nil {
+				configPath = candidate
+			}
+		}
+
+		// Load config
+		cfg, err := LoadConfig(configPath)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "error: %v\n", err)
+			os.Exit(1)
+		}
+
+		// Config file provides defaults; CLI flags override
+		if !hasSiteName && cfg.SiteName != "" {
+			siteName = cfg.SiteName
+		}
+		if !hasBasePath && cfg.BasePath != "" {
+			basePath = cfg.BasePath
+		}
+
+		cfg.SiteName = siteName
+		cfg.BasePath = basePath
+		if err := Build(src, dst, siteName, basePath, cfg); err != nil {
 			fmt.Fprintf(os.Stderr, "error: %v\n", err)
 			os.Exit(1)
 		}
@@ -73,6 +108,7 @@ func printUsage() {
 
 Usage:
   moat build <src> <dst> [flags]               Build static site
+    --config PATH      Config file (default: <src>/config.toml)
     --site-name NAME   Site name for templates (default: "Site")
     --base-path PATH   URL prefix for GitHub project pages (e.g. /moat)
   moat serve <dir> [--port PORT]              Serve for local preview

@@ -7,6 +7,10 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/alecthomas/chroma/v2"
+	chromahtml "github.com/alecthomas/chroma/v2/formatters/html"
+	"github.com/alecthomas/chroma/v2/styles"
 )
 
 // Page represents a single markdown page.
@@ -26,17 +30,19 @@ type TemplateData struct {
 	CurrentPath string
 	SiteName    string
 	BasePath    string
+	Extra       map[string]any // Per-page extra frontmatter
+	Site        map[string]any // Site-level extra from config.toml [extra]
 }
 
 // Build reads markdown from src, renders HTML, and writes to dst.
-func Build(src, dst, siteName, basePath string) error {
+func Build(src, dst, siteName, basePath string, cfg Config) error {
 	src, _ = filepath.Abs(src)
+	dst, _ = filepath.Abs(dst)
 
 	basePath = strings.TrimRight(basePath, "/")
 	if siteName == "" {
 		siteName = "Site"
 	}
-	dst, _ = filepath.Abs(dst)
 
 	// Load layout template
 	layoutPath := filepath.Join(src, "_layout.html")
@@ -98,6 +104,11 @@ func Build(src, dst, siteName, basePath string) error {
 	// Build navigation
 	nav := BuildNav(pages)
 
+	// Generate syntax highlighting CSS
+	if err := writeSyntaxCSS(dst, cfg.Highlight); err != nil {
+		return fmt.Errorf("writing syntax CSS: %w", err)
+	}
+
 	// Render each page
 	for _, page := range pages {
 		currentPath := pageURL(page)
@@ -119,6 +130,8 @@ func Build(src, dst, siteName, basePath string) error {
 			CurrentPath: prefixedPath,
 			SiteName:    siteName,
 			BasePath:    basePath,
+			Extra:       page.Frontmatter.Extra,
+			Site:        cfg.Extra,
 		}
 
 		if err := renderToFile(tmpl, data, outPath); err != nil {
@@ -181,4 +194,67 @@ func copyDir(src, dst string) error {
 		}
 		return os.WriteFile(dstPath, data, 0o644)
 	})
+}
+
+// writeSyntaxCSS generates a combined light/dark syntax highlighting stylesheet.
+func writeSyntaxCSS(dst string, hl HighlightConfig) error {
+	lightName := hl.Light
+	if lightName == "" {
+		lightName = "github"
+	}
+	darkName := hl.Dark
+	if darkName == "" {
+		darkName = "github-dark"
+	}
+
+	path := filepath.Join(dst, "_syntax.css")
+	if err := os.MkdirAll(dst, 0o755); err != nil {
+		return err
+	}
+	f, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	formatter := chromahtml.New(chromahtml.WithClasses(true))
+
+	// Light theme (default)
+	lightStyle := styles.Get(lightName)
+	if lightStyle == nil {
+		lightStyle = styles.Fallback
+	}
+	if err := formatter.WriteCSS(f, lightStyle); err != nil {
+		return err
+	}
+
+	// Dark theme — scoped under [data-theme="dark"]
+	darkStyle := styles.Get(darkName)
+	if darkStyle == nil {
+		darkStyle = styles.Fallback
+	}
+	f.WriteString("\n/* Dark theme */\n")
+	f.WriteString("[data-theme=\"dark\"] {\n")
+	if err := writeScopedCSS(f, formatter, darkStyle); err != nil {
+		return err
+	}
+	f.WriteString("}\n")
+
+	fmt.Printf("  Generated _syntax.css (light: %s, dark: %s)\n", lightName, darkName)
+	return nil
+}
+
+// writeScopedCSS writes chroma CSS rules inside an already-opened scope.
+func writeScopedCSS(f *os.File, formatter *chromahtml.Formatter, style *chroma.Style) error {
+	// Write to a buffer first, then indent each line
+	var buf strings.Builder
+	if err := formatter.WriteCSS(&buf, style); err != nil {
+		return err
+	}
+	for _, line := range strings.Split(buf.String(), "\n") {
+		if strings.TrimSpace(line) != "" {
+			f.WriteString("  " + line + "\n")
+		}
+	}
+	return nil
 }

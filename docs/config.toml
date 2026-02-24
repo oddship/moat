@@ -1,0 +1,6 @@
+site_name = "moat"
+base_path = "/moat"
+
+[extra]
+tagline = "docs are your project's moat"
+repo = "https://github.com/oddship/moat"

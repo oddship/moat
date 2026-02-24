@@ -9,9 +9,10 @@ import (
 
 // Frontmatter holds YAML metadata from the top of a markdown file.
 type Frontmatter struct {
-	Title       string `yaml:"title"`
-	Description string `yaml:"description"`
-	URL         string `yaml:"url"`
+	Title       string         `yaml:"title"`
+	Description string         `yaml:"description"`
+	URL         string         `yaml:"url"`
+	Extra       map[string]any `yaml:"-"` // All other fields
 }
 
 // ParseFrontmatter splits a markdown file into frontmatter and body.
@@ -40,7 +41,22 @@ func ParseFrontmatter(content []byte) (Frontmatter, []byte) {
 		body = body[2:]
 	}
 
+	// Parse known fields
 	_ = yaml.Unmarshal([]byte(yamlBlock), &fm)
+
+	// Parse all fields into a map for extras
+	var raw map[string]any
+	_ = yaml.Unmarshal([]byte(yamlBlock), &raw)
+	if raw != nil {
+		// Remove known fields, keep the rest as Extra
+		delete(raw, "title")
+		delete(raw, "description")
+		delete(raw, "url")
+		if len(raw) > 0 {
+			fm.Extra = raw
+		}
+	}
+
 	return fm, []byte(body)
 }
 

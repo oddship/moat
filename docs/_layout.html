@@ -6,6 +6,7 @@
   <title>{{ .Title }} — {{ .SiteName }}</title>
   {{ if .Description }}<meta name="description" content="{{ .Description }}">{{ end }}
   <link rel="stylesheet" href="https://unpkg.com/@knadh/oat/oat.min.css">
+  <link rel="stylesheet" href="{{ .BasePath }}/_syntax.css">
   <script>
     (function() {
       var t = localStorage.getItem('theme');
