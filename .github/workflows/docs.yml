@@ -4,8 +4,13 @@ on:
   push:
     branches: [main]
     paths:
+      - '**.go'
       - 'docs/**'
       - '.github/workflows/docs.yml'
+  pull_request:
+    paths:
+      - '**.go'
+      - 'docs/**'
   workflow_dispatch:
 
 permissions:
@@ -23,21 +28,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install moat
-        run: |
-          curl -sL https://github.com/oddship/moat/releases/download/v0.1.0/moat-linux-amd64 -o moat
-          chmod +x moat
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Build moat
+        run: go build -o moat .
 
       - name: Build site
         run: ./moat build docs/ _site/ --site-name moat
 
       - name: Upload artifact
+        if: github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v3
         with:
           path: _site/
 
   deploy:
     needs: build
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
