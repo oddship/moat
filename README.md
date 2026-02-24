@@ -1,17 +1,15 @@
 # moat
 
-Markdown + [oat](https://github.com/knadh/oat). A static site generator in one binary.
+Docs are your project's moat. A static site generator in one Go binary.
+
+**[Documentation](https://oddship.github.io/moat/)**
 
 ```
 moat build docs/ _site/
 moat serve _site/
 ```
 
-## What it does
-
-Reads markdown files from a directory, converts them to HTML, wraps them in a
-layout template styled with oat CSS, generates a sidebar nav, and writes
-static HTML files. That's it.
+Reads markdown, wraps it in a layout template, generates sidebar nav, writes static HTML. No config files — just conventions.
 
 ## Install
 
@@ -19,99 +17,43 @@ static HTML files. That's it.
 go install github.com/oddship/moat@latest
 ```
 
-Or build from source:
-
-```bash
-git clone https://github.com/oddship/moat.git
-cd moat && go build .
-```
+Or grab a binary from [releases](https://github.com/oddship/moat/releases).
 
 ## Usage
 
-### Build
-
 ```bash
-moat build <source-dir> <output-dir>
+moat build <src> <dst> [--site-name NAME] [--base-path PATH]
+moat serve <dir> [--port PORT]
 ```
 
-Source directory should contain:
-- `_layout.html` — Go template for page layout (required)
-- `*.md` files — your content
-- `_static/` — static assets copied as-is (optional)
-
-### Serve
-
-```bash
-moat serve <dir> [--port 3000]
-```
-
-Simple static file server for local preview. Default port: 8080.
-
-## Conventions
-
-### Directory structure
+Source directory contains:
 
 ```
 docs/
-├── _layout.html          # Required. Go template.
-├── _static/              # Copied to output as-is
-├── index.md              # → /index.html
-├── quickstart.md         # → /quickstart/index.html
-├── guide/
-│   ├── 01-intro.md       # → /guide/intro/index.html
-│   └── 02-advanced.md    # → /guide/advanced/index.html
-└── reference/
-    └── api.md            # → /reference/api/index.html
+├── _layout.html          # Go template (required)
+├── _static/              # Copied as-is
+├── index.md              # → /
+├── quickstart.md         # → /quickstart/
+└── 01-guide/
+    ├── 01-intro.md       # → /guide/intro/
+    └── 02-advanced.md    # → /guide/advanced/
 ```
 
-### Frontmatter
+Number prefixes (`01-`, `02-`) control ordering but are stripped from URLs and display names.
 
-Optional YAML frontmatter:
-
-```yaml
----
-title: Getting Started
-description: How to set up your project
-url: getting-started
----
-```
-
-- **title**: Page title. If omitted, derived from filename (`02-agents.md` → "Agents").
-- **description**: Meta description for the page.
-- **url**: Override the URL path. If omitted, derived from file path with number prefixes stripped.
-
-### Navigation
-
-Nav is generated automatically from the directory structure:
-- Root `.md` files appear as top-level links
-- Directories become collapsible sections
-- Files are sorted alphabetically within sections
-- Number prefixes (`01-`, `02-`) control order but are stripped from display and URLs
-- `index.md` is excluded from nav listings
-
-### Layout template
-
-`_layout.html` is a Go template with these variables:
+## Template variables
 
 ```html
-{{ .Title }}          <!-- Page title -->
-{{ .Description }}    <!-- Page description -->
-{{ .Content }}        <!-- Rendered HTML content -->
-{{ .Nav }}            <!-- Generated navigation HTML -->
-{{ .CurrentPath }}    <!-- Current page URL path -->
-{{ .SiteName }}       <!-- Site name (from flag or "Site") -->
+{{ .Title }}        {{ .Description }}    {{ .Content }}
+{{ .Nav }}          {{ .CurrentPath }}    {{ .SiteName }}
+{{ .BasePath }}
 ```
 
-### Clean URLs
-
-All pages get clean URLs:
-- `quickstart.md` → `/quickstart/` (served from `/quickstart/index.html`)
-- `guide/01-intro.md` → `/guide/intro/`
-- `index.md` → `/` (root index)
+Pairs well with [oat](https://github.com/knadh/oat) for styling — see the [layout guide](https://oddship.github.io/moat/guide/layout/).
 
 ## Dependencies
 
-- [goldmark](https://github.com/yuin/goldmark) — Markdown parser (with GFM tables, strikethrough, autolinks)
+- [goldmark](https://github.com/yuin/goldmark) — Markdown with GFM tables, strikethrough, autolinks
 - [yaml.v3](https://pkg.go.dev/gopkg.in/yaml.v3) — YAML frontmatter
 
 ## License

@@ -67,6 +67,7 @@ moat serve _site/
 - **Sections** — directories become collapsible nav groups
 - **Number prefixes** — `01-`, `02-` control order, stripped from URLs
 - **Static assets** — `_static/` directory copied as-is
+- **Base path** — `--base-path /repo` for GitHub project pages
 - **Zero config** — no config files, just conventions
 
 ## Why
