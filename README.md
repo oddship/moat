@@ -1,6 +1,12 @@
-# moat
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/_static/logo-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="docs/_static/logo-light.svg">
+    <img src="docs/_static/logo-light.svg" alt="moat" height="48">
+  </picture>
+</p>
 
-Markdown + [oat](https://oat.ink). A static site generator in one Go binary.
+<p align="center">Markdown + <a href="https://oat.ink">oat</a>. A static site generator in one Go binary.</p>
 
 **[Documentation](https://oddship.github.io/moat/)**
 
