@@ -265,6 +265,10 @@ func writeSyntaxCSS(dst string, hl HighlightConfig) error {
 	}
 	f.WriteString("\n/* Dark theme */\n")
 	f.WriteString("[data-theme=\"dark\"] {\n")
+	// Reset all chroma token colors to inherit from the dark base color.
+	// This ensures tokens styled in the light theme but absent from the
+	// dark theme (e.g. NameOther, Punctuation) don't keep their light colors.
+	f.WriteString("  .chroma span { color: inherit; }\n")
 	if err := writeScopedCSS(f, formatter, darkStyle); err != nil {
 		return err
 	}
