@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ block "title" . }}{{ .Title }} — {{ .SiteName }}{{ end }}</title>
   {{ if .Description }}<meta name="description" content="{{ .Description }}">{{ end }}
+  {{ if .Favicon }}<link rel="icon" type="image/svg+xml" href="{{ .BasePath }}/{{ .Favicon }}">{{ end }}
   <link rel="stylesheet" href="https://unpkg.com/@knadh/oat/oat.min.css">
   <link rel="stylesheet" href="{{ .BasePath }}/_syntax.css">
   <script>
@@ -44,7 +45,13 @@
             <line x1="4" y1="17" x2="16" y2="17"></line>
           </svg>
         </button>
-        <a href="{{ .BasePath }}/" style="text-decoration: none; font-weight: var(--font-semibold);">{{ .SiteName }}</a>
+        <a href="{{ .BasePath }}/" style="text-decoration: none; {{ if not .Logo }}font-weight: var(--font-semibold);{{ end }}">
+          {{ if .Logo }}
+            <img src="{{ .BasePath }}/{{ .Logo }}" height="24" alt="{{ .SiteName }}">
+          {{ else }}
+            {{ .SiteName }}
+          {{ end }}
+        </a>
       </div>
     </div>
   </nav>

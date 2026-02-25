@@ -1,5 +1,7 @@
 site_name = "My Project"
 # base_path = "/my-project"
+# logo = "_static/logo.svg"
+# favicon = "_static/favicon.svg"
 
 [highlight]
 light = "github"

@@ -1,5 +1,7 @@
 site_name = "moat"
 base_path = "/moat"
+logo = "_static/logo.svg"
+favicon = "_static/favicon.svg"
 
 [highlight]
 light = "github"

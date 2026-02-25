@@ -9,11 +9,13 @@ import (
 
 // Config holds site-level configuration from config.toml.
 type Config struct {
-	SiteName  string            `toml:"site_name"`
-	BasePath  string            `toml:"base_path"`
-	Highlight HighlightConfig   `toml:"highlight"`
-	Links     []LinkConfig      `toml:"links"`
-	Extra     map[string]any    `toml:"extra"`
+	SiteName  string          `toml:"site_name"`
+	BasePath  string          `toml:"base_path"`
+	Logo      string          `toml:"logo"`
+	Favicon   string          `toml:"favicon"`
+	Highlight HighlightConfig `toml:"highlight"`
+	Links     []LinkConfig    `toml:"links"`
+	Extra     map[string]any  `toml:"extra"`
 }
 
 // LinkConfig is a sidebar link above the nav.

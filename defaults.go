@@ -49,7 +49,7 @@ func Init(dir string) error {
 
 	// Write starter content
 	starters := map[string]string{
-		"index.md": "---\ntitle: Home\nlayout: landing\n---\n\n# My Project\n\n<h3 class=\"tagline text-light\">Your project description here.</h3>\n\n<div class=\"hstack\">\n  <a href=\"guide/getting-started/\" class=\"button\">Get started</a>\n</div>\n",
+		"index.md":                       "---\ntitle: Home\nlayout: landing\n---\n\n# My Project\n\n<h3 class=\"tagline text-light\">Your project description here.</h3>\n\n<div class=\"hstack\">\n  <a href=\"guide/getting-started/\" class=\"button\">Get started</a>\n</div>\n",
 		"01-guide/01-getting-started.md": "---\ntitle: Getting Started\n---\n\n# Getting started\n\nWelcome to your docs. Edit this file at `docs/01-guide/01-getting-started.md`.\n",
 	}
 	for rel, content := range starters {

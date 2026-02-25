@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 32" width="108" height="32">
+  <!-- Battlement icon -->
+  <path d="M2 22V12h4V6h4v6h4V6h4v6h4v10z" fill="currentColor"/>
+  <path d="M1 25.5c2.5-2 5-2 7.5 0s5 2 7.5 0 5-2 7.5 0" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.4"/>
+  <!-- Wordmark -->
+  <text x="29" y="23" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif" font-size="21" font-weight="600" fill="currentColor" letter-spacing="-0.02em">moat</text>
+</svg>

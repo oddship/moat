@@ -12,7 +12,7 @@ import (
 
 // ShortcodeContext is passed to shortcode templates.
 type ShortcodeContext struct {
-	Inner template.HTML  // Rendered inner content (markdown → HTML)
+	Inner template.HTML     // Rendered inner content (markdown → HTML)
 	Args  map[string]string // Named arguments
 	Page  *TemplateData     // Parent page data
 }

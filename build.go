@@ -30,6 +30,8 @@ type TemplateData struct {
 	CurrentPath string
 	SiteName    string
 	BasePath    string
+	Logo        string         // Path to logo image (relative to BasePath)
+	Favicon     string         // Path to favicon (relative to BasePath)
 	Extra       map[string]any // Per-page extra frontmatter
 	Site        map[string]any // Site-level extra from config.toml [extra]
 }
@@ -125,6 +127,8 @@ func Build(src, dst, siteName, basePath string, cfg Config) error {
 			CurrentPath: prefixedPath,
 			SiteName:    siteName,
 			BasePath:    basePath,
+			Logo:        cfg.Logo,
+			Favicon:     cfg.Favicon,
 			Extra:       page.Frontmatter.Extra,
 			Site:        cfg.Extra,
 		}
