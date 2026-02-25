@@ -11,6 +11,9 @@
   <script>
     (function() {
       var t = localStorage.getItem('theme');
+      if (!t && matchMedia('(prefers-color-scheme: dark)').matches) {
+        t = 'dark';
+      }
       if (t) {
         document.documentElement.style.colorScheme = t;
         document.documentElement.setAttribute('data-theme', t);
@@ -45,8 +48,10 @@
             <line x1="4" y1="17" x2="16" y2="17"></line>
           </svg>
         </button>
-        <a href="{{ .BasePath }}/" style="text-decoration: none; {{ if not .Logo }}font-weight: var(--font-semibold);{{ end }}">
-          {{ if .Logo }}
+        <a href="{{ .BasePath }}/" style="text-decoration: none; {{ if not .Logo }}font-weight: var(--font-semibold);{{ end }}" {{ if .Logo }}aria-label="{{ .SiteName }}"{{ end }}>
+          {{ if .LogoInline }}
+            {{ .LogoInline }}
+          {{ else if .Logo }}
             <img src="{{ .BasePath }}/{{ .Logo }}" height="24" alt="{{ .SiteName }}">
           {{ else }}
             {{ .SiteName }}

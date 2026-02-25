@@ -31,6 +31,7 @@ type TemplateData struct {
 	SiteName    string
 	BasePath    string
 	Logo        string         // Path to logo image (relative to BasePath)
+	LogoInline  template.HTML  // Inlined SVG content (set when logo is .svg)
 	Favicon     string         // Path to favicon (relative to BasePath)
 	Extra       map[string]any // Per-page extra frontmatter
 	Site        map[string]any // Site-level extra from config.toml [extra]
@@ -107,6 +108,15 @@ func Build(src, dst, siteName, basePath string, cfg Config) error {
 		return fmt.Errorf("writing syntax CSS: %w", err)
 	}
 
+	// Read inline SVG logo if configured
+	var logoInline template.HTML
+	if cfg.Logo != "" && strings.HasSuffix(strings.ToLower(cfg.Logo), ".svg") {
+		logoPath := filepath.Join(src, cfg.Logo)
+		if data, err := os.ReadFile(logoPath); err == nil {
+			logoInline = template.HTML(data)
+		}
+	}
+
 	// Render each page
 	for _, page := range pages {
 		currentPath := pageURL(page)
@@ -128,6 +138,7 @@ func Build(src, dst, siteName, basePath string, cfg Config) error {
 			SiteName:    siteName,
 			BasePath:    basePath,
 			Logo:        cfg.Logo,
+			LogoInline:  logoInline,
 			Favicon:     cfg.Favicon,
 			Extra:       page.Frontmatter.Extra,
 			Site:        cfg.Extra,
