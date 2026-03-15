@@ -10,6 +10,7 @@ dark  = "github-dark"
 [[links]]
 title = "GitHub"
 url = "https://github.com/oddship/moat"
+icon = "github"
 
 [extra]
 tagline = "docs are your project's moat"

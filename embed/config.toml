@@ -7,9 +7,13 @@ site_name = "My Project"
 light = "github"
 dark  = "github-dark"
 
+# [search]
+# enabled = false
+
 # [[links]]
 # title = "GitHub"
 # url = "https://github.com/you/project"
+# icon = "github"
 
 # [extra]
 # tagline = "My project tagline"

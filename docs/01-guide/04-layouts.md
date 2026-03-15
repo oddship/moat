@@ -5,7 +5,7 @@ description: Built-in defaults with optional customization via block inheritance
 
 # Layouts
 
-moat ships with a built-in layout that uses [oat](https://oat.ink) for styling — sidebar nav, dark mode toggle, responsive topnav. You don't need to create any layout files to get started.
+moat ships with a built-in layout that uses [oat](https://oat.ink) for styling — sidebar nav, built-in search, dark mode toggle, and a responsive topnav. You don't need to create any layout files to get started.
 
 To customize, create `_layout.html` in your docs directory. It completely replaces the built-in layout.
 
@@ -14,6 +14,7 @@ To customize, create `_layout.html` in your docs directory. It completely replac
 The built-in layout provides:
 
 - oat CSS from CDN
+- Sidebar search backed by `_search.json`
 - Sidebar navigation with collapsible sections
 - Dark/light theme toggle
 - Responsive topnav with sidebar toggle on mobile
@@ -96,6 +97,7 @@ If you don't provide a custom `_layout.html`, the built-in layout is used as the
 | `{{ .CurrentPath }}` | string | Current page URL path |
 | `{{ .SiteName }}` | string | Site name from config or CLI |
 | `{{ .BasePath }}` | string | URL prefix (e.g. `/moat`) |
+| `{{ .SearchEnabled }}` | bool | Whether built-in search is enabled in config |
 | `{{ .Extra }}` | map | Extra frontmatter from the page |
 | `{{ .Site }}` | map | Site-level `[extra]` from config |
 

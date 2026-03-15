@@ -72,7 +72,7 @@ func main() {
 
 		cfg.SiteName = siteName
 		cfg.BasePath = basePath
-		if err := Build(src, dst, siteName, basePath, cfg); err != nil {
+		if err := Build(src, dst, cfg); err != nil {
 			fmt.Fprintf(os.Stderr, "error: %v\n", err)
 			os.Exit(1)
 		}

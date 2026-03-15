@@ -28,12 +28,196 @@
       localStorage.setItem('theme', theme);
     }
   </script>
+  {{ if .SearchEnabled }}
+  <script>
+    var _moatBase = "{{ .BasePath }}";
+    document.addEventListener('DOMContentLoaded', function() {
+      var dialog = document.getElementById('search-dialog');
+      if (!dialog) return;
+
+      var input = dialog.querySelector('[data-search-input]');
+      var resultsContainer = dialog.querySelector('[data-search-results]');
+      var status = dialog.querySelector('[data-search-status]');
+      var searchIndex = null;
+      var loading = null;
+
+      function setStatus(text) {
+        status.textContent = text;
+      }
+
+      function clearResults() {
+        resultsContainer.innerHTML = '';
+      }
+
+      function loadIndex() {
+        if (searchIndex) return Promise.resolve(searchIndex);
+        if (loading) return loading;
+
+        setStatus('Loading search…');
+        loading = fetch(_moatBase + '/_search.json')
+          .then(function(r) {
+            if (!r.ok) throw new Error('failed to load search index');
+            return r.json();
+          })
+          .then(function(data) {
+            loading = null;
+            searchIndex = Array.isArray(data.entries) ? data.entries : [];
+            return searchIndex;
+          })
+          .catch(function() {
+            loading = null;
+            setStatus('Search unavailable');
+          });
+
+        return loading;
+      }
+
+      function scoreEntry(entry, query) {
+        var score = 0;
+        var title = (entry.title || '').toLowerCase();
+        var description = (entry.description || '').toLowerCase();
+        var text = (entry.text || '').toLowerCase();
+
+        if (title.indexOf(query) !== -1) score += 100;
+        if (description.indexOf(query) !== -1) score += 25;
+        if (text.indexOf(query) !== -1) score += 10;
+
+        return score;
+      }
+
+      function entrySummary(entry) {
+        var summary = entry.description || entry.text || '';
+        if (summary.length > 120) return summary.slice(0, 117) + '…';
+        return summary;
+      }
+
+      function renderResults(matches) {
+        var shown = Math.min(matches.length, 8);
+        clearResults();
+
+        if (!matches.length) {
+          setStatus('No results');
+          return;
+        }
+
+        matches.slice(0, shown).forEach(function(entry) {
+          var link = document.createElement('a');
+          link.href = entry.url;
+          link.className = 'search-result';
+
+          var title = document.createElement('strong');
+          title.textContent = entry.title || entry.url;
+          link.appendChild(title);
+
+          var summary = entrySummary(entry);
+          if (summary) {
+            var meta = document.createElement('small');
+            meta.className = 'text-light';
+            meta.textContent = summary;
+            link.appendChild(meta);
+          }
+
+          resultsContainer.appendChild(link);
+        });
+
+        if (shown === matches.length) {
+          setStatus(shown === 1 ? '1 result' : shown + ' results');
+        } else {
+          setStatus('Top ' + shown + ' of ' + matches.length + ' results');
+        }
+      }
+
+      input.addEventListener('input', function() {
+        var query = input.value.trim().toLowerCase();
+        if (query.length < 2) {
+          clearResults();
+          setStatus('Type at least 2 characters');
+          return;
+        }
+
+        loadIndex().then(function(entries) {
+          if (!entries) return;
+          var matches = entries
+            .map(function(e) { return { entry: e, score: scoreEntry(e, query) }; })
+            .filter(function(item) { return item.score > 0; })
+            .sort(function(a, b) {
+              if (b.score !== a.score) return b.score - a.score;
+              return (a.entry.title || '').localeCompare(b.entry.title || '');
+            })
+            .map(function(item) { return item.entry; });
+
+          renderResults(matches);
+        });
+      });
+
+      // Close dialog on result click (navigate)
+      resultsContainer.addEventListener('click', function(e) {
+        if (e.target.closest('a')) dialog.close();
+      });
+
+      // Reset state when dialog closes
+      dialog.addEventListener('close', function() {
+        input.value = '';
+        clearResults();
+        setStatus('Type at least 2 characters');
+      });
+
+      // "/" keyboard shortcut to open search
+      document.addEventListener('keydown', function(e) {
+        if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+          var tag = (e.target.tagName || '').toLowerCase();
+          if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+          if (e.target.isContentEditable) return;
+          e.preventDefault();
+          dialog.showModal();
+        }
+      });
+    });
+  </script>
+  {{ end }}
   <script src="https://unpkg.com/@knadh/oat/oat.min.js" defer></script>
   <style>
     html[data-theme="dark"] .icon-dark { display: none; }
     html:not([data-theme="dark"]) .icon-light { display: none; }
     .wrap { padding-top: var(--space-12); }
     aside footer button { width: 100%; }
+    {{ if .SearchEnabled }}
+    #search-dialog input[type="search"] {
+      margin: 0;
+      font-size: var(--text-6);
+    }
+    #search-dialog > form > div {
+      padding-block-start: 0;
+    }
+    #search-dialog footer {
+      justify-content: flex-start;
+    }
+    .search-result {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+      padding: var(--space-2) var(--space-3);
+      text-decoration: none;
+      border-radius: var(--radius-small);
+      color: var(--foreground);
+    }
+    .search-result:hover {
+      background-color: var(--accent);
+    }
+    .search-result + .search-result {
+      margin-block-start: var(--space-1);
+    }
+    kbd {
+      display: inline-block;
+      padding: 0 var(--space-1);
+      font-size: var(--text-8);
+      font-family: inherit;
+      background: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-small);
+      line-height: 1.4;
+    }
+    {{ end }}
   </style>
   {{ block "head" . }}{{ end }}
 </head>
@@ -58,8 +242,35 @@
           {{ end }}
         </a>
       </div>
+      {{ if .SearchEnabled }}
+      <div class="col-8 justify-end hstack">
+        <button class="outline small" onclick="document.getElementById('search-dialog').showModal()" aria-label="Search">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          Search
+          <kbd>/</kbd>
+        </button>
+      </div>
+      {{ end }}
     </div>
   </nav>
+
+  {{ if .SearchEnabled }}
+  <dialog id="search-dialog">
+    <form method="dialog">
+      <header>
+        <input type="search" placeholder="Search docs…" data-search-input autofocus autocomplete="off" autocapitalize="off" spellcheck="false">
+      </header>
+      <div data-search-results>
+      </div>
+      <footer>
+        <small class="text-light" data-search-status aria-live="polite">Type at least 2 characters</small>
+      </footer>
+    </form>
+  </dialog>
+  {{ end }}
 
   <aside data-sidebar class="main-sidebar">
     {{ .Nav }}

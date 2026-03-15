@@ -23,26 +23,29 @@ type Page struct {
 
 // TemplateData is passed to the layout template.
 type TemplateData struct {
-	Title       string
-	Description string
-	Content     template.HTML
-	Nav         template.HTML
-	CurrentPath string
-	SiteName    string
-	BasePath    string
-	Logo        string         // Path to logo image (relative to BasePath)
-	LogoInline  template.HTML  // Inlined SVG content (set when logo is .svg)
-	Favicon     string         // Path to favicon (relative to BasePath)
-	Extra       map[string]any // Per-page extra frontmatter
-	Site        map[string]any // Site-level extra from config.toml [extra]
+	Title         string
+	Description   string
+	Content       template.HTML
+	Nav           template.HTML
+	CurrentPath   string
+	SiteName      string
+	BasePath      string
+	Logo          string         // Path to logo image (relative to BasePath)
+	LogoInline    template.HTML  // Inlined SVG content (set when logo is .svg)
+	Favicon       string         // Path to favicon (relative to BasePath)
+	SearchEnabled bool           // Whether built-in search UI should render
+	Extra         map[string]any // Per-page extra frontmatter
+	Site          map[string]any // Site-level extra from config.toml [extra]
 }
 
 // Build reads markdown from src, renders HTML, and writes to dst.
-func Build(src, dst, siteName, basePath string, cfg Config) error {
+func Build(src, dst string, cfg Config) error {
 	src, _ = filepath.Abs(src)
 	dst, _ = filepath.Abs(dst)
 
-	basePath = strings.TrimRight(basePath, "/")
+	basePath := strings.TrimRight(cfg.BasePath, "/")
+	siteName := cfg.SiteName
+	searchEnabled := cfg.SearchEnabled()
 	if siteName == "" {
 		siteName = "Site"
 	}
@@ -118,7 +121,7 @@ func Build(src, dst, siteName, basePath string, cfg Config) error {
 	}
 
 	// Render each page
-	for _, page := range pages {
+	for i, page := range pages {
 		currentPath := pageURL(page)
 		prefixedPath := basePath + currentPath
 		outPath := outputPathFromURL(dst, currentPath)
@@ -131,17 +134,18 @@ func Build(src, dst, siteName, basePath string, cfg Config) error {
 		}
 
 		data := TemplateData{
-			Title:       title,
-			Description: page.Frontmatter.Description,
-			Nav:         template.HTML(navHTML),
-			CurrentPath: prefixedPath,
-			SiteName:    siteName,
-			BasePath:    basePath,
-			Logo:        cfg.Logo,
-			LogoInline:  logoInline,
-			Favicon:     cfg.Favicon,
-			Extra:       page.Frontmatter.Extra,
-			Site:        cfg.Extra,
+			Title:         title,
+			Description:   page.Frontmatter.Description,
+			Nav:           template.HTML(navHTML),
+			CurrentPath:   prefixedPath,
+			SiteName:      siteName,
+			BasePath:      basePath,
+			Logo:          cfg.Logo,
+			LogoInline:    logoInline,
+			Favicon:       cfg.Favicon,
+			SearchEnabled: searchEnabled,
+			Extra:         page.Frontmatter.Extra,
+			Site:          cfg.Extra,
 		}
 
 		// Process shortcodes in markdown source (before markdown rendering)
@@ -155,6 +159,7 @@ func Build(src, dst, siteName, basePath string, cfg Config) error {
 		if err != nil {
 			return fmt.Errorf("rendering %s: %w", page.RelPath, err)
 		}
+		pages[i].HTML = html
 		data.Content = template.HTML(html)
 
 		// Pick layout: frontmatter "layout: name" → _layout.name.html, default → _layout.html
@@ -171,6 +176,19 @@ func Build(src, dst, siteName, basePath string, cfg Config) error {
 			return fmt.Errorf("writing %s: %w", outPath, err)
 		}
 		fmt.Printf("  %s → %s\n", page.RelPath, outPath)
+	}
+
+	// Generate or remove the static search index (after rendering so page.HTML is populated)
+	if searchEnabled {
+		if err := writeSearchIndex(dst, buildSearchIndex(pages, basePath)); err != nil {
+			return fmt.Errorf("writing search index: %w", err)
+		}
+		fmt.Printf("  Generated %s\n", searchIndexFilename)
+	} else {
+		if err := removeSearchIndex(dst); err != nil {
+			return fmt.Errorf("removing search index: %w", err)
+		}
+		fmt.Printf("  Search disabled (%s skipped)\n", searchIndexFilename)
 	}
 
 	// Copy _static directory

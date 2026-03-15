@@ -55,6 +55,13 @@ moat build docs/ _site/ --config site.toml
 
 CLI flags override values from `config.toml`.
 
+By default, `moat build` also generates `_search.json` for built-in client-side search. Disable it with:
+
+```toml
+[search]
+enabled = false
+```
+
 If no `_layout.html` exists in the source directory, moat uses its built-in oat layout.
 
 ## `moat serve`

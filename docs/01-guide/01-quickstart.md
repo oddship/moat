@@ -24,7 +24,7 @@ moat build docs/ _site/
 moat serve _site/
 ```
 
-Open [http://localhost:8080](http://localhost:8080). You get a full oat-styled site with sidebar nav, dark mode toggle, and syntax highlighting.
+Open [http://localhost:8080](http://localhost:8080). You get a full oat-styled site with sidebar nav, built-in search, dark mode toggle, and syntax highlighting.
 
 ## Scaffold with `moat init`
 

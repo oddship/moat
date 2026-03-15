@@ -18,7 +18,7 @@ moat build docs/ _site/
 moat serve _site/
 ```
 
-That's it. No layout files needed — moat has a built-in oat layout with sidebar nav, dark mode, and syntax highlighting.
+That's it. No layout files needed — moat has a built-in oat layout with sidebar nav, built-in search, dark mode, and syntax highlighting.
 
 ## Install
 
@@ -32,10 +32,11 @@ Or grab a binary from [releases](https://github.com/oddship/moat/releases).
 
 - **Zero config** — built-in oat layout, just write markdown and build
 - **Convention-based** — directory structure is the config, number prefixes control ordering
+- **Built-in search** — client-side `_search.json` index with oat-native sidebar search UI
 - **Syntax highlighting** — 70 Chroma themes with automatic light/dark mode
 - **Layout inheritance** — base layout with `{{ block }}`/`{{ define }}` variants
 - **Shortcodes** — reusable components inside markdown (`{{< note >}}...{{< /note >}}`)
-- **Config file** — optional `config.toml` for site name, base path, highlight themes, sidebar links
+- **Config file** — optional `config.toml` for site name, base path, highlight themes, sidebar links, and search settings
 - **GitHub Actions** — reusable workflow for one-line GitHub Pages deployment
 - **Single binary** — no Node.js, no npm, just Go
 
@@ -80,12 +81,23 @@ base_path = "/my-project"
 light = "github"
 dark  = "github-dark"
 
+[search]
+enabled = false
+
 [[links]]
 title = "GitHub"
 url = "https://github.com/you/project"
+icon = "github"
 
 [extra]
 footer = '&copy; <a href="https://example.com">You</a>'
+```
+
+By default, `moat build` also emits `_search.json`, and the built-in oat layout wires up a sidebar search box automatically. Disable it with:
+
+```toml
+[search]
+enabled = false
 ```
 
 ## GitHub Pages

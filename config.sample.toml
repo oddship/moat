@@ -24,10 +24,16 @@ dark  = "github-dark"     # Used when [data-theme="dark"]
 #   xcode / xcode-dark
 #   modus-operandi / modus-vivendi
 
+# Built-in client-side search
+# Enabled by default in the built-in oat layout.
+# [search]
+# enabled = false
+
 # Sidebar links — rendered above the page navigation
 # [[links]]
 # title = "GitHub"
 # url = "https://github.com/you/project"
+# icon = "github"
 
 # Extra variables — available in templates as {{ .Site.key }}
 # [extra]
