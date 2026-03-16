@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"html"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -70,8 +71,9 @@ var reHTMLTag = regexp.MustCompile(`<[^>]+>`)
 
 // extractSearchText strips HTML tags from rendered page content,
 // collapses whitespace, and caps length for a compact search index.
-func extractSearchText(html []byte) string {
-	s := reHTMLTag.ReplaceAllString(string(html), " ")
+func extractSearchText(htmlBytes []byte) string {
+	s := reHTMLTag.ReplaceAllString(string(htmlBytes), " ")
+	s = html.UnescapeString(s)
 	s = strings.Join(strings.Fields(s), " ")
 
 	if len(s) > maxSearchTextLen {

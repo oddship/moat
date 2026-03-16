@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"html"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 )
@@ -92,20 +94,23 @@ func RenderNav(items []NavItem, currentPath, basePath string, links []LinkConfig
 	// Extra links first (e.g. GitHub)
 	for _, link := range links {
 		icon := linkIcon(link.Icon)
-		b.WriteString(fmt.Sprintf("  <li><a href=\"%s\">%s%s</a></li>\n", link.URL, icon, link.Title))
+		b.WriteString(fmt.Sprintf("  <li><a href=\"%s\">%s%s</a></li>\n",
+			html.EscapeString(link.URL), icon, html.EscapeString(link.Title)))
 	}
 
 	for _, item := range items {
 		if len(item.Children) > 0 {
 			// Section with children
-			b.WriteString(fmt.Sprintf("  <li>\n    <details open>\n      <summary>%s</summary>\n      <ul>\n", item.Title))
+			b.WriteString(fmt.Sprintf("  <li>\n    <details open>\n      <summary>%s</summary>\n      <ul>\n",
+				html.EscapeString(item.Title)))
 			for _, child := range item.Children {
 				aria := ""
 				href := basePath + child.Path
 				if href == currentPath {
 					aria = ` aria-current="page"`
 				}
-				b.WriteString(fmt.Sprintf("        <li><a href=\"%s\"%s>%s</a></li>\n", href, aria, child.Title))
+				b.WriteString(fmt.Sprintf("        <li><a href=\"%s\"%s>%s</a></li>\n",
+					html.EscapeString(href), aria, html.EscapeString(child.Title)))
 			}
 			b.WriteString("      </ul>\n    </details>\n  </li>\n")
 		} else {
@@ -115,7 +120,8 @@ func RenderNav(items []NavItem, currentPath, basePath string, links []LinkConfig
 			if href == currentPath {
 				aria = ` aria-current="page"`
 			}
-			b.WriteString(fmt.Sprintf("  <li><a href=\"%s\"%s>%s</a></li>\n", href, aria, item.Title))
+			b.WriteString(fmt.Sprintf("  <li><a href=\"%s\"%s>%s</a></li>\n",
+				html.EscapeString(href), aria, html.EscapeString(item.Title)))
 		}
 	}
 
@@ -158,6 +164,9 @@ func pageURL(p Page) string {
 	return defaultURLPath(p.RelPath)
 }
 
+// reNumPrefix matches leading digits followed by a hyphen: "01-", "1-", "001-"
+var reNumPrefix = regexp.MustCompile(`^\d+-`)
+
 // defaultURLPath converts "01-guide/02-agents.md" → "/guide/agents/"
 func defaultURLPath(relPath string) string {
 	// Remove .md
@@ -166,15 +175,14 @@ func defaultURLPath(relPath string) string {
 	// Strip number prefixes from each path segment
 	parts := strings.Split(p, string(filepath.Separator))
 	for i, part := range parts {
-		if len(part) >= 3 && part[0] >= '0' && part[0] <= '9' && part[1] >= '0' && part[1] <= '9' && part[2] == '-' {
-			parts[i] = part[3:]
-		}
+		parts[i] = reNumPrefix.ReplaceAllString(part, "")
 	}
 	p = strings.Join(parts, "/")
 
 	// index pages → directory path
 	if strings.HasSuffix(p, "/index") {
-		p = strings.TrimSuffix(p, "index")
+		p = strings.TrimSuffix(p, "/index")
+		return "/" + p + "/"
 	} else if p == "index" {
 		return "/"
 	}

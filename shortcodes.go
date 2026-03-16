@@ -131,6 +131,7 @@ func (reg *shortcodeRegistry) ProcessShortcodes(source []byte, page *TemplateDat
 // and replaces them with rendered shortcode output.
 func (reg *shortcodeRegistry) processBlockShortcodes(source []byte, page *TemplateData) ([]byte, error) {
 	s := string(source)
+	closePatterns := make(map[string]*regexp.Regexp)
 
 	for {
 		// Find the first opening tag
@@ -143,8 +144,12 @@ func (reg *shortcodeRegistry) processBlockShortcodes(source []byte, page *Templa
 		name := openMatch[1]
 		argsStr := openMatch[2]
 
-		// Find the matching closing tag for this name
-		closePattern := regexp.MustCompile(`\{\{<\s*/` + regexp.QuoteMeta(name) + `\s*>\}\}`)
+		// Find the matching closing tag for this name (cached per name)
+		closePattern, ok := closePatterns[name]
+		if !ok {
+			closePattern = regexp.MustCompile(`\{\{<\s*/` + regexp.QuoteMeta(name) + `\s*>\}\}`)
+			closePatterns[name] = closePattern
+		}
 		rest := s[openLoc[1]:]
 		closeLoc := closePattern.FindStringIndex(rest)
 		if closeLoc == nil {

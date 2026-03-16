@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"regexp"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -62,16 +63,17 @@ func ParseFrontmatter(content []byte) (Frontmatter, []byte) {
 	return fm, []byte(body)
 }
 
+// reNumPrefixFM matches leading digits followed by a hyphen: "01-", "1-", "001-"
+var reNumPrefixFM = regexp.MustCompile(`^\d+-`)
+
 // TitleFromFilename derives a title from a filename.
-// "02-agents.md" → "Agents", "quickstart.md" → "Quickstart"
+// "02-agents.md" → "Agents", "quickstart.md" → "Quickstart", "1-intro.md" → "Intro"
 func TitleFromFilename(name string) string {
 	// Remove .md extension
 	name = strings.TrimSuffix(name, ".md")
 
-	// Strip leading number prefix: "02-agents" → "agents"
-	if len(name) >= 3 && name[0] >= '0' && name[0] <= '9' && name[1] >= '0' && name[1] <= '9' && name[2] == '-' {
-		name = name[3:]
-	}
+	// Strip leading number prefix
+	name = reNumPrefixFM.ReplaceAllString(name, "")
 
 	// Replace hyphens with spaces and title case
 	name = strings.ReplaceAll(name, "-", " ")
@@ -80,10 +82,8 @@ func TitleFromFilename(name string) string {
 
 // TitleFromDir derives a section title from a directory name.
 func TitleFromDir(name string) string {
-	// Strip leading number prefix: "01-guide" → "guide"
-	if len(name) >= 3 && name[0] >= '0' && name[0] <= '9' && name[1] >= '0' && name[1] <= '9' && name[2] == '-' {
-		name = name[3:]
-	}
+	// Strip leading number prefix
+	name = reNumPrefixFM.ReplaceAllString(name, "")
 	name = strings.ReplaceAll(name, "-", " ")
 	return titleCase(name)
 }

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ block "title" . }}{{ .Title }} — {{ .SiteName }}{{ end }}</title>
   {{ if .Description }}<meta name="description" content="{{ .Description }}">{{ end }}
-  {{ if .Favicon }}<link rel="icon" type="image/svg+xml" href="{{ .BasePath }}/{{ .Favicon }}">{{ end }}
+  {{ if .Favicon }}<link rel="icon" href="{{ .BasePath }}/{{ .Favicon }}">{{ end }}
   <link rel="stylesheet" href="https://unpkg.com/@knadh/oat/oat.min.css">
   <link rel="stylesheet" href="{{ .BasePath }}/_syntax.css">
   <script>
@@ -30,8 +30,8 @@
   </script>
   {{ if .SearchEnabled }}
   <script>
-    var _moatBase = "{{ .BasePath }}";
     document.addEventListener('DOMContentLoaded', function() {
+      var _moatBase = "{{ .BasePath }}";
       var dialog = document.getElementById('search-dialog');
       if (!dialog) return;
 
@@ -72,17 +72,23 @@
         return loading;
       }
 
-      function scoreEntry(entry, query) {
-        var score = 0;
+      function scoreEntry(entry, tokens) {
         var title = (entry.title || '').toLowerCase();
         var description = (entry.description || '').toLowerCase();
         var text = (entry.text || '').toLowerCase();
+        var score = 0;
+        var allMatch = true;
 
-        if (title.indexOf(query) !== -1) score += 100;
-        if (description.indexOf(query) !== -1) score += 25;
-        if (text.indexOf(query) !== -1) score += 10;
+        for (var i = 0; i < tokens.length; i++) {
+          var token = tokens[i];
+          var tokenFound = false;
+          if (title.indexOf(token) !== -1) { score += 100; tokenFound = true; }
+          if (description.indexOf(token) !== -1) { score += 25; tokenFound = true; }
+          if (text.indexOf(token) !== -1) { score += 10; tokenFound = true; }
+          if (!tokenFound) { allMatch = false; break; }
+        }
 
-        return score;
+        return allMatch ? score : 0;
       }
 
       function entrySummary(entry) {
@@ -135,10 +141,12 @@
           return;
         }
 
+        var tokens = query.split(/\s+/).filter(Boolean);
+
         loadIndex().then(function(entries) {
           if (!entries) return;
           var matches = entries
-            .map(function(e) { return { entry: e, score: scoreEntry(e, query) }; })
+            .map(function(e) { return { entry: e, score: scoreEntry(e, tokens) }; })
             .filter(function(item) { return item.score > 0; })
             .sort(function(a, b) {
               if (b.score !== a.score) return b.score - a.score;
