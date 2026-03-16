@@ -150,19 +150,16 @@
         });
       });
 
-      // Close dialog on result click (navigate)
       resultsContainer.addEventListener('click', function(e) {
         if (e.target.closest('a')) dialog.close();
       });
 
-      // Reset state when dialog closes
       dialog.addEventListener('close', function() {
         input.value = '';
         clearResults();
         setStatus('Type at least 2 characters');
       });
 
-      // "/" keyboard shortcut to open search
       document.addEventListener('keydown', function(e) {
         if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey) {
           var tag = (e.target.tagName || '').toLowerCase();
@@ -179,19 +176,11 @@
   <style>
     html[data-theme="dark"] .icon-dark { display: none; }
     html:not([data-theme="dark"]) .icon-light { display: none; }
-    .wrap { padding-top: var(--space-12); }
     aside footer button { width: 100%; }
     {{ if .SearchEnabled }}
-    #search-dialog input[type="search"] {
-      margin: 0;
-      font-size: var(--text-6);
-    }
-    #search-dialog > form > div {
-      padding-block-start: 0;
-    }
-    #search-dialog footer {
-      justify-content: flex-start;
-    }
+    #search-dialog input[type="search"] { margin: 0; font-size: var(--text-6); }
+    #search-dialog > form > div { padding-block-start: 0; }
+    #search-dialog footer { justify-content: flex-start; }
     .search-result {
       display: flex;
       flex-direction: column;
@@ -201,12 +190,8 @@
       border-radius: var(--radius-small);
       color: var(--foreground);
     }
-    .search-result:hover {
-      background-color: var(--accent);
-    }
-    .search-result + .search-result {
-      margin-block-start: var(--space-1);
-    }
+    .search-result:hover { background-color: var(--accent); }
+    .search-result + .search-result { margin-block-start: var(--space-1); }
     kbd {
       display: inline-block;
       padding: 0 var(--space-1);
@@ -224,26 +209,29 @@
 <body data-sidebar-layout>
   <nav data-topnav>
     <div class="row">
-      <div class="col-4" style="display: flex; align-items: center; gap: var(--space-2);">
+      <div class="col-4 hstack gap-2">
         <button data-sidebar-toggle aria-label="Toggle sidebar" class="small">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" role="img" aria-label="Menu icon">
             <line x1="4" y1="7" x2="20" y2="7"></line>
             <line x1="4" y1="12" x2="20" y2="12"></line>
             <line x1="4" y1="17" x2="16" y2="17"></line>
           </svg>
         </button>
-        <a href="{{ .BasePath }}/" style="text-decoration: none; {{ if not .Logo }}font-weight: var(--font-semibold);{{ end }}" {{ if .Logo }}aria-label="{{ .SiteName }}"{{ end }}>
+        <a href="{{ .BasePath }}/" {{ if .Logo }}aria-label="{{ .SiteName }}"{{ end }}>
           {{ if .LogoInline }}
             {{ .LogoInline }}
           {{ else if .Logo }}
             <img src="{{ .BasePath }}/{{ .Logo }}" height="24" alt="{{ .SiteName }}">
           {{ else }}
-            {{ .SiteName }}
+            <strong>{{ .SiteName }}</strong>
           {{ end }}
         </a>
       </div>
-      {{ if .SearchEnabled }}
-      <div class="col-8 justify-end hstack">
+      <div class="col-8 hstack justify-end">
+        {{ range .TopNav }}
+        <a href="{{ .URL }}">{{ linkIcon .Icon }}{{ .Title }}</a>
+        {{ end }}
+        {{ if .SearchEnabled }}
         <button class="outline small" onclick="document.getElementById('search-dialog').showModal()" aria-label="Search">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
             <circle cx="11" cy="11" r="8"></circle>
@@ -252,8 +240,8 @@
           Search
           <kbd>/</kbd>
         </button>
+        {{ end }}
       </div>
-      {{ end }}
     </div>
   </nav>
 
@@ -276,14 +264,14 @@
     {{ .Nav }}
     <footer>
       <button class="outline small" onclick="toggleTheme()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-light">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-light" role="img" aria-label="Light mode">
           <circle cx="12" cy="12" r="5"></circle>
           <line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line>
           <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
           <line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line>
           <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
         </svg>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-dark">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-dark" role="img" aria-label="Dark mode">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
         </svg>
         Switch theme
@@ -291,13 +279,13 @@
     </footer>
   </aside>
 
-  <main class="wrap">
+  <main>
     <div class="container">
       {{ block "content" . }}
       <article>{{ .Content }}</article>
       {{ end }}
       {{ if index .Site "footer" }}
-      <footer class="text-light" style="margin: var(--space-6) 0;">
+      <footer class="footer text-light mt-6 mb-6">
         <small>{{ index .Site "footer" | safeHTML }}</small>
       </footer>
       {{ end }}

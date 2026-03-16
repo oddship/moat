@@ -15,6 +15,7 @@ type Config struct {
 	Favicon   string          `toml:"favicon"`
 	Highlight HighlightConfig `toml:"highlight"`
 	Links     []LinkConfig    `toml:"links"`
+	TopNav    []LinkConfig    `toml:"topnav"`
 	Search    SearchConfig    `toml:"search"`
 	Extra     map[string]any  `toml:"extra"`
 }

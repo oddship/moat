@@ -34,6 +34,7 @@ type TemplateData struct {
 	LogoInline    template.HTML  // Inlined SVG content (set when logo is .svg)
 	Favicon       string         // Path to favicon (relative to BasePath)
 	SearchEnabled bool           // Whether built-in search UI should render
+	TopNav        []LinkConfig   // Top navigation links
 	Extra         map[string]any // Per-page extra frontmatter
 	Site          map[string]any // Site-level extra from config.toml [extra]
 }
@@ -144,6 +145,7 @@ func Build(src, dst string, cfg Config) error {
 			LogoInline:    logoInline,
 			Favicon:       cfg.Favicon,
 			SearchEnabled: searchEnabled,
+			TopNav:        cfg.TopNav,
 			Extra:         page.Frontmatter.Extra,
 			Site:          cfg.Extra,
 		}

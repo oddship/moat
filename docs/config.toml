@@ -12,6 +12,11 @@ title = "GitHub"
 url = "https://github.com/oddship/moat"
 icon = "github"
 
+[[topnav]]
+title = "GitHub"
+url = "https://github.com/oddship/moat"
+icon = "github"
+
 [extra]
 tagline = "docs are your project's moat"
 footer = '&copy; <a href="https://github.com/oddship">oddship</a>'

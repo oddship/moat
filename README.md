@@ -89,6 +89,11 @@ title = "GitHub"
 url = "https://github.com/you/project"
 icon = "github"
 
+[[topnav]]
+title = "GitHub"
+url = "https://github.com/you/project"
+icon = "github"
+
 [extra]
 footer = '&copy; <a href="https://example.com">You</a>'
 ```

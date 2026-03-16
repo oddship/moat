@@ -18,6 +18,7 @@ The built-in layout provides:
 - Sidebar navigation with collapsible sections
 - Dark/light theme toggle
 - Responsive topnav with sidebar toggle on mobile
+- `[[topnav]]` links in the top navigation bar
 - Syntax highlighting CSS (`_syntax.css`)
 - `[[links]]` from config rendered above the page nav
 - Footer from `[extra].footer` in config (supports HTML)
@@ -98,6 +99,7 @@ If you don't provide a custom `_layout.html`, the built-in layout is used as the
 | `{{ .SiteName }}` | string | Site name from config or CLI |
 | `{{ .BasePath }}` | string | URL prefix (e.g. `/moat`) |
 | `{{ .SearchEnabled }}` | bool | Whether built-in search is enabled in config |
+| `{{ .TopNav }}` | []LinkConfig | Top navigation links from `[[topnav]]` config |
 | `{{ .Extra }}` | map | Extra frontmatter from the page |
 | `{{ .Site }}` | map | Site-level `[extra]` from config |
 

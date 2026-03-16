@@ -23,6 +23,11 @@ title = "GitHub"
 url = "https://github.com/you/project"
 icon = "github"
 
+[[topnav]]
+title = "GitHub"
+url = "https://github.com/you/project"
+icon = "github"
+
 [extra]
 tagline = "Build something great"
 footer = '&copy; <a href="https://example.com">You</a>'
@@ -35,6 +40,7 @@ footer = '&copy; <a href="https://example.com">You</a>'
 | `site_name` | Site name, available as `{{ .SiteName }}` in templates |
 | `base_path` | URL prefix for GitHub project pages (e.g. `/my-project`) |
 | `search.enabled` | Enable built-in client-side search (defaults to `true`) |
+| `[[topnav]]` | Links in the top navigation bar (same format as `[[links]]`) |
 
 CLI flags `--site-name` and `--base-path` override config values.
 
@@ -71,6 +77,19 @@ url = "https://discord.gg/your-server"
 Links appear at the top of the sidebar nav, before the auto-generated page tree.
 
 The optional `icon` field adds a built-in SVG icon before the link title. Currently supported: `github`.
+
+## Top navigation links
+
+Add links to the right side of the top navigation bar:
+
+```toml
+[[topnav]]
+title = "GitHub"
+url = "https://github.com/you/project"
+icon = "github"
+```
+
+Top nav links use the same format as sidebar links (`title`, `url`, optional `icon`). They appear alongside the search button in the built-in layout.
 
 ## Syntax highlighting
 

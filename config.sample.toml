@@ -35,6 +35,12 @@ dark  = "github-dark"     # Used when [data-theme="dark"]
 # url = "https://github.com/you/project"
 # icon = "github"
 
+# Top navigation links (right side of the topnav bar)
+# [[topnav]]
+# title = "GitHub"
+# url = "https://github.com/you/project"
+# icon = "github"
+
 # Extra variables — available in templates as {{ .Site.key }}
 # [extra]
 # tagline = "My project tagline"
