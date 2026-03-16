@@ -150,6 +150,16 @@
         });
       });
 
+      // Close dialog on Escape from the search input.
+      // type="search" inputs in Chromium swallow Escape to clear the value
+      // before bubbling, requiring two presses. This makes it one.
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          dialog.close();
+        }
+      });
+
       resultsContainer.addEventListener('click', function(e) {
         if (e.target.closest('a')) dialog.close();
       });

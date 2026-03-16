@@ -12,3 +12,9 @@ _site/
 .idea/
 *.swp
 *~
+
+# Node / e2e tests
+node_modules/
+package-lock.json
+test-results/
+cypress/

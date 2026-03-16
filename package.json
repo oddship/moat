@@ -1,0 +1,27 @@
+{
+  "name": "moat",
+  "version": "1.0.0",
+  "description": "<p align=\"center\">   <picture>     <source media=\"(prefers-color-scheme: dark)\" srcset=\"docs/_static/logo-dark.svg\">     <source media=\"(prefers-color-scheme: light)\" srcset=\"docs/_static/logo-light.svg\">     <img src=\"docs/_static/logo-light.svg\" alt=\"moat\" height=\"48\">   </picture> </p>",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oddship/moat.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/oddship/moat/issues"
+  },
+  "homepage": "https://github.com/oddship/moat#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "cypress": "^15.12.0"
+  }
+}
