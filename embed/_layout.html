@@ -250,9 +250,6 @@
         {{ range .TopNav }}
         <a href="{{ .URL }}">{{ linkIcon .Icon }}{{ .Title }}</a>
         {{ end }}
-        {{ if .FeedEnabled }}
-        <a href="{{ .BasePath }}/feed.xml" aria-label="RSS Feed">{{ linkIcon "rss" }}</a>
-        {{ end }}
         {{ if .SearchEnabled }}
         <button class="outline small" onclick="document.getElementById('search-dialog').showModal()" aria-label="Search">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
@@ -262,6 +259,9 @@
           Search
           <kbd>/</kbd>
         </button>
+        {{ end }}
+        {{ if .FeedEnabled }}
+        <a href="{{ .BasePath }}/feed.xml" aria-label="RSS Feed">{{ linkIcon "rss" }}</a>
         {{ end }}
       </div>
     </div>
