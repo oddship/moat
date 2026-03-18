@@ -161,3 +161,40 @@ func TestRenderNavAriaCurrent(t *testing.T) {
 		t.Errorf("expected exactly 1 aria-current, got %d", strings.Count(html, `aria-current="page"`))
 	}
 }
+
+func TestBuildNavChildrenFalse(t *testing.T) {
+	pages := []Page{
+		{RelPath: "index.md", Frontmatter: Frontmatter{Title: "Home"}},
+		{RelPath: "01-guide/01-intro.md", Frontmatter: Frontmatter{Title: "Intro"}},
+		{RelPath: "01-guide/02-config.md", Frontmatter: Frontmatter{Title: "Config"}},
+		{RelPath: "02-changelog/index.md", Frontmatter: Frontmatter{
+			Title: "Changelog",
+			Extra: map[string]any{"nav_children": false},
+		}},
+		{RelPath: "02-changelog/v0.1.0.md", Frontmatter: Frontmatter{Title: "v0.1.0", Date: "2026-01-01"}},
+		{RelPath: "02-changelog/v0.2.0.md", Frontmatter: Frontmatter{Title: "v0.2.0", Date: "2026-02-01"}},
+	}
+
+	nav := BuildNav(pages)
+
+	// Should have Guide (with children) and Changelog (flat link, no children)
+	if len(nav) != 2 {
+		t.Fatalf("expected 2 nav items, got %d", len(nav))
+	}
+
+	guide := nav[0]
+	if guide.Title != "Guide" || len(guide.Children) != 2 {
+		t.Errorf("guide: title=%q children=%d, want Guide/2", guide.Title, len(guide.Children))
+	}
+
+	changelog := nav[1]
+	if changelog.Title != "Changelog" {
+		t.Errorf("changelog title = %q, want Changelog", changelog.Title)
+	}
+	if len(changelog.Children) != 0 {
+		t.Errorf("changelog should have no children (nav_children: false), got %d", len(changelog.Children))
+	}
+	if changelog.Path != "/changelog/" {
+		t.Errorf("changelog path = %q, want /changelog/", changelog.Path)
+	}
+}

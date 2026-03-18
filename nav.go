@@ -23,6 +23,7 @@ func BuildNav(pages []Page) []NavItem {
 	// Group by directory
 	rootPages := []Page{}
 	sections := map[string][]Page{}
+	sectionIndex := map[string]Page{} // section dir → index.md page
 	sectionOrder := []string{}
 
 	for _, p := range pages {
@@ -37,6 +38,15 @@ func BuildNav(pages []Page) []NavItem {
 			// Use top-level directory only (max 2 levels)
 			parts := strings.SplitN(dir, string(filepath.Separator), 2)
 			section := parts[0]
+			// Track section index pages for nav_children support
+			if filepath.Base(p.RelPath) == "index.md" && len(parts) == 1 {
+				sectionIndex[section] = p
+				if _, exists := sections[section]; !exists {
+					sectionOrder = append(sectionOrder, section)
+					sections[section] = []Page{} // init so we don't add to order again
+				}
+				continue // Don't add index.md as a child page
+			}
 			if _, exists := sections[section]; !exists {
 				sectionOrder = append(sectionOrder, section)
 			}
@@ -92,6 +102,22 @@ func BuildNav(pages []Page) []NavItem {
 				Title: pageTitle(p),
 				Path:  pageURL(p),
 			})
+		}
+
+		// If section has an index.md with nav_children: false, show as
+		// a single link to the index instead of expanding children.
+		if idx, ok := sectionIndex[section]; ok {
+			if nc, exists := idx.Frontmatter.Extra["nav_children"]; exists && nc == false {
+				title := pageTitle(idx)
+				if title == "Index" || title == "" {
+					title = TitleFromDir(section)
+				}
+				nav = append(nav, NavItem{
+					Title: title,
+					Path:  pageURL(idx),
+				})
+				continue
+			}
 		}
 
 		nav = append(nav, NavItem{

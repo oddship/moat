@@ -1,0 +1,9 @@
+<ul>
+{{ range .SectionPages (.Get "section") }}
+  <li>
+    <a href="{{ .URL }}">{{ .Title }}</a>
+    {{ if .Date }}<small class="text-light"> — {{ .Date }}</small>{{ end }}
+    {{ if .Description }}<br><small class="text-light">{{ .Description }}</small>{{ end }}
+  </li>
+{{ end }}
+</ul>

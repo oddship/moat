@@ -72,6 +72,7 @@ draft: false
 | `layout` | (default) | Use a named layout variant |
 | `date` | — | Page date (`YYYY-MM-DD` or `YYYY-MM-DD HH:MM` or full timestamp) |
 | `draft` | `false` | Skip the page during build |
+| `nav_children` | `true` | Set to `false` on a section's `index.md` to hide children from sidebar |
 
 ### Dates and drafts
 
