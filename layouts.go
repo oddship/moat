@@ -39,6 +39,12 @@ func loadLayouts(src string) (map[string]*template.Template, error) {
 	funcMap := template.FuncMap{
 		"safeHTML":  func(s string) template.HTML { return template.HTML(s) },
 		"linkIcon": func(name string) template.HTML { return template.HTML(linkIcon(name)) },
+		"formatDate": func(s string) string {
+			if t, ok := ParseDate(s); ok {
+				return t.Format("January 2, 2006")
+			}
+			return s
+		},
 	}
 
 	baseTmpl, err := template.New("layout").Funcs(funcMap).Parse(string(baseBytes))

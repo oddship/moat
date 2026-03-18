@@ -93,6 +93,7 @@ If you don't provide a custom `_layout.html`, the built-in layout is used as the
 |----------|------|-------------|
 | `{{ .Title }}` | string | Page title |
 | `{{ .Description }}` | string | Page description |
+| `{{ .Date }}` | string | Page date from frontmatter (empty if not set) |
 | `{{ .Content }}` | HTML | Rendered markdown content |
 | `{{ .Nav }}` | HTML | Generated navigation sidebar |
 | `{{ .CurrentPath }}` | string | Current page URL path |
@@ -122,6 +123,7 @@ Each item in `{{ .Pages }}` contains:
 | Function | Description |
 |----------|-------------|
 | `safeHTML` | Renders a string as raw HTML (use for trusted config values like footer) |
+| `formatDate` | Formats a date string as "January 2, 2006" |
 
 ## Navigation HTML
 

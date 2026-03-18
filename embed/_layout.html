@@ -300,7 +300,10 @@
   <main>
     <div class="container">
       {{ block "content" . }}
-      <article>{{ .Content }}</article>
+      <article>
+        {{ if .Date }}<p><small class="text-light">{{ formatDate .Date }}</small></p>{{ end }}
+        {{ .Content }}
+      </article>
       {{ end }}
       {{ if index .Site "footer" }}
       <footer class="footer text-light mt-6 mb-6">

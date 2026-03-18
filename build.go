@@ -36,6 +36,7 @@ type PageMeta struct {
 type TemplateData struct {
 	Title         string
 	Description   string
+	Date          string         // Page date from frontmatter (raw string, e.g. "2026-03-18 14:30")
 	Content       template.HTML
 	Nav           template.HTML
 	CurrentPath   string
@@ -168,6 +169,7 @@ func Build(src, dst string, cfg Config) error {
 		data := TemplateData{
 			Title:         title,
 			Description:   page.Frontmatter.Description,
+			Date:          page.Frontmatter.Date,
 			Nav:           template.HTML(navHTML),
 			CurrentPath:   prefixedPath,
 			SiteName:      siteName,
