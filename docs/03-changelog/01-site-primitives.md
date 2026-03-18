@@ -1,10 +1,10 @@
 ---
-title: "Site Primitives"
+title: "v0.6.0 — Site Primitives"
 date: 2026-03-18
 description: Wiki links, date/draft frontmatter, page listings, RSS feed, and date-aware nav sorting.
 ---
 
-# Site Primitives
+# v0.6.0 — Site Primitives
 
 New primitives for building richer content sites — blogs, knowledge bases, changelogs — without a separate mode.
 

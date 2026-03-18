@@ -1,10 +1,10 @@
 ---
-title: "Built-in Search"
+title: "v0.5.0 — Built-in Search"
 date: 2026-03-15
 description: Client-side search with static JSON index, topnav links, and Playwright e2e tests.
 ---
 
-# Built-in Search
+# v0.5.0 — Built-in Search
 
 moat now generates a `_search.json` index at build time and the built-in layout includes a search dialog accessible via the `/` key or the search button in the top nav.
 

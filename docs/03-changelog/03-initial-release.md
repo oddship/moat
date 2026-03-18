@@ -1,10 +1,10 @@
 ---
-title: "Initial Release"
+title: "v0.1.0 — Initial Release"
 date: 2026-02-25
 description: First release — markdown to static HTML with oat layout, syntax highlighting, and GitHub Actions.
 ---
 
-# Initial Release
+# v0.1.0 — Initial Release
 
 moat's first release. A static site generator in one Go binary.
 
