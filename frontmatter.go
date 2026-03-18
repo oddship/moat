@@ -4,9 +4,32 @@ import (
 	"bytes"
 	"regexp"
 	"strings"
+	"time"
 
 	"gopkg.in/yaml.v3"
 )
+
+// dateFormats are the accepted date formats in frontmatter, tried in order.
+// All are ISO-style so string comparison works for sorting.
+var dateFormats = []string{
+	"2006-01-02T15:04:05",
+	"2006-01-02 15:04:05",
+	"2006-01-02T15:04",
+	"2006-01-02 15:04",
+	"2006-01-02",
+}
+
+// ParseDate tries to parse a frontmatter date string.
+// Returns the parsed time and true on success, or zero time and false.
+func ParseDate(s string) (time.Time, bool) {
+	s = strings.TrimSpace(s)
+	for _, fmt := range dateFormats {
+		if t, err := time.Parse(fmt, s); err == nil {
+			return t, true
+		}
+	}
+	return time.Time{}, false
+}
 
 // Frontmatter holds YAML metadata from the top of a markdown file.
 type Frontmatter struct {

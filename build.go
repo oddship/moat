@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
-	"time"
 
 	"github.com/alecthomas/chroma/v2"
 	chromahtml "github.com/alecthomas/chroma/v2/formatters/html"
@@ -111,8 +110,8 @@ func Build(src, dst string, cfg Config) error {
 
 		// Warn on malformed dates
 		if fm.Date != "" {
-			if _, err := time.Parse("2006-01-02", fm.Date); err != nil {
-				fmt.Printf("  Warning: %s has invalid date %q (expected YYYY-MM-DD)\n", relPath, fm.Date)
+			if _, ok := ParseDate(fm.Date); !ok {
+				fmt.Printf("  Warning: %s has invalid date %q (expected YYYY-MM-DD or YYYY-MM-DD HH:MM:SS)\n", relPath, fm.Date)
 			}
 		}
 

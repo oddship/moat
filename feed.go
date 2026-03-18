@@ -77,8 +77,8 @@ func buildFeed(pages []Page, cfg Config) rssFeed {
 		if page.Frontmatter.Date == "" {
 			continue
 		}
-		t, err := time.Parse("2006-01-02", page.Frontmatter.Date)
-		if err != nil {
+		t, ok := ParseDate(page.Frontmatter.Date)
+		if !ok {
 			continue
 		}
 		datedPages = append(datedPages, feedPage{page: page, date: t})

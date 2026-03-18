@@ -121,7 +121,7 @@ link = "https://docs.example.com"
 # title = "My Site Feed"
 ```
 
-Only pages with `date: YYYY-MM-DD` are included in `feed.xml`, newest first.
+Only pages with a `date` are included in `feed.xml`, newest first. Dates accept `YYYY-MM-DD`, `YYYY-MM-DD HH:MM`, or full timestamps.
 
 Wiki links are also supported:
 

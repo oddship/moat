@@ -42,7 +42,7 @@ dark  = "github-dark"     # Used when [data-theme="dark"]
 # icon = "github"
 
 # RSS feed (disabled by default)
-# Only pages with date = YYYY-MM-DD are included.
+# Only pages with a date are included (YYYY-MM-DD or YYYY-MM-DD HH:MM).
 # [feed]
 # enabled = true
 # link = "https://docs.example.com"

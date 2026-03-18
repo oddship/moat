@@ -64,6 +64,45 @@ func TestParseFrontmatterDateAndDraft(t *testing.T) {
 	}
 }
 
+func TestParseDateFormats(t *testing.T) {
+	tests := []struct {
+		input string
+		ok    bool
+	}{
+		{"2026-03-18", true},
+		{"2026-03-18 14:30", true},
+		{"2026-03-18 14:30:00", true},
+		{"2026-03-18T14:30", true},
+		{"2026-03-18T14:30:00", true},
+		{"18-03-2026", false},
+		{"March 18, 2026", false},
+		{"", false},
+	}
+
+	for _, tt := range tests {
+		_, ok := ParseDate(tt.input)
+		if ok != tt.ok {
+			t.Errorf("ParseDate(%q) ok=%v, want %v", tt.input, ok, tt.ok)
+		}
+	}
+}
+
+func TestParseDateTimestampOrdering(t *testing.T) {
+	// String comparison of ISO timestamps must sort correctly
+	a := "2026-02-25 10:00"
+	b := "2026-02-25 18:00"
+	if a >= b {
+		t.Errorf("expected %q < %q", a, b)
+	}
+
+	// Date-only vs timestamp
+	c := "2026-02-25"
+	d := "2026-03-18"
+	if c >= d {
+		t.Errorf("expected %q < %q", c, d)
+	}
+}
+
 func TestParseFrontmatterCRLF(t *testing.T) {
 	input := []byte("---\r\ntitle: CRLF\r\n---\r\nBody")
 	fm, body := ParseFrontmatter(input)

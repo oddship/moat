@@ -81,7 +81,7 @@ link = "https://docs.example.com"
 Feed generation is disabled by default.
 
 Notes:
-- Only pages with `date: YYYY-MM-DD` in frontmatter are included
+- Only pages with a valid `date` in frontmatter are included
 - Items are sorted newest first
 - `feed.link` should be your full site URL including base path (e.g. `https://example.com/moat`)
 - If `[extra].tagline` is set, it becomes the feed description

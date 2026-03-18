@@ -59,6 +59,22 @@ func TestBuildFeedIncludesOnlyDatedPagesNewestFirst(t *testing.T) {
 	}
 }
 
+func TestBuildFeedAcceptsTimestamps(t *testing.T) {
+	pages := []Page{
+		{RelPath: "posts/a.md", Frontmatter: Frontmatter{Title: "Morning", Date: "2026-03-18 09:00"}, HTML: []byte("<p>x</p>")},
+		{RelPath: "posts/b.md", Frontmatter: Frontmatter{Title: "Evening", Date: "2026-03-18 21:00"}, HTML: []byte("<p>x</p>")},
+	}
+
+	feed := buildFeed(pages, Config{SiteName: "Test", Feed: FeedConfig{Link: "https://example.com"}})
+	if len(feed.Channel.Items) != 2 {
+		t.Fatalf("expected 2 items, got %d", len(feed.Channel.Items))
+	}
+	// Evening (21:00) should sort before Morning (09:00)
+	if feed.Channel.Items[0].Title != "Evening" {
+		t.Errorf("first item = %q, want Evening", feed.Channel.Items[0].Title)
+	}
+}
+
 func TestBuildFeedSkipsInvalidDates(t *testing.T) {
 	pages := []Page{
 		{RelPath: "posts/bad.md", Frontmatter: Frontmatter{Title: "Bad", Date: "18-03-2026"}, HTML: []byte("<p>x</p>")},

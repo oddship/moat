@@ -59,7 +59,7 @@ title: Getting Started
 description: How to set up your project
 url: custom-path
 layout: wide
-date: 2026-03-18
+date: 2026-03-18 14:30
 draft: false
 ---
 ```
@@ -70,12 +70,12 @@ draft: false
 | `description` | — | Meta description |
 | `url` | From file path | Override the URL path |
 | `layout` | (default) | Use a named layout variant |
-| `date` | — | Page date in `YYYY-MM-DD` format |
+| `date` | — | Page date (`YYYY-MM-DD` or `YYYY-MM-DD HH:MM` or full timestamp) |
 | `draft` | `false` | Skip the page during build |
 
 ### Dates and drafts
 
-- Use `YYYY-MM-DD` for `date`
+- Accepted date formats: `YYYY-MM-DD`, `YYYY-MM-DD HH:MM`, `YYYY-MM-DD HH:MM:SS` (also with `T` separator)
 - `draft: true` excludes a page from the output, nav, search index, and feed
 - Sections with dated pages sort newest first in the sidebar
 - `feed.xml` includes only dated pages

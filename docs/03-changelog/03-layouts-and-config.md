@@ -1,6 +1,6 @@
 ---
 title: "v0.4.0 — Layouts, Shortcodes & Config"
-date: 2026-02-25
+date: 2026-02-25 18:00
 description: Layout inheritance, shortcodes, config.toml, syntax highlighting, base_path, and moat init.
 ---
 
