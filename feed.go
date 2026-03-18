@@ -54,7 +54,6 @@ type rssItem struct {
 // buildFeed creates an RSS 2.0 feed from rendered pages.
 // Only pages with a valid YYYY-MM-DD date are included, sorted newest first.
 func buildFeed(pages []Page, cfg Config) rssFeed {
-	basePath := strings.TrimRight(cfg.BasePath, "/")
 	siteLink := cfg.Feed.Link
 	if siteLink == "" {
 		siteLink = "/"
@@ -95,8 +94,9 @@ func buildFeed(pages []Page, cfg Config) rssFeed {
 	items := make([]rssItem, 0, len(datedPages))
 	for _, fp := range datedPages {
 		page := fp.page
-		url := pageURL(page)
-		fullURL := siteLink + basePath + url
+		// feed.link is the full site root (e.g. https://example.com/moat)
+		// so we only append the page URL path, not basePath again.
+		fullURL := siteLink + pageURL(page)
 
 		title := pageTitle(page)
 		desc := page.Frontmatter.Description

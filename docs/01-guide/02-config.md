@@ -83,7 +83,7 @@ Feed generation is disabled by default.
 Notes:
 - Only pages with `date: YYYY-MM-DD` in frontmatter are included
 - Items are sorted newest first
-- `feed.link` should usually be your full site URL so feed readers get absolute URLs
+- `feed.link` should be your full site URL including base path (e.g. `https://example.com/moat`)
 - If `[extra].tagline` is set, it becomes the feed description
 
 ## Sidebar links

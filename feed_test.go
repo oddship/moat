@@ -1,7 +1,6 @@
 package main
 
 import (
-	"strings"
 	"testing"
 )
 
@@ -52,8 +51,8 @@ func TestBuildFeedIncludesOnlyDatedPagesNewestFirst(t *testing.T) {
 	if feed.Channel.Items[1].Title != "Older Post" {
 		t.Errorf("second item title = %q, want Older Post", feed.Channel.Items[1].Title)
 	}
-	if !strings.Contains(feed.Channel.Items[0].Link, "https://example.com/posts/newer/") {
-		t.Errorf("first item link = %q", feed.Channel.Items[0].Link)
+	if feed.Channel.Items[0].Link != "https://example.com/posts/newer/" {
+		t.Errorf("first item link = %q, want https://example.com/posts/newer/", feed.Channel.Items[0].Link)
 	}
 	if feed.Channel.Items[0].PubDate == "" || feed.Channel.Items[1].PubDate == "" {
 		t.Error("expected pubDate for all feed items")
@@ -72,6 +71,26 @@ func TestBuildFeedSkipsInvalidDates(t *testing.T) {
 	}
 	if feed.Channel.Items[0].Title != "Good" {
 		t.Errorf("item title = %q, want Good", feed.Channel.Items[0].Title)
+	}
+}
+
+func TestBuildFeedLinkIncludesBasePath(t *testing.T) {
+	// feed.link should be the full site root — basePath is NOT appended again
+	pages := []Page{
+		{RelPath: "posts/hello.md", Frontmatter: Frontmatter{Title: "Hello", Date: "2026-03-18"}, HTML: []byte("<p>hi</p>")},
+	}
+
+	cfg := Config{
+		SiteName: "Test",
+		BasePath: "/moat",
+		Feed:     FeedConfig{Link: "https://oddship.github.io/moat"},
+	}
+
+	feed := buildFeed(pages, cfg)
+	got := feed.Channel.Items[0].Link
+	want := "https://oddship.github.io/moat/posts/hello/"
+	if got != want {
+		t.Errorf("feed item link = %q, want %q (no double base path)", got, want)
 	}
 }
 
