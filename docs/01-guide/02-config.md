@@ -18,6 +18,10 @@ dark  = "github-dark"
 [search]
 enabled = false
 
+[feed]
+enabled = true
+link = "https://docs.example.com"
+
 [[links]]
 title = "GitHub"
 url = "https://github.com/you/project"
@@ -40,6 +44,9 @@ footer = '&copy; <a href="https://example.com">You</a>'
 | `site_name` | Site name, available as `{{ .SiteName }}` in templates |
 | `base_path` | URL prefix for GitHub project pages (e.g. `/my-project`) |
 | `search.enabled` | Enable built-in client-side search (defaults to `true`) |
+| `feed.enabled` | Generate `feed.xml` (defaults to `false`) |
+| `feed.link` | Absolute site URL used for RSS item links (recommended) |
+| `feed.title` | Optional RSS title override |
 | `[[topnav]]` | Links in the top navigation bar (same format as `[[links]]`) |
 
 CLI flags `--site-name` and `--base-path` override config values.
@@ -58,6 +65,26 @@ enabled = false
 Search is enabled by default. Set `enabled = false` to skip generating `_search.json` and hide the built-in search UI.
 
 If you use a custom layout, you can ignore the generated index, consume `_search.json` yourself, or disable search entirely.
+
+## RSS feed
+
+moat can also generate a static `feed.xml` during `build`.
+
+```toml
+[feed]
+enabled = true
+link = "https://docs.example.com"
+# optional
+# title = "My Site Feed"
+```
+
+Feed generation is disabled by default.
+
+Notes:
+- Only pages with `date: YYYY-MM-DD` in frontmatter are included
+- Items are sorted newest first
+- `feed.link` should usually be your full site URL so feed readers get absolute URLs
+- If `[extra].tagline` is set, it becomes the feed description
 
 ## Sidebar links
 

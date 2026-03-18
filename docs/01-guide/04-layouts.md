@@ -100,8 +100,22 @@ If you don't provide a custom `_layout.html`, the built-in layout is used as the
 | `{{ .BasePath }}` | string | URL prefix (e.g. `/moat`) |
 | `{{ .SearchEnabled }}` | bool | Whether built-in search is enabled in config |
 | `{{ .TopNav }}` | []LinkConfig | Top navigation links from `[[topnav]]` config |
+| `{{ .Pages }}` | []PageMeta | All non-draft pages, sorted by date desc then title |
 | `{{ .Extra }}` | map | Extra frontmatter from the page |
 | `{{ .Site }}` | map | Site-level `[extra]` from config |
+
+### PageMeta fields
+
+Each item in `{{ .Pages }}` contains:
+
+| Field | Description |
+|-------|-------------|
+| `Title` | Resolved page title |
+| `Description` | Page description |
+| `URL` | Final page URL (includes `base_path`) |
+| `Date` | Frontmatter date string |
+| `Extra` | Extra frontmatter fields |
+| `Section` | Top-level directory name, without numeric prefix |
 
 ### Template functions
 

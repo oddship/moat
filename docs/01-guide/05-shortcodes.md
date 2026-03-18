@@ -55,6 +55,8 @@ Templates receive a `ShortcodeContext` with:
 | `{{ .Get "key" }}` | Get a named argument |
 | `{{ .Args }}` | Map of all arguments |
 | `{{ .Page }}` | Parent page's template data |
+| `{{ .Page.Pages }}` | All non-draft pages available to the current page |
+| `{{ .SectionPages "guide" }}` | Pages in a section, excluding the current page |
 
 ## Examples
 
@@ -79,6 +81,29 @@ Watch out — this is a **warning**.
 {{< note type="error" >}}
 Something went **wrong**. This is an error alert.
 {{< /note >}}
+
+### Section listing
+
+`_shortcodes/listing.html`:
+
+```
+<ul>
+{{ range .SectionPages (.Get "section") }}
+  <li>
+    <a href="{{ .URL }}">{{ .Title }}</a>
+    {{ if .Date }}<small> — {{ .Date }}</small>{{ end }}
+  </li>
+{{ end }}
+</ul>
+```
+
+Use it from markdown:
+
+```text
+{{</* listing section="guide" /*/>}}
+```
+
+Pass an empty `section` or omit it to list all pages.
 
 ### Collapsible details
 
@@ -112,7 +137,7 @@ This one starts open because of `open="true"`.
 5. Splice shortcode output back into the document
 6. Render the full document as markdown
 
-This means shortcode output becomes part of the markdown document — you can mix shortcodes and markdown freely.
+This means shortcode output becomes part of the markdown document — you can mix shortcodes and markdown freely. Wiki links inside block shortcode content are resolved the same way as normal page content.
 
 ## Syntax reference
 

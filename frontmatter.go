@@ -14,6 +14,8 @@ type Frontmatter struct {
 	Description string         `yaml:"description"`
 	URL         string         `yaml:"url"`
 	Layout      string         `yaml:"layout"`
+	Date        string         `yaml:"date"`
+	Draft       bool           `yaml:"draft"`
 	Extra       map[string]any `yaml:"-"` // All other fields
 }
 
@@ -55,6 +57,8 @@ func ParseFrontmatter(content []byte) (Frontmatter, []byte) {
 		delete(raw, "description")
 		delete(raw, "url")
 		delete(raw, "layout")
+		delete(raw, "date")
+		delete(raw, "draft")
 		if len(raw) > 0 {
 			fm.Extra = raw
 		}

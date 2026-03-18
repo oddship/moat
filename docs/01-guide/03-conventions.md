@@ -1,6 +1,6 @@
 ---
 title: Conventions
-description: Directory structure and file naming rules
+description: Directory structure, links, and frontmatter rules
 ---
 
 # Conventions
@@ -59,6 +59,8 @@ title: Getting Started
 description: How to set up your project
 url: custom-path
 layout: wide
+date: 2026-03-18
+draft: false
 ---
 ```
 
@@ -68,6 +70,25 @@ layout: wide
 | `description` | — | Meta description |
 | `url` | From file path | Override the URL path |
 | `layout` | (default) | Use a named layout variant |
+| `date` | — | Page date in `YYYY-MM-DD` format |
+| `draft` | `false` | Skip the page during build |
+
+### Dates and drafts
+
+- Use `YYYY-MM-DD` for `date`
+- `draft: true` excludes a page from the output, nav, search index, and feed
+- Sections with dated pages sort newest first in the sidebar
+- `feed.xml` includes only dated pages
+
+### Wiki links
+
+moat supports wiki-style internal links:
+
+```md
+See [[Getting Started]] for the intro.
+```
+
+Links resolve by page title (case-insensitive). Unknown targets render as plain text rather than broken links.
 
 ### Extra fields
 

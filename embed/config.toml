@@ -20,6 +20,11 @@ dark  = "github-dark"
 # url = "https://github.com/you/project"
 # icon = "github"
 
+# [feed]
+# enabled = true
+# link = "https://docs.example.com"
+# title = "My Site Feed"
+
 # [extra]
 # tagline = "My project tagline"
 # footer = '&copy; <a href="https://example.com">You</a>'

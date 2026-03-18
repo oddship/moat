@@ -41,6 +41,13 @@ dark  = "github-dark"     # Used when [data-theme="dark"]
 # url = "https://github.com/you/project"
 # icon = "github"
 
+# RSS feed (disabled by default)
+# Only pages with date = YYYY-MM-DD are included.
+# [feed]
+# enabled = true
+# link = "https://docs.example.com"
+# title = "My Site Feed"
+
 # Extra variables — available in templates as {{ .Site.key }}
 # [extra]
 # tagline = "My project tagline"

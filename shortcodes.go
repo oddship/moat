@@ -22,6 +22,25 @@ func (sc ShortcodeContext) Get(key string) string {
 	return sc.Args[key]
 }
 
+// SectionPages returns pages matching a section name.
+// If section is empty, returns all pages. Excludes the current page.
+func (sc ShortcodeContext) SectionPages(section string) []PageMeta {
+	if sc.Page == nil {
+		return nil
+	}
+	var result []PageMeta
+	for _, p := range sc.Page.Pages {
+		if p.URL == sc.Page.CurrentPath {
+			continue // skip current page
+		}
+		if section != "" && p.Section != section {
+			continue
+		}
+		result = append(result, p)
+	}
+	return result
+}
+
 // shortcodeRegistry holds parsed shortcode templates.
 type shortcodeRegistry struct {
 	templates map[string]*template.Template
@@ -76,7 +95,7 @@ var reArgs = regexp.MustCompile(`(\w+)="([^"]*)"`)
 
 // ProcessShortcodes replaces shortcode calls in markdown source with rendered HTML.
 // Must be called BEFORE markdown rendering.
-func (reg *shortcodeRegistry) ProcessShortcodes(source []byte, page *TemplateData) ([]byte, error) {
+func (reg *shortcodeRegistry) ProcessShortcodes(source []byte, page *TemplateData, resolver *pageResolver) ([]byte, error) {
 	if len(reg.templates) == 0 {
 		return source, nil
 	}
@@ -119,7 +138,7 @@ func (reg *shortcodeRegistry) ProcessShortcodes(source []byte, page *TemplateDat
 	}
 
 	// Process block shortcodes by finding matched open/close pairs
-	result, err := reg.processBlockShortcodes(result, page)
+	result, err := reg.processBlockShortcodes(result, page, resolver)
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +148,7 @@ func (reg *shortcodeRegistry) ProcessShortcodes(source []byte, page *TemplateDat
 
 // processBlockShortcodes finds matched {{< name >}}...{{< /name >}} pairs
 // and replaces them with rendered shortcode output.
-func (reg *shortcodeRegistry) processBlockShortcodes(source []byte, page *TemplateData) ([]byte, error) {
+func (reg *shortcodeRegistry) processBlockShortcodes(source []byte, page *TemplateData, resolver *pageResolver) ([]byte, error) {
 	s := string(source)
 	closePatterns := make(map[string]*regexp.Regexp)
 
@@ -164,8 +183,8 @@ func (reg *shortcodeRegistry) processBlockShortcodes(source []byte, page *Templa
 			return nil, fmt.Errorf("unknown shortcode: %s", name)
 		}
 
-		// Render inner content as markdown
-		innerHTML, err := RenderMarkdown([]byte(inner))
+		// Render inner content as markdown, preserving page-aware wikilink resolution.
+		innerHTML, err := RenderMarkdownWithResolver([]byte(inner), resolver)
 		if err != nil {
 			return nil, fmt.Errorf("rendering inner content for shortcode %s: %w", name, err)
 		}

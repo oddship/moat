@@ -33,10 +33,12 @@ Or grab a binary from [releases](https://github.com/oddship/moat/releases).
 - **Zero config** — built-in oat layout, just write markdown and build
 - **Convention-based** — directory structure is the config, number prefixes control ordering
 - **Built-in search** — client-side `_search.json` index with oat-native sidebar search UI
+- **Wiki links** — `[[Page Title]]` resolves to internal page URLs
+- **Site primitives** — `date`, `draft`, page listings via templates/shortcodes, and optional RSS feed
 - **Syntax highlighting** — 70 Chroma themes with automatic light/dark mode
 - **Layout inheritance** — base layout with `{{ block }}`/`{{ define }}` variants
 - **Shortcodes** — reusable components inside markdown (`{{< note >}}...{{< /note >}}`)
-- **Config file** — optional `config.toml` for site name, base path, highlight themes, sidebar links, and search settings
+- **Config file** — optional `config.toml` for site name, base path, highlight themes, navigation links, search, and feed settings
 - **GitHub Actions** — reusable workflow for one-line GitHub Pages deployment
 - **Single binary** — no Node.js, no npm, just Go
 
@@ -84,6 +86,10 @@ dark  = "github-dark"
 [search]
 enabled = false
 
+[feed]
+enabled = true
+link = "https://docs.example.com"
+
 [[links]]
 title = "GitHub"
 url = "https://github.com/you/project"
@@ -104,6 +110,26 @@ By default, `moat build` also emits `_search.json`, and the built-in oat layout 
 [search]
 enabled = false
 ```
+
+Enable RSS feed generation with:
+
+```toml
+[feed]
+enabled = true
+link = "https://docs.example.com"
+# optional
+# title = "My Site Feed"
+```
+
+Only pages with `date: YYYY-MM-DD` are included in `feed.xml`, newest first.
+
+Wiki links are also supported:
+
+```md
+See [[Getting Started]] for the overview.
+```
+
+Pages and shortcodes can use site-level page data for listings via templates (`{{ .Pages }}`) or shortcode context (`{{ .Page.Pages }}` / `{{ .SectionPages "guide" }}`).
 
 ## GitHub Pages
 
@@ -132,6 +158,7 @@ jobs:
 ## Dependencies
 
 - [goldmark](https://github.com/yuin/goldmark) — Markdown with GFM
+- [goldmark/wikilink](https://pkg.go.dev/go.abhg.dev/goldmark/wikilink) — `[[Wiki Links]]`
 - [chroma](https://github.com/alecthomas/chroma) — Syntax highlighting
 - [yaml.v3](https://pkg.go.dev/gopkg.in/yaml.v3) — YAML frontmatter
 - [toml](https://github.com/BurntSushi/toml) — Config file

@@ -43,6 +43,27 @@ func TestParseFrontmatterExtras(t *testing.T) {
 	}
 }
 
+func TestParseFrontmatterDateAndDraft(t *testing.T) {
+	input := []byte("---\ntitle: My Post\ndate: 2026-03-18\ndraft: true\n---\nBody")
+	fm, _ := ParseFrontmatter(input)
+
+	if fm.Date != "2026-03-18" {
+		t.Errorf("Date = %q, want 2026-03-18", fm.Date)
+	}
+	if !fm.Draft {
+		t.Error("Draft = false, want true")
+	}
+	// date and draft should NOT appear in Extra
+	if fm.Extra != nil {
+		if _, ok := fm.Extra["date"]; ok {
+			t.Error("date should not be in Extra")
+		}
+		if _, ok := fm.Extra["draft"]; ok {
+			t.Error("draft should not be in Extra")
+		}
+	}
+}
+
 func TestParseFrontmatterCRLF(t *testing.T) {
 	input := []byte("---\r\ntitle: CRLF\r\n---\r\nBody")
 	fm, body := ParseFrontmatter(input)

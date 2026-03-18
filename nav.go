@@ -62,9 +62,29 @@ func BuildNav(pages []Page) []NavItem {
 	// Then sections
 	for _, section := range sectionOrder {
 		pages := sections[section]
-		sort.Slice(pages, func(i, j int) bool {
-			return pages[i].RelPath < pages[j].RelPath
-		})
+
+		// If any page has a date, sort reverse-chronologically (newest first).
+		// Otherwise, sort alphabetically by path.
+		hasDate := false
+		for _, p := range pages {
+			if p.Frontmatter.Date != "" {
+				hasDate = true
+				break
+			}
+		}
+		if hasDate {
+			sort.Slice(pages, func(i, j int) bool {
+				di, dj := pages[i].Frontmatter.Date, pages[j].Frontmatter.Date
+				if di != dj {
+					return di > dj // reverse chronological
+				}
+				return pages[i].RelPath < pages[j].RelPath
+			})
+		} else {
+			sort.Slice(pages, func(i, j int) bool {
+				return pages[i].RelPath < pages[j].RelPath
+			})
+		}
 
 		children := []NavItem{}
 		for _, p := range pages {

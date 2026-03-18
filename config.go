@@ -17,6 +17,7 @@ type Config struct {
 	Links     []LinkConfig    `toml:"links"`
 	TopNav    []LinkConfig    `toml:"topnav"`
 	Search    SearchConfig    `toml:"search"`
+	Feed      FeedConfig      `toml:"feed"`
 	Extra     map[string]any  `toml:"extra"`
 }
 

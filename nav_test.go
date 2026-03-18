@@ -57,6 +57,69 @@ func TestBuildNavSections(t *testing.T) {
 	}
 }
 
+func TestBuildNavDateSortedSection(t *testing.T) {
+	pages := []Page{
+		{RelPath: "index.md", Frontmatter: Frontmatter{Title: "Home"}},
+		{RelPath: "posts/older.md", Frontmatter: Frontmatter{Title: "Older Post", Date: "2026-01-01"}},
+		{RelPath: "posts/newest.md", Frontmatter: Frontmatter{Title: "Newest Post", Date: "2026-03-18"}},
+		{RelPath: "posts/middle.md", Frontmatter: Frontmatter{Title: "Middle Post", Date: "2026-02-15"}},
+	}
+
+	nav := BuildNav(pages)
+
+	if len(nav) != 1 {
+		t.Fatalf("expected 1 nav section, got %d", len(nav))
+	}
+
+	section := nav[0]
+	if section.Title != "Posts" {
+		t.Errorf("section title = %q, want Posts", section.Title)
+	}
+	if len(section.Children) != 3 {
+		t.Fatalf("expected 3 children, got %d", len(section.Children))
+	}
+
+	// Should be reverse chronological
+	if section.Children[0].Title != "Newest Post" {
+		t.Errorf("first child = %q, want Newest Post", section.Children[0].Title)
+	}
+	if section.Children[1].Title != "Middle Post" {
+		t.Errorf("second child = %q, want Middle Post", section.Children[1].Title)
+	}
+	if section.Children[2].Title != "Older Post" {
+		t.Errorf("third child = %q, want Older Post", section.Children[2].Title)
+	}
+}
+
+func TestBuildNavMixedDatedUndatedSection(t *testing.T) {
+	pages := []Page{
+		{RelPath: "posts/undated.md", Frontmatter: Frontmatter{Title: "Undated Post"}},
+		{RelPath: "posts/newer.md", Frontmatter: Frontmatter{Title: "Newer Post", Date: "2026-03-18"}},
+		{RelPath: "posts/older.md", Frontmatter: Frontmatter{Title: "Older Post", Date: "2026-01-01"}},
+	}
+
+	nav := BuildNav(pages)
+	if len(nav) != 1 {
+		t.Fatalf("expected 1 section, got %d", len(nav))
+	}
+
+	children := nav[0].Children
+	if len(children) != 3 {
+		t.Fatalf("expected 3 children, got %d", len(children))
+	}
+
+	// Dated pages first (newest), then undated (sorted by path)
+	if children[0].Title != "Newer Post" {
+		t.Errorf("first = %q, want Newer Post", children[0].Title)
+	}
+	if children[1].Title != "Older Post" {
+		t.Errorf("second = %q, want Older Post", children[1].Title)
+	}
+	if children[2].Title != "Undated Post" {
+		t.Errorf("third = %q, want Undated Post", children[2].Title)
+	}
+}
+
 func TestRenderNavEscapesHTML(t *testing.T) {
 	items := []NavItem{
 		{Title: `<script>alert("xss")</script>`, Path: "/evil/"},

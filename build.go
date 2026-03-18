@@ -6,7 +6,9 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
+	"time"
 
 	"github.com/alecthomas/chroma/v2"
 	chromahtml "github.com/alecthomas/chroma/v2/formatters/html"
@@ -19,6 +21,16 @@ type Page struct {
 	Frontmatter Frontmatter // Parsed YAML frontmatter
 	Body        []byte      // Markdown body (without frontmatter)
 	HTML        []byte      // Rendered HTML (set after shortcode + markdown processing)
+}
+
+// PageMeta is a lightweight page summary available to templates and shortcodes.
+type PageMeta struct {
+	Title       string
+	Description string
+	URL         string
+	Date        string
+	Extra       map[string]any
+	Section     string // Top-level directory, e.g. "guide" (empty for root pages)
 }
 
 // TemplateData is passed to the layout template.
@@ -37,6 +49,7 @@ type TemplateData struct {
 	TopNav        []LinkConfig   // Top navigation links
 	Extra         map[string]any // Per-page extra frontmatter
 	Site          map[string]any // Site-level extra from config.toml [extra]
+	Pages         []PageMeta     // All non-draft pages (sorted by date desc, then title)
 }
 
 // Build reads markdown from src, renders HTML, and writes to dst.
@@ -90,6 +103,19 @@ func Build(src, dst string, cfg Config) error {
 
 		fm, body := ParseFrontmatter(content)
 
+		// Skip draft pages
+		if fm.Draft {
+			fmt.Printf("  Skipping draft: %s\n", relPath)
+			return nil
+		}
+
+		// Warn on malformed dates
+		if fm.Date != "" {
+			if _, err := time.Parse("2006-01-02", fm.Date); err != nil {
+				fmt.Printf("  Warning: %s has invalid date %q (expected YYYY-MM-DD)\n", relPath, fm.Date)
+			}
+		}
+
 		// Body stored raw — shortcodes processed per-page during render
 		pages = append(pages, Page{
 			RelPath:     relPath,
@@ -106,6 +132,12 @@ func Build(src, dst string, cfg Config) error {
 
 	// Build navigation
 	nav := BuildNav(pages)
+
+	// Build wikilink resolver from discovered pages
+	wikiResolver := newPageResolver(pages, basePath)
+
+	// Build page metadata list for templates and shortcodes
+	allPages := buildPageMeta(pages, basePath)
 
 	// Generate syntax highlighting CSS
 	if err := writeSyntaxCSS(dst, cfg.Highlight); err != nil {
@@ -148,16 +180,17 @@ func Build(src, dst string, cfg Config) error {
 			TopNav:        cfg.TopNav,
 			Extra:         page.Frontmatter.Extra,
 			Site:          cfg.Extra,
+			Pages:         allPages,
 		}
 
 		// Process shortcodes in markdown source (before markdown rendering)
-		body, err := shortcodes.ProcessShortcodes(page.Body, &data)
+		body, err := shortcodes.ProcessShortcodes(page.Body, &data, wikiResolver)
 		if err != nil {
 			return fmt.Errorf("processing shortcodes in %s: %w", page.RelPath, err)
 		}
 
-		// Render markdown to HTML
-		html, err := RenderMarkdown(body)
+		// Render markdown to HTML (with wiki link resolution)
+		html, err := RenderMarkdownWithResolver(body, wikiResolver)
 		if err != nil {
 			return fmt.Errorf("rendering %s: %w", page.RelPath, err)
 		}
@@ -191,6 +224,19 @@ func Build(src, dst string, cfg Config) error {
 			return fmt.Errorf("removing search index: %w", err)
 		}
 		fmt.Printf("  Search disabled (%s skipped)\n", searchIndexFilename)
+	}
+
+	// Generate or remove the RSS feed (after rendering so page.HTML is populated)
+	if cfg.FeedEnabled() {
+		feed := buildFeed(pages, cfg)
+		if err := writeFeed(dst, feed); err != nil {
+			return fmt.Errorf("writing feed: %w", err)
+		}
+		fmt.Printf("  Generated %s\n", feedFilename)
+	} else {
+		if err := removeFeed(dst); err != nil {
+			return fmt.Errorf("removing feed: %w", err)
+		}
 	}
 
 	// Copy _static directory
@@ -246,6 +292,49 @@ func copyDir(src, dst string) error {
 		}
 		return os.WriteFile(dstPath, data, 0o644)
 	})
+}
+
+// buildPageMeta creates a sorted list of PageMeta from all pages.
+// Root index.md is excluded (matches nav behavior).
+// Pages with dates sort reverse-chronologically first, then undated pages alphabetically.
+func buildPageMeta(pages []Page, basePath string) []PageMeta {
+	metas := make([]PageMeta, 0, len(pages))
+	for _, p := range pages {
+		if p.RelPath == "index.md" {
+			continue
+		}
+		title := pageTitle(p)
+		section := ""
+		dir := filepath.Dir(p.RelPath)
+		if dir != "." {
+			parts := strings.SplitN(dir, string(filepath.Separator), 2)
+			section = reNumPrefix.ReplaceAllString(parts[0], "")
+		}
+		metas = append(metas, PageMeta{
+			Title:       title,
+			Description: p.Frontmatter.Description,
+			URL:         basePath + pageURL(p),
+			Date:        p.Frontmatter.Date,
+			Extra:       p.Frontmatter.Extra,
+			Section:     section,
+		})
+	}
+
+	sort.Slice(metas, func(i, j int) bool {
+		// Dated pages first, reverse chronological
+		if metas[i].Date != "" && metas[j].Date != "" {
+			return metas[i].Date > metas[j].Date
+		}
+		if metas[i].Date != "" {
+			return true
+		}
+		if metas[j].Date != "" {
+			return false
+		}
+		return metas[i].Title < metas[j].Title
+	})
+
+	return metas
 }
 
 // writeSyntaxCSS generates a combined light/dark syntax highlighting stylesheet.
