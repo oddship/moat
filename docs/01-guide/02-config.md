@@ -85,6 +85,7 @@ Notes:
 - Items are sorted newest first
 - `feed.link` should be your full site URL including base path (e.g. `https://example.com/moat`)
 - If `[extra].tagline` is set, it becomes the feed description
+- The built-in layout shows an RSS icon in the top navigation when feed is enabled
 
 ## Sidebar links
 
@@ -103,7 +104,7 @@ url = "https://discord.gg/your-server"
 
 Links appear at the top of the sidebar nav, before the auto-generated page tree.
 
-The optional `icon` field adds a built-in SVG icon before the link title. Currently supported: `github`.
+The optional `icon` field adds a built-in SVG icon before the link title. Currently supported: `github`, `rss`.
 
 ## Top navigation links
 

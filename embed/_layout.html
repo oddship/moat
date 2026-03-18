@@ -6,6 +6,7 @@
   <title>{{ block "title" . }}{{ .Title }} — {{ .SiteName }}{{ end }}</title>
   {{ if .Description }}<meta name="description" content="{{ .Description }}">{{ end }}
   {{ if .Favicon }}<link rel="icon" href="{{ .BasePath }}/{{ .Favicon }}">{{ end }}
+  {{ if .FeedEnabled }}<link rel="alternate" type="application/rss+xml" title="{{ .SiteName }}" href="{{ .BasePath }}/feed.xml">{{ end }}
   <link rel="stylesheet" href="https://unpkg.com/@knadh/oat/oat.min.css">
   <link rel="stylesheet" href="{{ .BasePath }}/_syntax.css">
   <script>
@@ -248,6 +249,9 @@
       <div class="col-8 hstack justify-end">
         {{ range .TopNav }}
         <a href="{{ .URL }}">{{ linkIcon .Icon }}{{ .Title }}</a>
+        {{ end }}
+        {{ if .FeedEnabled }}
+        <a href="{{ .BasePath }}/feed.xml" aria-label="RSS Feed">{{ linkIcon "rss" }}</a>
         {{ end }}
         {{ if .SearchEnabled }}
         <button class="outline small" onclick="document.getElementById('search-dialog').showModal()" aria-label="Search">

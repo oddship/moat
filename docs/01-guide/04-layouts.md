@@ -100,6 +100,7 @@ If you don't provide a custom `_layout.html`, the built-in layout is used as the
 | `{{ .SiteName }}` | string | Site name from config or CLI |
 | `{{ .BasePath }}` | string | URL prefix (e.g. `/moat`) |
 | `{{ .SearchEnabled }}` | bool | Whether built-in search is enabled in config |
+| `{{ .FeedEnabled }}` | bool | Whether RSS feed is enabled in config |
 | `{{ .TopNav }}` | []LinkConfig | Top navigation links from `[[topnav]]` config |
 | `{{ .Pages }}` | []PageMeta | All non-draft pages, sorted by date desc then title |
 | `{{ .Extra }}` | map | Extra frontmatter from the page |
