@@ -120,6 +120,7 @@ Template functions available in layouts:
 | Function | Description |
 |----------|-------------|
 | `safeHTML` | Render a string as raw HTML |
+| `formatDate` | Format a date string as "January 2, 2006" |
 | `linkIcon` | Return built-in SVG icon by name (e.g. `"github"`) |
 
 ## Adding a built-in icon
