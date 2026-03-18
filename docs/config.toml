@@ -17,6 +17,10 @@ title = "GitHub"
 url = "https://github.com/oddship/moat"
 icon = "github"
 
+[feed]
+enabled = true
+link = "https://oddship.github.io/moat"
+
 [extra]
 tagline = "docs are your project's moat"
 footer = '&copy; <a href="https://github.com/oddship">oddship</a>'

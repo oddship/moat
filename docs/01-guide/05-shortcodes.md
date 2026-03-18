@@ -5,7 +5,7 @@ description: Reusable components inside markdown
 
 # Shortcodes
 
-Shortcodes are reusable HTML components you can call from inside markdown. They're Go templates stored in `_shortcodes/`.
+Shortcodes are reusable HTML components you can call from inside markdown. They're Go templates stored in `_shortcodes/`. See [[Layouts]] for the template variables available to shortcodes via `{{ .Page }}`.
 
 ## Creating a shortcode
 

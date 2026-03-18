@@ -5,7 +5,7 @@ description: Directory structure, links, and frontmatter rules
 
 # Conventions
 
-moat is convention-based. No config files needed — the directory structure is the config.
+moat is convention-based. No config files needed — the directory structure is the config. For site-level settings, see [[Configuration]].
 
 ## Directory structure
 

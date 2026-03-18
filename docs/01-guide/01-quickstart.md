@@ -24,7 +24,7 @@ moat build docs/ _site/
 moat serve _site/
 ```
 
-Open [http://localhost:8080](http://localhost:8080). You get a full oat-styled site with sidebar nav, built-in search, dark mode toggle, and syntax highlighting.
+Open [http://localhost:8080](http://localhost:8080). You get a full oat-styled site with sidebar nav, built-in search, dark mode toggle, and syntax highlighting. See [[Conventions]] for how file structure maps to URLs.
 
 ## Scaffold with `moat init`
 
@@ -61,11 +61,11 @@ Number prefixes (`01-`, `02-`) control ordering but are stripped from URLs and n
 - `01-guide/01-getting-started.md` → `/guide/getting-started/`
 - `01-guide/02-configuration.md` → `/guide/configuration/`
 
-Directories become collapsible sections in the sidebar automatically.
+Directories become collapsible sections in the sidebar automatically. See [[Configuration]] for site name, themes, and navigation links.
 
 ## Deploy to GitHub Pages
 
-Add this to your repo — or use moat's [reusable workflow](../reference/github-actions/):
+Add this to your repo — or use moat's reusable workflow (see [[GitHub Actions]]):
 
 ```yaml
 # .github/workflows/docs.yml
@@ -88,3 +88,7 @@ jobs:
 ```
 
 That's it. Push to main and your site deploys.
+
+{{< note type="info" >}}
+moat also supports [[Layouts]] for custom templates and [[Shortcodes]] for reusable components inside markdown.
+{{< /note >}}

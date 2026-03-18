@@ -7,7 +7,7 @@ description: Built-in defaults with optional customization via block inheritance
 
 moat ships with a built-in layout that uses [oat](https://oat.ink) for styling — sidebar nav, built-in search, dark mode toggle, and a responsive topnav. You don't need to create any layout files to get started.
 
-To customize, create `_layout.html` in your docs directory. It completely replaces the built-in layout.
+To customize, create `_layout.html` in your docs directory. It completely replaces the built-in layout. See [[Shortcodes]] for reusable components you can call from inside markdown.
 
 ## Built-in layout
 

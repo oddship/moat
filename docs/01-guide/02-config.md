@@ -5,7 +5,7 @@ description: Site-level configuration via config.toml
 
 # Configuration
 
-Place a `config.toml` in your docs directory for site-level settings. It's optional — everything has sensible defaults.
+Place a `config.toml` in your docs directory for site-level settings. It's optional — everything has sensible defaults. See [[Conventions]] for directory structure and frontmatter fields.
 
 ```toml
 site_name = "My Project"
