@@ -261,7 +261,7 @@
       </div>
       <div class="col-8 hstack justify-end">
         {{ range .TopNav }}
-        <a href="{{ .URL }}">{{ linkIcon .Icon }}{{ .Title }}</a>
+        <a href="{{ navURL $.BasePath .URL }}">{{ linkIcon .Icon }}{{ .Title }}</a>
         {{ end }}
         {{ if .SearchEnabled }}
         <button class="outline small" onclick="document.getElementById('search-dialog').showModal()" aria-label="Search">
@@ -281,7 +281,7 @@
           </button>
           <menu popover id="nav-menu">
             {{ range .TopNavMore }}
-            <a href="{{ .URL }}" role="menuitem">{{ linkIcon .Icon }}{{ .Title }}</a>
+            <a href="{{ navURL $.BasePath .URL }}" role="menuitem">{{ linkIcon .Icon }}{{ .Title }}</a>
             {{ end }}
             {{ if and .TopNavMore .FeedEnabled }}<hr>{{ end }}
             {{ if .FeedEnabled }}

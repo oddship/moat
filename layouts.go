@@ -37,8 +37,24 @@ func loadLayouts(src string) (map[string]*template.Template, error) {
 	}
 
 	funcMap := template.FuncMap{
-		"safeHTML":  func(s string) template.HTML { return template.HTML(s) },
+		"safeHTML": func(s string) template.HTML { return template.HTML(s) },
 		"linkIcon": func(name string) template.HTML { return template.HTML(linkIcon(name)) },
+		"navURL": func(basePath, url string) string {
+			if url == "" {
+				return ""
+			}
+			if strings.HasPrefix(url, "http://") || strings.HasPrefix(url, "https://") || strings.HasPrefix(url, "mailto:") || strings.HasPrefix(url, "#") {
+				return url
+			}
+			basePath = strings.TrimRight(basePath, "/")
+			if strings.HasPrefix(url, "/") {
+				return basePath + url
+			}
+			if basePath == "" {
+				return "/" + url
+			}
+			return basePath + "/" + url
+		},
 		"formatDate": func(s string) string {
 			if t, ok := ParseDate(s); ok {
 				return t.Format("January 2, 2006")
