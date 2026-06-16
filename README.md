@@ -18,7 +18,7 @@ moat build docs/ _site/
 moat serve _site/
 ```
 
-That's it. No layout files needed — moat has a built-in oat layout with sidebar nav, built-in search, dark mode, and syntax highlighting.
+That's it. No layout files needed — moat has a built-in oat layout with sidebar nav, modal search, dark mode, and syntax highlighting.
 
 ## Install
 
@@ -32,13 +32,13 @@ Or grab a binary from [releases](https://github.com/oddship/moat/releases).
 
 - **Zero config** — built-in oat layout, just write markdown and build
 - **Convention-based** — directory structure is the config, number prefixes control ordering
-- **Built-in search** — client-side `_search.json` index with oat-native sidebar search UI
+- **Built-in search** — client-side `_search.json` index with modal search in the built-in topnav (`/` to open)
 - **Wiki links** — `[[Page Title]]` resolves to internal page URLs
 - **Site primitives** — `date`, `draft`, page listings via templates/shortcodes, and optional RSS feed
 - **Syntax highlighting** — 70 Chroma themes with automatic light/dark mode
 - **Layout inheritance** — base layout with `{{ block }}`/`{{ define }}` variants
 - **Shortcodes** — reusable components inside markdown (`{{< note >}}...{{< /note >}}`)
-- **Config file** — optional `config.toml` for site name, base path, highlight themes, navigation links, search, and feed settings
+- **Config file** — optional `config.toml` for site name, base path, highlight themes, navigation links, topnav dropdown links, search, and feed settings
 - **GitHub Actions** — reusable workflow for one-line GitHub Pages deployment
 - **Single binary** — no Node.js, no npm, just Go
 
@@ -96,6 +96,14 @@ url = "https://github.com/you/project"
 icon = "github"
 
 [[topnav]]
+title = "Quickstart"
+url = "/guide/quickstart/"
+
+[[topnav]]
+title = "Reference"
+url = "/reference/github-actions/"
+
+[[topnav_more]]
 title = "GitHub"
 url = "https://github.com/you/project"
 icon = "github"
@@ -104,7 +112,7 @@ icon = "github"
 footer = '&copy; <a href="https://example.com">You</a>'
 ```
 
-By default, `moat build` also emits `_search.json`, and the built-in oat layout wires up a sidebar search box automatically. Disable it with:
+By default, `moat build` also emits `_search.json`, and the built-in oat layout wires up modal search in the topnav. Press `/` to open it. Disable it with:
 
 ```toml
 [search]
@@ -121,7 +129,7 @@ link = "https://docs.example.com"
 # title = "My Site Feed"
 ```
 
-Only pages with a `date` are included in `feed.xml`, newest first. Dates accept `YYYY-MM-DD`, `YYYY-MM-DD HH:MM`, or full timestamps.
+Only pages with a `date` are included in `feed.xml`, newest first. Dates accept `YYYY-MM-DD`, `YYYY-MM-DD HH:MM`, or full timestamps. In the built-in layout, feed links are typically exposed from the `More` dropdown.
 
 Wiki links are also supported:
 

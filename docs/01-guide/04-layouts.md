@@ -5,7 +5,7 @@ description: Built-in defaults with optional customization via block inheritance
 
 # Layouts
 
-moat ships with a built-in layout that uses [oat](https://oat.ink) for styling — sidebar nav, built-in search, dark mode toggle, and a responsive topnav. You don't need to create any layout files to get started.
+moat ships with a built-in layout that uses [oat](https://oat.ink) for styling — sidebar nav, modal search, dark mode toggle, and a responsive topnav. You don't need to create any layout files to get started.
 
 To customize, create `_layout.html` in your docs directory. It completely replaces the built-in layout. See [[Shortcodes]] for reusable components you can call from inside markdown.
 
@@ -14,11 +14,13 @@ To customize, create `_layout.html` in your docs directory. It completely replac
 The built-in layout provides:
 
 - oat CSS from CDN
-- Sidebar search backed by `_search.json`
+- Modal search backed by `_search.json` (`/` opens it in the built-in layout)
 - Sidebar navigation with collapsible sections
 - Dark/light theme toggle
 - Responsive topnav with sidebar toggle on mobile
-- `[[topnav]]` links in the top navigation bar
+- `[[topnav]]` primary links in the top navigation bar
+- `[[topnav_more]]` links grouped under the built-in `More` dropdown
+- Feed link in `More` when RSS is enabled
 - Syntax highlighting CSS (`_syntax.css`)
 - `[[links]]` from config rendered above the page nav
 - Footer from `[extra].footer` in config (supports HTML)
@@ -101,7 +103,8 @@ If you don't provide a custom `_layout.html`, the built-in layout is used as the
 | `{{ .BasePath }}` | string | URL prefix (e.g. `/moat`) |
 | `{{ .SearchEnabled }}` | bool | Whether built-in search is enabled in config |
 | `{{ .FeedEnabled }}` | bool | Whether RSS feed is enabled in config |
-| `{{ .TopNav }}` | []LinkConfig | Top navigation links from `[[topnav]]` config |
+| `{{ .TopNav }}` | []LinkConfig | Primary top navigation links from `[[topnav]]` config |
+| `{{ .TopNavMore }}` | []LinkConfig | Secondary top navigation links from `[[topnav_more]]` config |
 | `{{ .Pages }}` | []PageMeta | All non-draft pages, sorted by date desc then title |
 | `{{ .Extra }}` | map | Extra frontmatter from the page |
 | `{{ .Site }}` | map | Site-level `[extra]` from config |
