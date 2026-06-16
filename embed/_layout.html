@@ -336,9 +336,9 @@
         {{ .Content }}
       </article>
       {{ end }}
-      {{ if index .Site "footer" }}
+      {{ if .Footer }}
       <footer class="footer text-light mt-6 mb-6">
-        <small>{{ index .Site "footer" | safeHTML }}</small>
+        <small>{{ .Footer }}</small>
       </footer>
       {{ end }}
     </div>

@@ -2,6 +2,8 @@ site_name = "moat"
 base_path = "/moat"
 logo = "_static/logo.svg"
 favicon = "_static/favicon.svg"
+footer_text = "© [oddship](https://github.com/oddship) 2026"
+disable_moat_citation = false
 
 [highlight]
 light = "github"
@@ -31,4 +33,3 @@ link = "https://oddship.github.io/moat"
 
 [extra]
 tagline = "docs are your project's moat"
-footer = '&copy; <a href="https://github.com/oddship">oddship</a>'

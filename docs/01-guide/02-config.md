@@ -10,6 +10,8 @@ Place a `config.toml` in your docs directory for site-level settings. It's optio
 ```toml
 site_name = "My Project"
 base_path = "/my-project"
+footer_text = "© [you](https://example.com) 2026"
+disable_moat_citation = false
 
 [highlight]
 light = "github"
@@ -51,6 +53,8 @@ footer = '&copy; <a href="https://example.com">You</a>'
 |-------|-------------|
 | `site_name` | Site name, available as `{{ .SiteName }}` in templates |
 | `base_path` | URL prefix for GitHub project pages (e.g. `/my-project`) |
+| `footer_text` | Footer copy rendered by the built-in layout; markdown links are allowed |
+| `disable_moat_citation` | Removes the built-in `built with oddship/moat` suffix from `footer_text` |
 | `search.enabled` | Enable built-in client-side search (defaults to `true`) |
 | `feed.enabled` | Generate `feed.xml` (defaults to `false`) |
 | `feed.link` | Absolute site URL used for RSS item links (recommended) |
@@ -61,6 +65,22 @@ footer = '&copy; <a href="https://example.com">You</a>'
 CLI flags `--site-name` and `--base-path` override config values.
 
 Use `--config PATH` to point to a config file outside the docs directory. By default, moat looks for `config.toml` in the source directory.
+
+## Built-in footer
+
+The built-in layout can render a footer line from plain config, without writing raw HTML.
+
+```toml
+footer_text = "© [oddship](https://github.com/oddship) 2026"
+disable_moat_citation = false
+```
+
+That renders as:
+
+- `© oddship 2026 · built with oddship/moat` when citation is enabled
+- `© oddship 2026` when `disable_moat_citation = true`
+
+For backward compatibility, the built-in layout still falls back to `[extra].footer` if `footer_text` is not set.
 
 ## Built-in search
 
@@ -220,4 +240,4 @@ Access in templates:
 
 The built-in layout uses these extras automatically:
 - `tagline` — appended to the site name in the landing page title
-- `footer` — rendered at the bottom of every page (supports HTML via `safeHTML`)
+- `footer` — rendered at the bottom of every page as a backward-compatible HTML fallback

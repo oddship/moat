@@ -8,6 +8,10 @@ site_name = "My Project"
 # Leave empty for custom domains or root-level sites.
 # base_path = "/my-project"
 
+# Footer text rendered below the page content. Markdown links are allowed.
+# footer_text = "© [you](https://example.com) 2026"
+# disable_moat_citation = false
+
 # Syntax highlighting themes (Chroma)
 # See all themes: https://xyproto.github.io/splash/docs/
 [highlight]
@@ -60,4 +64,4 @@ dark  = "github-dark"     # Used when [data-theme="dark"]
 # Extra variables — available in templates as {{ .Site.key }}
 # [extra]
 # tagline = "My project tagline"
-# footer = '&copy; <a href="https://example.com">You</a>'
+# footer = '<a href="https://example.com">Legacy footer HTML</a>'  # Backward-compatible fallback

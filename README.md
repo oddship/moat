@@ -78,6 +78,8 @@ Optional `config.toml` in your docs directory:
 ```toml
 site_name = "My Project"
 base_path = "/my-project"
+footer_text = "© [you](https://example.com) 2026"
+disable_moat_citation = false
 
 [highlight]
 light = "github"
@@ -109,7 +111,7 @@ url = "https://github.com/you/project"
 icon = "github"
 
 [extra]
-footer = '&copy; <a href="https://example.com">You</a>'
+tagline = "Build something great"
 ```
 
 By default, `moat build` also emits `_search.json`, and the built-in oat layout wires up modal search in the topnav. Press `/` to open it. Disable it with:
@@ -130,6 +132,13 @@ link = "https://docs.example.com"
 ```
 
 Only pages with a `date` are included in `feed.xml`, newest first. Dates accept `YYYY-MM-DD`, `YYYY-MM-DD HH:MM`, or full timestamps. In the built-in layout, feed links are typically exposed from the `More` dropdown.
+
+The built-in footer also supports plain config via:
+
+```toml
+footer_text = "© [you](https://example.com) 2026"
+disable_moat_citation = false
+```
 
 Wiki links are also supported:
 

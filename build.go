@@ -39,6 +39,7 @@ type TemplateData struct {
 	Date          string // Page date from frontmatter (raw string, e.g. "2026-03-18 14:30")
 	Content       template.HTML
 	Nav           template.HTML
+	Footer        template.HTML
 	CurrentPath   string
 	SiteName      string
 	BasePath      string
@@ -155,6 +156,11 @@ func Build(src, dst string, cfg Config) error {
 		}
 	}
 
+	footer, err := buildFooter(cfg)
+	if err != nil {
+		return fmt.Errorf("building footer: %w", err)
+	}
+
 	// Render each page
 	for i, page := range pages {
 		currentPath := pageURL(page)
@@ -173,6 +179,7 @@ func Build(src, dst string, cfg Config) error {
 			Description:   page.Frontmatter.Description,
 			Date:          page.Frontmatter.Date,
 			Nav:           template.HTML(navHTML),
+			Footer:        footer,
 			CurrentPath:   prefixedPath,
 			SiteName:      siteName,
 			BasePath:      basePath,
@@ -277,6 +284,27 @@ func renderToFile(tmpl *template.Template, data TemplateData, path string) error
 	}
 	defer f.Close()
 	return tmpl.Execute(f, data)
+}
+
+func buildFooter(cfg Config) (template.HTML, error) {
+	if cfg.FooterText != "" {
+		text := cfg.FooterText
+		if !cfg.DisableMoatCitation {
+			text += " · built with [oddship/moat](https://github.com/oddship/moat)"
+		}
+		html, err := RenderMarkdown([]byte(text))
+		if err != nil {
+			return "", err
+		}
+		trimmed := strings.TrimSpace(string(html))
+		trimmed = strings.TrimPrefix(trimmed, "<p>")
+		trimmed = strings.TrimSuffix(trimmed, "</p>")
+		return template.HTML(trimmed), nil
+	}
+	if footer, ok := cfg.Extra["footer"].(string); ok && footer != "" {
+		return template.HTML(footer), nil
+	}
+	return "", nil
 }
 
 func copyDir(src, dst string) error {
