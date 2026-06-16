@@ -28,6 +28,14 @@ url = "https://github.com/you/project"
 icon = "github"
 
 [[topnav]]
+title = "Quickstart"
+url = "/guide/quickstart/"
+
+[[topnav]]
+title = "Reference"
+url = "/reference/github-actions/"
+
+[[topnav_more]]
 title = "GitHub"
 url = "https://github.com/you/project"
 icon = "github"
@@ -47,7 +55,8 @@ footer = '&copy; <a href="https://example.com">You</a>'
 | `feed.enabled` | Generate `feed.xml` (defaults to `false`) |
 | `feed.link` | Absolute site URL used for RSS item links (recommended) |
 | `feed.title` | Optional RSS title override |
-| `[[topnav]]` | Links in the top navigation bar (same format as `[[links]]`) |
+| `[[topnav]]` | Primary links in the top navigation bar |
+| `[[topnav_more]]` | Secondary links grouped under the built-in `More` dropdown |
 
 CLI flags `--site-name` and `--base-path` override config values.
 
@@ -55,14 +64,14 @@ Use `--config PATH` to point to a config file outside the docs directory. By def
 
 ## Built-in search
 
-moat generates a static `_search.json` file during `build` and the built-in oat layout renders a sidebar search box automatically.
+moat generates a static `_search.json` file during `build` and the built-in oat layout renders modal search in the top navigation automatically.
 
 ```toml
 [search]
 enabled = false
 ```
 
-Search is enabled by default. Set `enabled = false` to skip generating `_search.json` and hide the built-in search UI.
+Search is enabled by default. Set `enabled = false` to skip generating `_search.json` and hide the built-in search UI. In the built-in layout, press `/` to open search.
 
 If you use a custom layout, you can ignore the generated index, consume `_search.json` yourself, or disable search entirely.
 
@@ -85,7 +94,7 @@ Notes:
 - Items are sorted newest first
 - `feed.link` should be your full site URL including base path (e.g. `https://example.com/moat`)
 - If `[extra].tagline` is set, it becomes the feed description
-- The built-in layout shows an RSS icon in the top navigation when feed is enabled
+- The built-in layout typically exposes the feed from the `More` dropdown when feed is enabled
 
 ## Sidebar links
 
@@ -108,16 +117,32 @@ The optional `icon` field adds a built-in SVG icon before the link title. Curren
 
 ## Top navigation links
 
-Add links to the right side of the top navigation bar:
+Add primary links to the right side of the top navigation bar:
 
 ```toml
 [[topnav]]
+title = "Quickstart"
+url = "/guide/quickstart/"
+
+[[topnav]]
+title = "Reference"
+url = "/reference/github-actions/"
+```
+
+Top nav links use the same format as sidebar links (`title`, `url`, optional `icon`). In the built-in layout they appear before the search button and `More` dropdown.
+
+## More dropdown links
+
+Add secondary links under the built-in `More` dropdown:
+
+```toml
+[[topnav_more]]
 title = "GitHub"
 url = "https://github.com/you/project"
 icon = "github"
 ```
 
-Top nav links use the same format as sidebar links (`title`, `url`, optional `icon`). They appear alongside the search button in the built-in layout.
+`[[topnav_more]]` uses the same link format as `[[links]]` and `[[topnav]]`. When feed generation is enabled, the built-in layout also adds an `RSS feed` item in this dropdown.
 
 ## Syntax highlighting
 

@@ -196,6 +196,19 @@
     html[data-theme="dark"] .icon-dark { display: none; }
     html:not([data-theme="dark"]) .icon-light { display: none; }
     aside footer button { width: 100%; }
+    nav[data-topnav] {
+      font-size: var(--text-7);
+    }
+    nav[data-topnav] a,
+    nav[data-topnav] button {
+      color: var(--muted-foreground);
+    }
+    nav[data-topnav] img {
+      height: 24px;
+    }
+    nav[data-topnav] .hstack {
+      gap: var(--space-6);
+    }
     {{ if .SearchEnabled }}
     #search-dialog input[type="search"] { margin: 0; font-size: var(--text-6); }
     #search-dialog > form > div { padding-block-start: 0; }
@@ -260,8 +273,22 @@
           <kbd>/</kbd>
         </button>
         {{ end }}
-        {{ if .FeedEnabled }}
-        <a href="{{ .BasePath }}/feed.xml" aria-label="RSS Feed">{{ linkIcon "rss" }}</a>
+        {{ if or .TopNavMore .FeedEnabled }}
+        <ot-dropdown>
+          <button popovertarget="nav-menu" class="outline small">
+            More
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+          </button>
+          <menu popover id="nav-menu">
+            {{ range .TopNavMore }}
+            <a href="{{ .URL }}" role="menuitem">{{ linkIcon .Icon }}{{ .Title }}</a>
+            {{ end }}
+            {{ if and .TopNavMore .FeedEnabled }}<hr>{{ end }}
+            {{ if .FeedEnabled }}
+            <a href="{{ .BasePath }}/feed.xml" role="menuitem">{{ linkIcon "rss" }}RSS feed</a>
+            {{ end }}
+          </menu>
+        </ot-dropdown>
         {{ end }}
       </div>
     </div>

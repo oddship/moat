@@ -36,7 +36,7 @@ type PageMeta struct {
 type TemplateData struct {
 	Title         string
 	Description   string
-	Date          string         // Page date from frontmatter (raw string, e.g. "2026-03-18 14:30")
+	Date          string // Page date from frontmatter (raw string, e.g. "2026-03-18 14:30")
 	Content       template.HTML
 	Nav           template.HTML
 	CurrentPath   string
@@ -48,6 +48,7 @@ type TemplateData struct {
 	SearchEnabled bool           // Whether built-in search UI should render
 	FeedEnabled   bool           // Whether RSS feed is enabled
 	TopNav        []LinkConfig   // Top navigation links
+	TopNavMore    []LinkConfig   // Dropdown items under More
 	Extra         map[string]any // Per-page extra frontmatter
 	Site          map[string]any // Site-level extra from config.toml [extra]
 	Pages         []PageMeta     // All non-draft pages (sorted by date desc, then title)
@@ -181,6 +182,7 @@ func Build(src, dst string, cfg Config) error {
 			SearchEnabled: searchEnabled,
 			FeedEnabled:   cfg.FeedEnabled(),
 			TopNav:        cfg.TopNav,
+			TopNavMore:    cfg.TopNavMore,
 			Extra:         page.Frontmatter.Extra,
 			Site:          cfg.Extra,
 			Pages:         allPages,

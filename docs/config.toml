@@ -13,6 +13,14 @@ url = "https://github.com/oddship/moat"
 icon = "github"
 
 [[topnav]]
+title = "Quickstart"
+url = "/guide/quickstart/"
+
+[[topnav]]
+title = "Reference"
+url = "/reference/github-actions/"
+
+[[topnav_more]]
 title = "GitHub"
 url = "https://github.com/oddship/moat"
 icon = "github"

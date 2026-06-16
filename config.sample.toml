@@ -37,6 +37,15 @@ dark  = "github-dark"     # Used when [data-theme="dark"]
 
 # Top navigation links (right side of the topnav bar)
 # [[topnav]]
+# title = "Quickstart"
+# url = "/guide/quickstart/"
+#
+# [[topnav]]
+# title = "Reference"
+# url = "/reference/github-actions/"
+#
+# Secondary links grouped under the built-in More dropdown.
+# [[topnav_more]]
 # title = "GitHub"
 # url = "https://github.com/you/project"
 # icon = "github"
