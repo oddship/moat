@@ -36,6 +36,24 @@ test.describe("Search", () => {
     await expect(page.locator("#search-dialog")).not.toBeVisible();
   });
 
+  test("closes search dialog with the close button", async ({ page }) => {
+    await page.locator('button[aria-label="Search"]').click();
+    await expect(page.locator("#search-dialog")).toBeVisible();
+    await page.locator('button[aria-label="Close search dialog"]').click();
+    await expect(page.locator("#search-dialog")).not.toBeVisible();
+  });
+
+  test("closes search dialog on backdrop click", async ({ page }) => {
+    await page.locator('button[aria-label="Search"]').click();
+    await expect(page.locator("#search-dialog")).toBeVisible();
+
+    const box = await page.locator("#search-dialog").boundingBox();
+    expect(box).not.toBeNull();
+    await page.mouse.click(20, 20);
+
+    await expect(page.locator("#search-dialog")).not.toBeVisible();
+  });
+
   test("shows status message before typing", async ({ page }) => {
     await page.locator('button[aria-label="Search"]').click();
     await expect(page.locator("[data-search-status]")).toContainText(
