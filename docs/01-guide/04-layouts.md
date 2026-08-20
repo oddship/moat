@@ -38,6 +38,7 @@ Create `_layout.html` with Go template syntax. Use `{{ block "name" . }}` to def
 <head>
   {{ block "title" . }}<title>{{ .Title }}</title>{{ end }}
   <link rel="stylesheet" href="https://unpkg.com/@knadh/oat/oat.min.css">
+  <link rel="stylesheet" href="{{ .BasePath }}/_static/theme.css">
   <link rel="stylesheet" href="{{ .BasePath }}/_syntax.css">
   {{ block "head" . }}{{ end }}
 </head>
@@ -53,6 +54,84 @@ Create `_layout.html` with Go template syntax. Use `{{ block "name" . }}` to def
 ```
 
 The `{{ block "name" . }}...{{ end }}` sections have default content that variants can replace.
+
+## Custom styling
+
+The built-in layout uses [oat](https://oat.ink), whose theme is controlled by CSS variables. Create `_static/theme.css` and load it after oat's stylesheet so your values take precedence:
+
+```css
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --card: #ffffff;
+  --card-foreground: #171717;
+
+  --primary: #574747;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f4f5;
+  --secondary-foreground: #574747;
+
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  --faint: #fafafa;
+  --faint-foreground: #a1a1aa;
+  --accent: #f4f4f5;
+
+  --danger: #d32f2f;
+  --danger-foreground: #ffffff;
+  --success: #008032;
+  --success-foreground: #ffffff;
+  --warning: #a65b00;
+  --warning-foreground: #171717;
+
+  --border: #d4d4d8;
+  --input: #d4d4d8;
+  --ring: #574747;
+}
+
+html[data-theme="dark"] {
+  --background: #18181b;
+  --foreground: #fafafa;
+  --card: #27272a;
+  --card-foreground: #fafafa;
+  --primary: #d4a373;
+  --primary-foreground: #18181b;
+  --border: #3f3f46;
+  --input: #3f3f46;
+  --ring: #d4a373;
+}
+```
+
+The main theme variables are:
+
+| Variable | Controls |
+|----------|----------|
+| `--background`, `--foreground` | Page background and primary text |
+| `--card`, `--card-foreground` | Card background and text |
+| `--primary`, `--primary-foreground` | Primary buttons, links, and their text |
+| `--secondary`, `--secondary-foreground` | Secondary controls and their text |
+| `--muted`, `--muted-foreground` | Muted surfaces and text |
+| `--faint`, `--faint-foreground` | Subtle surfaces and text |
+| `--accent` | Accent backgrounds, such as hovered search results |
+| `--danger`, `--danger-foreground` | Error and destructive states |
+| `--success`, `--success-foreground` | Success states |
+| `--warning`, `--warning-foreground` | Warning states |
+| `--border`, `--input` | Borders and form input borders |
+| `--ring` | Focus rings |
+
+You can also override component-specific variables such as `--sidebar-width`, or add regular CSS selectors for further changes:
+
+```css
+:root {
+  --sidebar-width: 260px;
+}
+
+article h1 {
+  letter-spacing: -0.03em;
+}
+```
+
+The built-in theme toggle sets `data-theme="dark"` on the `<html>` element, so dark-mode overrides should use `html[data-theme="dark"]`. For the full list of oat variables, see the [oat customization guide](https://oat.ink/customizing/).
 
 ## Named variants
 
