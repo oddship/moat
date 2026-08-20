@@ -120,6 +120,34 @@ func TestBuildNavMixedDatedUndatedSection(t *testing.T) {
 	}
 }
 
+func TestBuildNavSortsMixedDateFormatsChronologically(t *testing.T) {
+	nav := BuildNav([]Page{
+		{RelPath: "posts/morning.md", Frontmatter: Frontmatter{Title: "Morning", Date: "2026-03-18T09:00"}},
+		{RelPath: "posts/evening.md", Frontmatter: Frontmatter{Title: "Evening", Date: "2026-03-18 21:00"}},
+	})
+
+	children := nav[0].Children
+	if children[0].Title != "Evening" || children[1].Title != "Morning" {
+		t.Fatalf("expected chronological order Evening, Morning; got %q, %q", children[0].Title, children[1].Title)
+	}
+}
+
+func TestBuildNavIndexOnlySectionLinksToIndex(t *testing.T) {
+	nav := BuildNav([]Page{
+		{RelPath: "guide/index.md", Frontmatter: Frontmatter{Title: "Guide"}},
+	})
+
+	if len(nav) != 1 {
+		t.Fatalf("expected one nav item, got %d", len(nav))
+	}
+	if nav[0].Path != "/guide/" {
+		t.Fatalf("index-only section path = %q, want /guide/", nav[0].Path)
+	}
+	if len(nav[0].Children) != 0 {
+		t.Fatalf("index-only section should not have children, got %d", len(nav[0].Children))
+	}
+}
+
 func TestRenderNavEscapesHTML(t *testing.T) {
 	items := []NavItem{
 		{Title: `<script>alert("xss")</script>`, Path: "/evil/"},

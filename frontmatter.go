@@ -31,6 +31,36 @@ func ParseDate(s string) (time.Time, bool) {
 	return time.Time{}, false
 }
 
+// compareDatesDesc compares frontmatter dates in newest-first order. Valid
+// dates are compared as times so equivalent ISO formats sort consistently.
+// Invalid non-empty dates sort before empty dates and fall back to text order.
+func compareDatesDesc(a, b string) int {
+	ta, aOK := ParseDate(a)
+	tb, bOK := ParseDate(b)
+	if aOK && bOK {
+		if ta.After(tb) {
+			return -1
+		}
+		if ta.Before(tb) {
+			return 1
+		}
+		return 0
+	}
+	if aOK != bOK {
+		if aOK {
+			return -1
+		}
+		return 1
+	}
+	if a > b {
+		return -1
+	}
+	if a < b {
+		return 1
+	}
+	return 0
+}
+
 // Frontmatter holds YAML metadata from the top of a markdown file.
 type Frontmatter struct {
 	Title       string         `yaml:"title"`

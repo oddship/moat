@@ -56,9 +56,14 @@ type rssItem struct {
 func buildFeed(pages []Page, cfg Config) rssFeed {
 	siteLink := cfg.Feed.Link
 	if siteLink == "" {
-		siteLink = "/"
+		siteLink = cfg.BasePath
+		if siteLink == "" {
+			siteLink = "/"
+		}
 	}
-	siteLink = strings.TrimRight(siteLink, "/")
+	if siteLink != "/" {
+		siteLink = strings.TrimRight(siteLink, "/")
+	}
 
 	feedTitle := cfg.Feed.Title
 	if feedTitle == "" {
@@ -96,7 +101,10 @@ func buildFeed(pages []Page, cfg Config) rssFeed {
 		page := fp.page
 		// feed.link is the full site root (e.g. https://example.com/moat)
 		// so we only append the page URL path, not basePath again.
-		fullURL := siteLink + pageURL(page)
+		fullURL := pageURL(page)
+		if siteLink != "/" {
+			fullURL = siteLink + fullURL
+		}
 
 		title := pageTitle(page)
 		desc := page.Frontmatter.Description

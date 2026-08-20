@@ -57,8 +57,18 @@ type TemplateData struct {
 
 // Build reads markdown from src, renders HTML, and writes to dst.
 func Build(src, dst string, cfg Config) error {
-	src, _ = filepath.Abs(src)
-	dst, _ = filepath.Abs(dst)
+	var err error
+	src, err = filepath.Abs(src)
+	if err != nil {
+		return fmt.Errorf("resolving source directory: %w", err)
+	}
+	dst, err = filepath.Abs(dst)
+	if err != nil {
+		return fmt.Errorf("resolving output directory: %w", err)
+	}
+	if err := validateOutputDirs(src, dst); err != nil {
+		return err
+	}
 
 	basePath := strings.TrimRight(cfg.BasePath, "/")
 	siteName := cfg.SiteName
@@ -132,6 +142,14 @@ func Build(src, dst string, cfg Config) error {
 	}
 
 	fmt.Printf("Found %d pages\n", len(pages))
+	for _, page := range pages {
+		if _, err := outputPathFromURL(dst, pageURL(page)); err != nil {
+			return fmt.Errorf("writing %s: %w", page.RelPath, err)
+		}
+	}
+	if err := cleanOutputDir(dst); err != nil {
+		return err
+	}
 
 	// Build navigation
 	nav := BuildNav(pages)
@@ -165,7 +183,10 @@ func Build(src, dst string, cfg Config) error {
 	for i, page := range pages {
 		currentPath := pageURL(page)
 		prefixedPath := basePath + currentPath
-		outPath := outputPathFromURL(dst, currentPath)
+		outPath, err := outputPathFromURL(dst, currentPath)
+		if err != nil {
+			return fmt.Errorf("writing %s: %w", page.RelPath, err)
+		}
 
 		navHTML := RenderNav(nav, prefixedPath, basePath, cfg.Links)
 
@@ -266,12 +287,65 @@ func Build(src, dst string, cfg Config) error {
 }
 
 // outputPathFromURL converts a URL path like "/guide/agents/" to a file path.
-func outputPathFromURL(dst, urlPath string) string {
+// The resulting path must remain inside dst, including for custom frontmatter URLs.
+func outputPathFromURL(dst, urlPath string) (string, error) {
 	p := strings.Trim(urlPath, "/")
 	if p == "" {
-		return filepath.Join(dst, "index.html")
+		return filepath.Join(dst, "index.html"), nil
 	}
-	return filepath.Join(dst, p, "index.html")
+
+	path := filepath.Join(dst, filepath.FromSlash(p), "index.html")
+	dstAbs, err := filepath.Abs(dst)
+	if err != nil {
+		return "", fmt.Errorf("resolving output directory: %w", err)
+	}
+	pathAbs, err := filepath.Abs(path)
+	if err != nil {
+		return "", fmt.Errorf("resolving output path: %w", err)
+	}
+	rel, err := filepath.Rel(dstAbs, pathAbs)
+	if err != nil {
+		return "", fmt.Errorf("checking output path: %w", err)
+	}
+	if rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
+		return "", fmt.Errorf("URL path %q escapes output directory", urlPath)
+	}
+
+	return pathAbs, nil
+}
+
+// validateOutputDirs ensures source and output are disjoint so cleaning the
+// destination can never remove source files.
+func validateOutputDirs(src, dst string) error {
+	if isWithinDir(src, dst) || isWithinDir(dst, src) {
+		return fmt.Errorf("source and output directories must be separate: %s and %s", src, dst)
+	}
+	return nil
+}
+
+// cleanOutputDir makes dst a clean build destination.
+func cleanOutputDir(dst string) error {
+	if err := os.MkdirAll(dst, 0o755); err != nil {
+		return fmt.Errorf("creating output directory: %w", err)
+	}
+	entries, err := os.ReadDir(dst)
+	if err != nil {
+		return fmt.Errorf("reading output directory: %w", err)
+	}
+	for _, entry := range entries {
+		if err := os.RemoveAll(filepath.Join(dst, entry.Name())); err != nil {
+			return fmt.Errorf("cleaning output directory: %w", err)
+		}
+	}
+	return nil
+}
+
+func isWithinDir(base, target string) bool {
+	rel, err := filepath.Rel(base, target)
+	if err != nil {
+		return false
+	}
+	return rel == "." || (rel != ".." && !strings.HasPrefix(rel, ".."+string(filepath.Separator)))
 }
 
 func renderToFile(tmpl *template.Template, data TemplateData, path string) error {
@@ -354,15 +428,8 @@ func buildPageMeta(pages []Page, basePath string) []PageMeta {
 	}
 
 	sort.Slice(metas, func(i, j int) bool {
-		// Dated pages first, reverse chronological
-		if metas[i].Date != "" && metas[j].Date != "" {
-			return metas[i].Date > metas[j].Date
-		}
-		if metas[i].Date != "" {
-			return true
-		}
-		if metas[j].Date != "" {
-			return false
+		if cmp := compareDatesDesc(metas[i].Date, metas[j].Date); cmp != 0 {
+			return cmp < 0
 		}
 		return metas[i].Title < metas[j].Title
 	})

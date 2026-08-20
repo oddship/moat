@@ -85,8 +85,8 @@ func BuildNav(pages []Page) []NavItem {
 		if hasDate {
 			sort.Slice(pages, func(i, j int) bool {
 				di, dj := pages[i].Frontmatter.Date, pages[j].Frontmatter.Date
-				if di != dj {
-					return di > dj // reverse chronological
+				if cmp := compareDatesDesc(di, dj); cmp != 0 {
+					return cmp < 0
 				}
 				return pages[i].RelPath < pages[j].RelPath
 			})
@@ -105,9 +105,12 @@ func BuildNav(pages []Page) []NavItem {
 		}
 
 		// If section has an index.md with nav_children: false, show as
-		// a single link to the index instead of expanding children.
+		// a single link to the index instead of expanding children. An
+		// index-only section also needs to link to its index rather than
+		// rendering an empty section link to the site root.
 		if idx, ok := sectionIndex[section]; ok {
-			if nc, exists := idx.Frontmatter.Extra["nav_children"]; exists && nc == false {
+			nc, hideChildren := idx.Frontmatter.Extra["nav_children"]
+			if (hideChildren && nc == false) || len(children) == 0 {
 				title := pageTitle(idx)
 				if title == "Index" || title == "" {
 					title = TitleFromDir(section)
@@ -177,7 +180,7 @@ func RenderNav(items []NavItem, currentPath, basePath string, links []LinkConfig
 
 // Built-in SVG icons for sidebar links.
 var builtinIcons = map[string]string{
-	"rss": `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="vertical-align:text-bottom;flex-shrink:0;align-self:center"><path d="M6.18 15.64a2.18 2.18 0 1 1 0 4.36 2.18 2.18 0 0 1 0-4.36M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1"/></svg>`,
+	"rss":    `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="vertical-align:text-bottom;flex-shrink:0;align-self:center"><path d="M6.18 15.64a2.18 2.18 0 1 1 0 4.36 2.18 2.18 0 0 1 0-4.36M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1"/></svg>`,
 	"github": `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="vertical-align:text-bottom;flex-shrink:0;align-self:center"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>`,
 }
 

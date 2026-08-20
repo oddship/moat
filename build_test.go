@@ -1,6 +1,10 @@
 package main
 
-import "testing"
+import (
+	"os"
+	"path/filepath"
+	"testing"
+)
 
 func TestBuildPageMetaSortOrder(t *testing.T) {
 	pages := []Page{
@@ -58,5 +62,44 @@ func TestBuildPageMetaSection(t *testing.T) {
 		if m.Title == "Intro" && m.URL != "/site/guide/intro/" {
 			t.Errorf("Intro URL = %q, want /site/guide/intro/", m.URL)
 		}
+	}
+}
+
+func TestBuildPageMetaSortsMixedDateFormatsChronologically(t *testing.T) {
+	metas := buildPageMeta([]Page{
+		{RelPath: "morning.md", Frontmatter: Frontmatter{Title: "Morning", Date: "2026-03-18T09:00"}},
+		{RelPath: "evening.md", Frontmatter: Frontmatter{Title: "Evening", Date: "2026-03-18 21:00"}},
+	}, "")
+
+	if metas[0].Title != "Evening" || metas[1].Title != "Morning" {
+		t.Fatalf("expected chronological order Evening, Morning; got %q, %q", metas[0].Title, metas[1].Title)
+	}
+}
+
+func TestOutputPathRejectsTraversal(t *testing.T) {
+	if _, err := outputPathFromURL("/tmp/site", "/../outside/"); err == nil {
+		t.Fatal("expected traversal URL to be rejected")
+	}
+}
+
+func TestBuildCleansDestination(t *testing.T) {
+	src := t.TempDir()
+	dst := t.TempDir()
+	stale := filepath.Join(dst, "old", "index.html")
+	if err := os.MkdirAll(filepath.Dir(stale), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(stale, []byte("stale"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(src, "index.md"), []byte("# Home\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := Build(src, dst, Config{}); err != nil {
+		t.Fatalf("Build: %v", err)
+	}
+	if _, err := os.Stat(stale); !os.IsNotExist(err) {
+		t.Fatalf("expected stale output to be removed, got err=%v", err)
 	}
 }

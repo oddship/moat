@@ -131,3 +131,29 @@ func TestBuildFeedCustomTitle(t *testing.T) {
 		t.Errorf("channel title = %q, want My Site Feed", feed.Channel.Title)
 	}
 }
+
+func TestBuildFeedFallsBackToBasePathWithoutLink(t *testing.T) {
+	feed := buildFeed([]Page{
+		{RelPath: "posts/hello.md", Frontmatter: Frontmatter{Title: "Hello", Date: "2026-03-18"}},
+	}, Config{BasePath: "/docs"})
+
+	if feed.Channel.Link != "/docs" {
+		t.Errorf("channel link = %q, want /docs", feed.Channel.Link)
+	}
+	if feed.Channel.Items[0].Link != "/docs/posts/hello/" {
+		t.Errorf("item link = %q, want /docs/posts/hello/", feed.Channel.Items[0].Link)
+	}
+}
+
+func TestBuildFeedFallsBackToRootWithoutLinkOrBasePath(t *testing.T) {
+	feed := buildFeed([]Page{
+		{RelPath: "posts/hello.md", Frontmatter: Frontmatter{Title: "Hello", Date: "2026-03-18"}},
+	}, Config{})
+
+	if feed.Channel.Link != "/" {
+		t.Errorf("channel link = %q, want /", feed.Channel.Link)
+	}
+	if feed.Channel.Items[0].Link != "/posts/hello/" {
+		t.Errorf("item link = %q, want /posts/hello/", feed.Channel.Items[0].Link)
+	}
+}
