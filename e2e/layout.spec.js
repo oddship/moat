@@ -69,4 +69,38 @@ test.describe("Layout", () => {
     const active = page.locator('aside[data-sidebar] a[aria-current="page"]');
     await expect(active).toContainText("Configuration");
   });
+
+  test("opens and closes the More menu with focus state", async ({ page }) => {
+    const more = page.locator("nav[data-topnav] ot-dropdown > button");
+    await more.click();
+    await expect(more).toHaveAttribute("aria-expanded", "true");
+    await page.keyboard.press("Escape");
+    await expect(more).toHaveAttribute("aria-expanded", "false");
+    await expect(more).toBeFocused();
+  });
+
+  test("closes the mobile sidebar with Escape", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    const toggle = page.locator("[data-sidebar-toggle]");
+    await toggle.click();
+    await expect(toggle).toHaveAttribute("aria-expanded", "true");
+    await page.keyboard.press("Escape");
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await expect(toggle).toBeFocused();
+  });
+
+  test("keeps the top nav compact on narrow screens", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    const topnav = page.locator("nav[data-topnav]");
+    const box = await topnav.boundingBox();
+    expect(box).not.toBeNull();
+    expect(box.height).toBeLessThanOrEqual(64);
+    await expect(topnav.locator(".topnav-link").first()).toBeHidden();
+
+    await topnav.locator("ot-dropdown > button").click();
+    await expect(page.locator("#nav-menu .mobile-topnav-item").first()).toBeVisible();
+  });
 });

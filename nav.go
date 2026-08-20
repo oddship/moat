@@ -138,7 +138,7 @@ func BuildNav(pages []Page) []NavItem {
 // links are extra items rendered at the top of the nav (e.g. GitHub link).
 func RenderNav(items []NavItem, currentPath, basePath string, links []LinkConfig) string {
 	var b strings.Builder
-	b.WriteString("<nav>\n<ul>\n")
+	b.WriteString("<nav aria-label=\"Documentation navigation\">\n<ul>\n")
 
 	// Extra links first (e.g. GitHub)
 	for _, link := range links {
@@ -185,11 +185,11 @@ var builtinIcons = map[string]string{
 }
 
 // linkIcon returns the inline SVG for a built-in icon name, or empty string.
-// The SVG uses vertical-align: text-bottom for inline contexts and
-// flex-shrink: 0 to prevent distortion inside flex containers.
+// Spacing is provided by the containing link so inline and flex layouts stay
+// consistent.
 func linkIcon(name string) string {
 	if svg, ok := builtinIcons[name]; ok {
-		return svg + " "
+		return svg
 	}
 	return ""
 }

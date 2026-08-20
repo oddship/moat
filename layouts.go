@@ -55,6 +55,7 @@ func loadLayouts(src string) (map[string]*template.Template, error) {
 			}
 			return basePath + "/" + url
 		},
+		"siteURL": siteURL,
 		"formatDate": func(s string) string {
 			if t, ok := ParseDate(s); ok {
 				return t.Format("January 2, 2006")
@@ -80,6 +81,20 @@ func loadLayouts(src string) (map[string]*template.Template, error) {
 	}
 
 	return layouts, nil
+}
+
+// siteURL joins a site base path and an asset path without producing a
+// protocol-relative URL when the site is hosted at the domain root.
+func siteURL(basePath, path string) string {
+	basePath = strings.TrimRight(basePath, "/")
+	path = strings.TrimLeft(path, "/")
+	if basePath == "" {
+		return "/" + path
+	}
+	if path == "" {
+		return basePath + "/"
+	}
+	return basePath + "/" + path
 }
 
 // discoverVariants finds _layout.{name}.html files in the source directory.

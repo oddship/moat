@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ block "title" . }}{{ .Title }} — {{ .SiteName }}{{ end }}</title>
   {{ if .Description }}<meta name="description" content="{{ .Description }}">{{ end }}
-  {{ if .Favicon }}<link rel="icon" href="{{ .BasePath }}/{{ .Favicon }}">{{ end }}
-  {{ if .FeedEnabled }}<link rel="alternate" type="application/rss+xml" title="{{ .SiteName }}" href="{{ .BasePath }}/feed.xml">{{ end }}
+  {{ if .Favicon }}<link rel="icon" href="{{ siteURL .BasePath .Favicon }}">{{ end }}
+  {{ if .FeedEnabled }}<link rel="alternate" type="application/rss+xml" title="{{ .SiteName }}" href="{{ siteURL .BasePath "feed.xml" }}">{{ end }}
   <link rel="stylesheet" href="https://unpkg.com/@knadh/oat/oat.min.css">
-  <link rel="stylesheet" href="{{ .BasePath }}/_syntax.css">
+  <link rel="stylesheet" href="{{ siteURL .BasePath "_syntax.css" }}">
   <script>
     (function() {
       var t = localStorage.getItem('theme');
@@ -28,6 +28,27 @@
       document.documentElement.setAttribute('data-theme', theme);
       localStorage.setItem('theme', theme);
     }
+    document.addEventListener('DOMContentLoaded', function() {
+      var layout = document.querySelector('[data-sidebar-layout]');
+      var toggle = layout && layout.querySelector('[data-sidebar-toggle]');
+      if (!layout || !toggle) return;
+
+      function syncSidebarState() {
+        toggle.setAttribute('aria-expanded', String(layout.hasAttribute('data-sidebar-open')));
+      }
+
+      syncSidebarState();
+      new MutationObserver(syncSidebarState).observe(layout, {
+        attributes: true,
+        attributeFilter: ['data-sidebar-open']
+      });
+      document.addEventListener('keydown', function(e) {
+        if (e.key !== 'Escape' || e.target.closest('dialog')) return;
+        if (!layout.hasAttribute('data-sidebar-open')) return;
+        layout.removeAttribute('data-sidebar-open');
+        toggle.focus();
+      });
+    });
   </script>
   {{ if .SearchEnabled }}
   <script>
@@ -41,9 +62,12 @@
       var status = dialog.querySelector('[data-search-status]');
       var searchIndex = null;
       var loading = null;
+      var searchGeneration = 0;
+      var lastSearchTrigger = null;
 
-      function setStatus(text) {
+      function setStatus(text, busy) {
         status.textContent = text;
+        status.setAttribute('aria-busy', busy ? 'true' : 'false');
       }
 
       function closeDialog() {
@@ -58,7 +82,7 @@
         if (searchIndex) return Promise.resolve(searchIndex);
         if (loading) return loading;
 
-        setStatus('Loading search…');
+        setStatus('Loading search…', true);
         loading = fetch(_moatBase + '/_search.json')
           .then(function(r) {
             if (!r.ok) throw new Error('failed to load search index');
@@ -71,7 +95,7 @@
           })
           .catch(function() {
             loading = null;
-            setStatus('Search unavailable');
+            return null;
           });
 
         return loading;
@@ -139,6 +163,7 @@
       }
 
       input.addEventListener('input', function() {
+        var generation = ++searchGeneration;
         var query = input.value.trim().toLowerCase();
         if (query.length < 2) {
           clearResults();
@@ -149,7 +174,11 @@
         var tokens = query.split(/\s+/).filter(Boolean);
 
         loadIndex().then(function(entries) {
-          if (!entries) return;
+          if (generation !== searchGeneration || !dialog.open) return;
+          if (!entries) {
+            setStatus('Search unavailable');
+            return;
+          }
           var matches = entries
             .map(function(e) { return { entry: e, score: scoreEntry(e, tokens) }; })
             .filter(function(item) { return item.score > 0; })
@@ -173,14 +202,29 @@
         }
       });
 
+      document.addEventListener('click', function(e) {
+        var trigger = e.target.closest('[data-search-open]');
+        if (!trigger) return;
+        lastSearchTrigger = trigger;
+        requestAnimationFrame(function() {
+          if (dialog.open) input.focus();
+        });
+      });
+
       resultsContainer.addEventListener('click', function(e) {
         if (e.target.closest('a')) closeDialog();
       });
 
       dialog.addEventListener('close', function() {
+        searchGeneration++;
+        var trigger = lastSearchTrigger;
+        lastSearchTrigger = null;
         input.value = '';
         clearResults();
         setStatus('Type at least 2 characters');
+        if (trigger && document.contains(trigger)) {
+          requestAnimationFrame(function() { trigger.focus(); });
+        }
       });
 
       document.addEventListener('keydown', function(e) {
@@ -189,7 +233,13 @@
           if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
           if (e.target.isContentEditable) return;
           e.preventDefault();
+          if (dialog.open) {
+            input.focus();
+            return;
+          }
+          lastSearchTrigger = null;
           dialog.showModal();
+          requestAnimationFrame(function() { input.focus(); });
         }
       });
     });
@@ -200,12 +250,43 @@
     html[data-theme="dark"] .icon-dark { display: none; }
     html:not([data-theme="dark"]) .icon-light { display: none; }
     aside footer button { width: 100%; }
+    main article {
+      min-width: 0;
+    }
+    main article :is(img, video, iframe) {
+      max-width: 100%;
+    }
+    main article table {
+      display: block;
+      max-width: 100%;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    main article th,
+    main article td {
+      min-width: 8rem;
+    }
     nav[data-topnav] {
       font-size: var(--text-7);
+    }
+    nav[data-topnav] .row {
+      align-items: center;
+    }
+    nav[data-topnav] .col-4,
+    nav[data-topnav] .col-8 {
+      min-width: 0;
     }
     nav[data-topnav] a,
     nav[data-topnav] button {
       color: var(--muted-foreground);
+    }
+    nav[data-topnav] a {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    nav[data-topnav] menu [role="menuitem"] {
+      gap: var(--space-2);
     }
     nav[data-topnav] img {
       height: 24px;
@@ -213,9 +294,71 @@
     nav[data-topnav] .hstack {
       gap: var(--space-6);
     }
+    nav[data-topnav] .mobile-topnav-item,
+    nav[data-topnav] .mobile-topnav-divider {
+      display: none;
+    }
+    nav[data-topnav] ot-dropdown.mobile-only-more {
+      display: none;
+    }
+    @media (max-width: 768px) {
+      nav[data-topnav] {
+        padding-inline: var(--space-3);
+      }
+      nav[data-topnav] .row {
+        display: flex;
+        gap: var(--space-2);
+      }
+      nav[data-topnav] .col-4 {
+        flex: 0 1 auto;
+        width: auto;
+      }
+      nav[data-topnav] .col-8 {
+        flex: 1 1 auto;
+        width: auto;
+        gap: var(--space-2);
+      }
+      nav[data-topnav] .topnav-link {
+        display: none;
+      }
+      nav[data-topnav] .mobile-topnav-item,
+      nav[data-topnav] .mobile-topnav-divider {
+        display: flex;
+      }
+      nav[data-topnav] .mobile-topnav-divider {
+        display: block;
+      }
+      nav[data-topnav] .col-8 > ot-dropdown {
+        flex-shrink: 0;
+      }
+      nav[data-topnav] ot-dropdown.mobile-only-more {
+        display: block;
+      }
+    }
+    @media (max-width: 768px) {
+      body[data-sidebar-layout]::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        background: rgb(0 0 0 / 45%);
+        opacity: 0;
+        transition: opacity var(--transition);
+      }
+      body[data-sidebar-layout][data-sidebar-open]::before {
+        pointer-events: auto;
+        opacity: 1;
+      }
+    }
     {{ if .SearchEnabled }}
     #search-dialog input[type="search"] { margin: 0; font-size: var(--text-6); }
     #search-dialog > form > div { padding-block-start: 0; }
+    #search-dialog > form { margin: 0; }
+    #search-dialog [data-search-results] {
+      max-height: min(50vh, 24rem);
+      overflow-y: auto;
+    }
     #search-dialog footer { justify-content: flex-start; }
     .search-result {
       display: flex;
@@ -228,6 +371,7 @@
     }
     .search-result:hover { background-color: var(--accent); }
     .search-result + .search-result { margin-block-start: var(--space-1); }
+    .search-result small { line-height: 1.4; }
     kbd {
       display: inline-block;
       padding: 0 var(--space-1);
@@ -246,18 +390,18 @@
   <nav data-topnav>
     <div class="row">
       <div class="col-4 hstack gap-2">
-        <button data-sidebar-toggle aria-label="Toggle sidebar" class="small">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" role="img" aria-label="Menu icon">
+        <button data-sidebar-toggle aria-label="Toggle sidebar" aria-controls="moat-sidebar" aria-expanded="false" class="small">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
             <line x1="4" y1="7" x2="20" y2="7"></line>
             <line x1="4" y1="12" x2="20" y2="12"></line>
             <line x1="4" y1="17" x2="16" y2="17"></line>
           </svg>
         </button>
-        <a href="{{ .BasePath }}/" {{ if .Logo }}aria-label="{{ .SiteName }}"{{ end }}>
+        <a href="{{ siteURL .BasePath "" }}" {{ if .Logo }}aria-label="{{ .SiteName }}"{{ end }}>
           {{ if .LogoInline }}
             {{ .LogoInline }}
           {{ else if .Logo }}
-            <img src="{{ .BasePath }}/{{ .Logo }}" height="24" alt="{{ .SiteName }}">
+            <img src="{{ siteURL .BasePath .Logo }}" height="24" alt="{{ .SiteName }}">
           {{ else }}
             <strong>{{ .SiteName }}</strong>
           {{ end }}
@@ -265,10 +409,10 @@
       </div>
       <div class="col-8 hstack justify-end">
         {{ range .TopNav }}
-        <a href="{{ navURL $.BasePath .URL }}">{{ linkIcon .Icon }}{{ .Title }}</a>
+        <a class="topnav-link" href="{{ navURL $.BasePath .URL }}">{{ linkIcon .Icon }}{{ .Title }}</a>
         {{ end }}
         {{ if .SearchEnabled }}
-        <button class="outline small" commandfor="search-dialog" command="show-modal" aria-label="Search">
+        <button class="outline small" commandfor="search-dialog" command="show-modal" aria-label="Search" aria-haspopup="dialog" aria-controls="search-dialog" data-search-open>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -277,19 +421,23 @@
           <kbd>/</kbd>
         </button>
         {{ end }}
-        {{ if or .TopNavMore .FeedEnabled }}
-        <ot-dropdown>
-          <button popovertarget="nav-menu" class="outline small">
+        {{ if or .TopNav .TopNavMore .FeedEnabled }}
+        <ot-dropdown class="{{ if not (or .TopNavMore .FeedEnabled) }}mobile-only-more{{ end }}">
+          <button popovertarget="nav-menu" class="outline small" aria-haspopup="menu" aria-expanded="false" aria-controls="nav-menu">
             More
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
           </button>
-          <menu popover id="nav-menu">
+          <menu popover id="nav-menu" aria-label="More navigation">
+            {{ range .TopNav }}
+            <a class="mobile-topnav-item" href="{{ navURL $.BasePath .URL }}" role="menuitem">{{ linkIcon .Icon }}{{ .Title }}</a>
+            {{ end }}
+            {{ if and .TopNav (or .TopNavMore .FeedEnabled) }}<hr class="mobile-topnav-divider">{{ end }}
             {{ range .TopNavMore }}
             <a href="{{ navURL $.BasePath .URL }}" role="menuitem">{{ linkIcon .Icon }}{{ .Title }}</a>
             {{ end }}
             {{ if and .TopNavMore .FeedEnabled }}<hr>{{ end }}
             {{ if .FeedEnabled }}
-            <a href="{{ .BasePath }}/feed.xml" role="menuitem">{{ linkIcon "rss" }}RSS feed</a>
+            <a href="{{ siteURL .BasePath "feed.xml" }}" role="menuitem">{{ linkIcon "rss" }}RSS feed</a>
             {{ end }}
           </menu>
         </ot-dropdown>
@@ -299,7 +447,7 @@
   </nav>
 
   {{ if .SearchEnabled }}
-  <dialog id="search-dialog" closedby="any">
+  <dialog id="search-dialog" closedby="any" aria-label="Search documentation">
     <form method="dialog">
       <header>
         <fieldset class="group">
@@ -310,24 +458,24 @@
       <div data-search-results>
       </div>
       <footer>
-        <small class="text-light" data-search-status aria-live="polite">Type at least 2 characters</small>
+        <small class="text-light" data-search-status aria-live="polite" aria-busy="false">Type at least 2 characters</small>
       </footer>
     </form>
   </dialog>
   {{ end }}
 
-  <aside data-sidebar class="main-sidebar">
+  <aside id="moat-sidebar" data-sidebar class="main-sidebar">
     {{ .Nav }}
     <footer>
-      <button class="outline small" onclick="toggleTheme()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-light" role="img" aria-label="Light mode">
+      <button type="button" class="outline small" onclick="toggleTheme()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-light" aria-hidden="true">
           <circle cx="12" cy="12" r="5"></circle>
           <line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line>
           <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
           <line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line>
           <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
         </svg>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-dark" role="img" aria-label="Dark mode">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-dark" aria-hidden="true">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
         </svg>
         Switch theme

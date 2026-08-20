@@ -36,6 +36,14 @@ test.describe("Search", () => {
     await expect(page.locator("#search-dialog")).not.toBeVisible();
   });
 
+  test("restores focus to the search trigger after closing", async ({ page }) => {
+    const trigger = page.locator('button[aria-label="Search"]');
+    await trigger.click();
+    await expect(page.locator("#search-dialog")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(trigger).toBeFocused();
+  });
+
   test("closes search dialog with the close button", async ({ page }) => {
     await page.locator('button[aria-label="Search"]').click();
     await expect(page.locator("#search-dialog")).toBeVisible();

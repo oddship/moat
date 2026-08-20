@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -101,5 +102,42 @@ func TestBuildCleansDestination(t *testing.T) {
 	}
 	if _, err := os.Stat(stale); !os.IsNotExist(err) {
 		t.Fatalf("expected stale output to be removed, got err=%v", err)
+	}
+}
+
+func TestBuildBuiltinLayoutUsesRootRelativeURLs(t *testing.T) {
+	src := t.TempDir()
+	dst := t.TempDir()
+	if err := os.WriteFile(filepath.Join(src, "index.md"), []byte("# Home\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	enabled := true
+	cfg := Config{
+		Favicon: "_static/favicon.svg",
+		Logo:    "_static/logo.svg",
+		Feed:    FeedConfig{Enabled: &enabled},
+	}
+
+	if err := Build(src, dst, cfg); err != nil {
+		t.Fatalf("Build: %v", err)
+	}
+	data, err := os.ReadFile(filepath.Join(dst, "index.html"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	html := string(data)
+	for _, want := range []string{
+		`href="/"`,
+		`href="/_static/favicon.svg"`,
+		`href="/_syntax.css"`,
+		`href="/feed.xml"`,
+		`src="/_static/logo.svg"`,
+	} {
+		if !strings.Contains(html, want) {
+			t.Errorf("built page does not contain %s", want)
+		}
+	}
+	if strings.Contains(html, `href="//`) || strings.Contains(html, `src="//`) {
+		t.Error("built page contains protocol-relative asset URLs")
 	}
 }
