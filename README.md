@@ -33,6 +33,7 @@ Or grab a binary from [releases](https://github.com/oddship/moat/releases).
 - **Zero config** — built-in oat layout, just write markdown and build
 - **Convention-based** — directory structure is the config, number prefixes control ordering
 - **Built-in search** — client-side `_search.json` index with modal search in the built-in topnav (`/` to open)
+- **Version navigation**: an optional version picker in the built-in sidebar, configured with links to separately built versions
 - **Wiki links** — `[[Page Title]]` resolves to internal page URLs
 - **Site primitives** — `date`, `draft`, page listings via templates/shortcodes, and optional RSS feed
 - **Syntax highlighting** — 70 Chroma themes with automatic light/dark mode

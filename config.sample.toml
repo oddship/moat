@@ -8,6 +8,15 @@ site_name = "My Project"
 # Leave empty for custom domains or root-level sites.
 # base_path = "/my-project"
 
+# Optional version navigation. URLs are independent of base_path.
+# current_version = "v2.0"
+# [[versions]]
+# title = "v2.0"
+# url = "/v/v2.0/"
+# [[versions]]
+# title = "v1.0"
+# url = "/v/v1.0/"
+
 # Footer text rendered below the page content. Markdown links are allowed.
 # footer_text = "© [you](https://example.com) 2026"
 # disable_moat_citation = false

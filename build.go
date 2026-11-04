@@ -34,29 +34,34 @@ type PageMeta struct {
 
 // TemplateData is passed to the layout template.
 type TemplateData struct {
-	Title         string
-	Description   string
-	Date          string // Page date from frontmatter (raw string, e.g. "2026-03-18 14:30")
-	Content       template.HTML
-	Nav           template.HTML
-	Footer        template.HTML
-	CurrentPath   string
-	SiteName      string
-	BasePath      string
-	Logo          string         // Path to logo image (relative to BasePath)
-	LogoInline    template.HTML  // Inlined SVG content (set when logo is .svg)
-	Favicon       string         // Path to favicon (relative to BasePath)
-	SearchEnabled bool           // Whether built-in search UI should render
-	FeedEnabled   bool           // Whether RSS feed is enabled
-	TopNav        []LinkConfig   // Top navigation links
-	TopNavMore    []LinkConfig   // Dropdown items under More
-	Extra         map[string]any // Per-page extra frontmatter
-	Site          map[string]any // Site-level extra from config.toml [extra]
-	Pages         []PageMeta     // All non-draft pages (sorted by date desc, then title)
+	Title          string
+	Description    string
+	Date           string // Page date from frontmatter (raw string, e.g. "2026-03-18 14:30")
+	Content        template.HTML
+	Nav            template.HTML
+	Footer         template.HTML
+	CurrentPath    string
+	SiteName       string
+	BasePath       string
+	Logo           string          // Path to logo image (relative to BasePath)
+	LogoInline     template.HTML   // Inlined SVG content (set when logo is .svg)
+	Favicon        string          // Path to favicon (relative to BasePath)
+	SearchEnabled  bool            // Whether built-in search UI should render
+	FeedEnabled    bool            // Whether RSS feed is enabled
+	TopNav         []LinkConfig    // Top navigation links
+	TopNavMore     []LinkConfig    // Dropdown items under More
+	CurrentVersion string          // Selected title in the optional version picker
+	Versions       []VersionConfig // Independently built versions of this site
+	Extra          map[string]any  // Per-page extra frontmatter
+	Site           map[string]any  // Site-level extra from config.toml [extra]
+	Pages          []PageMeta      // All non-draft pages (sorted by date desc, then title)
 }
 
 // Build reads markdown from src, renders HTML, and writes to dst.
 func Build(src, dst string, cfg Config) error {
+	if err := cfg.validateVersions(); err != nil {
+		return err
+	}
 	var err error
 	src, err = filepath.Abs(src)
 	if err != nil {
@@ -196,24 +201,26 @@ func Build(src, dst string, cfg Config) error {
 		}
 
 		data := TemplateData{
-			Title:         title,
-			Description:   page.Frontmatter.Description,
-			Date:          page.Frontmatter.Date,
-			Nav:           template.HTML(navHTML),
-			Footer:        footer,
-			CurrentPath:   prefixedPath,
-			SiteName:      siteName,
-			BasePath:      basePath,
-			Logo:          cfg.Logo,
-			LogoInline:    logoInline,
-			Favicon:       cfg.Favicon,
-			SearchEnabled: searchEnabled,
-			FeedEnabled:   cfg.FeedEnabled(),
-			TopNav:        cfg.TopNav,
-			TopNavMore:    cfg.TopNavMore,
-			Extra:         page.Frontmatter.Extra,
-			Site:          cfg.Extra,
-			Pages:         allPages,
+			CurrentVersion: cfg.CurrentVersion,
+			Versions:       cfg.Versions,
+			Title:          title,
+			Description:    page.Frontmatter.Description,
+			Date:           page.Frontmatter.Date,
+			Nav:            template.HTML(navHTML),
+			Footer:         footer,
+			CurrentPath:    prefixedPath,
+			SiteName:       siteName,
+			BasePath:       basePath,
+			Logo:           cfg.Logo,
+			LogoInline:     logoInline,
+			Favicon:        cfg.Favicon,
+			SearchEnabled:  searchEnabled,
+			FeedEnabled:    cfg.FeedEnabled(),
+			TopNav:         cfg.TopNav,
+			TopNavMore:     cfg.TopNavMore,
+			Extra:          page.Frontmatter.Extra,
+			Site:           cfg.Extra,
+			Pages:          allPages,
 		}
 
 		// Process shortcodes in markdown source (before markdown rendering)

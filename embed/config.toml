@@ -2,6 +2,14 @@ site_name = "My Project"
 # base_path = "/my-project"
 # logo = "_static/logo.svg"
 # favicon = "_static/favicon.svg"
+# current_version = "v2.0"
+
+# [[versions]]
+# title = "v2.0"
+# url = "/v/v2.0/"
+# [[versions]]
+# title = "v1.0"
+# url = "/v/v1.0/"
 
 [highlight]
 light = "github"
