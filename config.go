@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"net/url"
 	"os"
+	"strings"
 
 	"github.com/BurntSushi/toml"
 )
@@ -19,9 +21,38 @@ type Config struct {
 	Links               []LinkConfig    `toml:"links"`
 	TopNav              []LinkConfig    `toml:"topnav"`
 	TopNavMore          []LinkConfig    `toml:"topnav_more"`
+	CurrentVersion      string          `toml:"current_version"`
+	Versions            []VersionConfig `toml:"versions"`
 	Search              SearchConfig    `toml:"search"`
 	Feed                FeedConfig      `toml:"feed"`
 	Extra               map[string]any  `toml:"extra"`
+}
+
+// VersionConfig links to another independently built version of a site.
+// URLs are site-root-relative or absolute, independent of BasePath.
+type VersionConfig struct {
+	Title string `toml:"title"`
+	URL   string `toml:"url"`
+}
+
+func (c Config) validateVersions() error {
+	titles := make(map[string]bool, len(c.Versions))
+	for _, version := range c.Versions {
+		if strings.TrimSpace(version.Title) == "" || titles[version.Title] {
+			return fmt.Errorf("versions must have nonempty, unique titles")
+		}
+		titles[version.Title] = true
+		u, err := url.Parse(version.URL)
+		if err != nil || u.Opaque != "" || strings.Contains(u.Path, "\\") ||
+			!((u.Scheme == "" && u.Host == "" && strings.HasPrefix(u.Path, "/") && !strings.HasPrefix(u.Path, "//")) ||
+				((u.Scheme == "https" || u.Scheme == "http") && u.Host != "")) {
+			return fmt.Errorf("version %q URL must be root-relative or use http(s)", version.Title)
+		}
+	}
+	if c.CurrentVersion != "" && !titles[c.CurrentVersion] {
+		return fmt.Errorf("current_version %q is missing from versions", c.CurrentVersion)
+	}
+	return nil
 }
 
 // LinkConfig is a sidebar link above the nav.

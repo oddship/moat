@@ -65,6 +65,7 @@ jobs:
           path: ${{ inputs.output_dir }}/
 
   deploy:
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:

@@ -29,6 +29,12 @@
       localStorage.setItem('theme', theme);
     }
     document.addEventListener('DOMContentLoaded', function() {
+      var versionSelect = document.querySelector('[data-version-select]');
+      if (versionSelect) {
+        versionSelect.addEventListener('change', function() {
+          window.location.assign(versionSelect.value);
+        });
+      }
       var layout = document.querySelector('[data-sidebar-layout]');
       var toggle = layout && layout.querySelector('[data-sidebar-toggle]');
       if (!layout || !toggle) return;
@@ -465,6 +471,17 @@
   {{ end }}
 
   <aside id="moat-sidebar" data-sidebar class="main-sidebar">
+    {{ if .Versions }}
+    <div class="p-4">
+      <label for="moat-version">Version</label>
+      <select id="moat-version" data-version-select>
+        {{ if not .CurrentVersion }}<option value="" disabled selected>Choose a version</option>{{ end }}
+        {{ range .Versions }}
+        <option value="{{ .URL }}"{{ if eq .Title $.CurrentVersion }} selected{{ end }}>{{ .Title }}</option>
+        {{ end }}
+      </select>
+    </div>
+    {{ end }}
     {{ .Nav }}
     <footer>
       <button type="button" class="outline small" onclick="toggleTheme()">

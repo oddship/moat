@@ -241,3 +241,31 @@ Access in templates:
 The built-in layout uses these extras automatically:
 - `tagline` — appended to the site name in the landing page title
 - `footer` — rendered at the bottom of every page as a backward-compatible HTML fallback
+
+## Version navigation
+
+Use `current_version` and `[[versions]]` to add a version picker to the built-in
+sidebar. The titles appear in the configured order, and `current_version`
+selects the matching title. Without a current version, the picker starts with
+a placeholder. Sites without `[[versions]]` keep their existing navigation.
+
+```toml
+current_version = "v2.0"
+
+[[versions]]
+title = "v2.0"
+url = "/docs/v2.0/"
+
+[[versions]]
+title = "v1.0"
+url = "/docs/v1.0/"
+```
+
+Version URLs must start at the site root (`/docs/v1.0/`) or use an absolute
+HTTP(S) URL. They are used directly, without prepending `base_path`, so a page
+under `/docs/v2.0/` can navigate to `/docs/v1.0/`. Each version link opens the
+configured destination. Moat does not fetch releases or combine version builds;
+the publishing workflow manages the content and output directories.
+
+Custom layouts can use `.CurrentVersion` and `.Versions` to render the same
+configuration.
