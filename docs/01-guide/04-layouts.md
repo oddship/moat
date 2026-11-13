@@ -17,7 +17,7 @@ The built-in layout provides:
 - Modal search backed by `_search.json` (`/` opens it in the built-in layout)
 - Sidebar navigation with collapsible sections
 - Dark/light theme toggle
-- Responsive topnav with sidebar toggle on mobile
+- Responsive topnav with sidebar toggle on mobile; swipe right on page text to open the sidebar
 - `[[topnav]]` primary links in the top navigation bar
 - `[[topnav_more]]` links grouped under the built-in `More` dropdown
 - Feed link in `More` when RSS is enabled

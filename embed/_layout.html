@@ -56,6 +56,44 @@
         layout.removeAttribute('data-sidebar-open');
         toggle.focus();
       });
+
+      // Recognize a deliberate one-finger swipe without preventing normal
+      // scrolling, selection, or interaction with horizontally scrollable content.
+      var swipe;
+      var mobileSidebar = matchMedia('(max-width: 768px)');
+      document.addEventListener('touchstart', function(event) {
+        swipe = null;
+        if (!mobileSidebar.matches || event.touches.length !== 1 ||
+            layout.hasAttribute('data-sidebar-open') ||
+            document.querySelector('dialog[open]') ||
+            event.target.closest('a, button, input, textarea, select, pre, code, table, [contenteditable], [popover], [data-sidebar]')) return;
+        if (window.getSelection().toString()) return;
+        for (var element = event.target; element && element !== layout; element = element.parentElement) {
+          if (element.scrollWidth > element.clientWidth &&
+              /auto|scroll/.test(getComputedStyle(element).overflowX)) return;
+        }
+        var touch = event.touches[0];
+        swipe = { id: touch.identifier, x: touch.clientX, y: touch.clientY, time: performance.now() };
+      }, { passive: true });
+      document.addEventListener('touchmove', function(event) {
+        if (!swipe) return;
+        if (event.touches.length !== 1) { swipe = null; return; }
+        var touch = event.touches[0];
+        var dx = touch.clientX - swipe.x;
+        var dy = Math.abs(touch.clientY - swipe.y);
+        if (touch.identifier !== swipe.id || dx < -12 || dy > Math.max(12, Math.abs(dx))) swipe = null;
+      }, { passive: true });
+      document.addEventListener('touchend', function(event) {
+        if (!swipe) return;
+        var start = swipe;
+        swipe = null;
+        var touch = Array.from(event.changedTouches).find(function(touch) { return touch.identifier === start.id; });
+        if (!touch || !mobileSidebar.matches || layout.hasAttribute('data-sidebar-open')) return;
+        var dx = touch.clientX - start.x;
+        var dy = Math.abs(touch.clientY - start.y);
+        if (dx >= 70 && dy <= 40 && dx > dy * 2 && performance.now() - start.time <= 600) toggle.click();
+      }, { passive: true });
+      document.addEventListener('touchcancel', function() { swipe = null; }, { passive: true });
     });
   </script>
   {{ if .MarkdownURL }}
