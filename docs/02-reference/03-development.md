@@ -61,6 +61,7 @@ moat/
 ├── build.go           # Build pipeline: walk → parse → render → write
 ├── config.go          # Config types and TOML parsing
 ├── search.go          # Search index generation from rendered HTML
+├── agents.go          # Static Markdown exports and llms.txt catalogs
 ├── nav.go             # Sidebar navigation tree + HTML rendering
 ├── layouts.go         # Template loading (built-in + custom)
 ├── markdown.go        # Goldmark markdown → HTML rendering
@@ -97,7 +98,8 @@ The `Build()` function in `build.go` runs this pipeline:
    - Execute layout template with `TemplateData`
    - Write output HTML file
 6. **Generate** search index from rendered HTML (strip tags, cap at 2000 chars)
-7. **Copy** `_static/` directory as-is
+7. **Export** per-page Markdown and `llms.txt` (optionally `llms-full.txt`)
+8. **Copy** `_static/` directory as-is
 
 ## Search indexing
 

@@ -20,6 +20,7 @@ type Page struct {
 	Frontmatter Frontmatter // Parsed YAML frontmatter
 	Body        []byte      // Markdown body (without frontmatter)
 	HTML        []byte      // Rendered HTML (set after shortcode + markdown processing)
+	Markdown    []byte      // Published Markdown, including expanded shortcode HTML
 }
 
 // PageMeta is a lightweight page summary available to templates and shortcodes.
@@ -48,6 +49,8 @@ type TemplateData struct {
 	Favicon        string          // Path to favicon (relative to BasePath)
 	SearchEnabled  bool            // Whether built-in search UI should render
 	FeedEnabled    bool            // Whether RSS feed is enabled
+	MarkdownURL    string          // Published Markdown URL (empty when agents are disabled)
+	LLMsURL        string          // Static documentation catalog URL
 	TopNav         []LinkConfig    // Top navigation links
 	TopNavMore     []LinkConfig    // Dropdown items under More
 	CurrentVersion string          // Selected title in the optional version picker
@@ -222,6 +225,10 @@ func Build(src, dst string, cfg Config) error {
 			Site:           cfg.Extra,
 			Pages:          allPages,
 		}
+		if cfg.AgentsEnabled() {
+			data.MarkdownURL = prefixedPath + "index.md"
+			data.LLMsURL = siteURL(basePath, "llms.txt")
+		}
 
 		// Process shortcodes in markdown source (before markdown rendering)
 		body, err := shortcodes.ProcessShortcodes(page.Body, &data, wikiResolver)
@@ -236,6 +243,15 @@ func Build(src, dst string, cfg Config) error {
 		}
 		pages[i].HTML = html
 		data.Content = template.HTML(html)
+		if cfg.AgentsEnabled() {
+			pages[i].Markdown = exportMarkdown(body, wikiResolver)
+			if err := os.MkdirAll(filepath.Dir(outPath), 0o755); err != nil {
+				return fmt.Errorf("writing Markdown for %s: %w", page.RelPath, err)
+			}
+			if err := os.WriteFile(filepath.Join(filepath.Dir(outPath), "index.md"), pages[i].Markdown, 0o644); err != nil {
+				return fmt.Errorf("writing Markdown for %s: %w", page.RelPath, err)
+			}
+		}
 
 		// Pick layout: frontmatter "layout: name" → _layout.name.html, default → _layout.html
 		layoutName := page.Frontmatter.Layout
@@ -251,6 +267,12 @@ func Build(src, dst string, cfg Config) error {
 			return fmt.Errorf("writing %s: %w", outPath, err)
 		}
 		fmt.Printf("  %s → %s\n", page.RelPath, outPath)
+	}
+
+	if cfg.AgentsEnabled() {
+		if err := writeAgentCatalogs(dst, pages, cfg); err != nil {
+			return fmt.Errorf("writing agent exports: %w", err)
+		}
 	}
 
 	// Generate or remove the static search index (after rendering so page.HTML is populated)

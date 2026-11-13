@@ -18,6 +18,11 @@ dark  = "github-dark"
 # [search]
 # enabled = false
 
+# Static Markdown exports and page actions (enabled by default).
+# [agents]
+# enabled = true
+# full = false  # Generate llms-full.txt as well
+
 # [[links]]
 # title = "GitHub"
 # url = "https://github.com/you/project"

@@ -31,5 +31,8 @@ icon = "github"
 enabled = true
 link = "https://oddship.github.io/moat"
 
+[agents]
+full = true
+
 [extra]
 tagline = "docs are your project's moat"

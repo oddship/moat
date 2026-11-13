@@ -5,6 +5,9 @@ description: Site-level configuration via config.toml
 
 # Configuration
 
+Static Markdown exports and page actions are enabled by default. See
+[[Agent-friendly docs]] for the `[agents]` settings and optional full bundle.
+
 Place a `config.toml` in your docs directory for site-level settings. It's optional — everything has sensible defaults. See [[Conventions]] for directory structure and frontmatter fields.
 
 ```toml

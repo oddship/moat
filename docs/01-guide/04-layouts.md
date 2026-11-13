@@ -182,6 +182,8 @@ If you don't provide a custom `_layout.html`, the built-in layout is used as the
 | `{{ .BasePath }}` | string | URL prefix (e.g. `/moat`) |
 | `{{ .SearchEnabled }}` | bool | Whether built-in search is enabled in config |
 | `{{ .FeedEnabled }}` | bool | Whether RSS feed is enabled in config |
+| `{{ .MarkdownURL }}` | string | Page Markdown URL; empty when agent exports are disabled |
+| `{{ .LLMsURL }}` | string | Documentation catalog URL; empty when agent exports are disabled |
 | `{{ .TopNav }}` | []LinkConfig | Primary top navigation links from `[[topnav]]` config |
 | `{{ .TopNavMore }}` | []LinkConfig | Secondary top navigation links from `[[topnav_more]]` config |
 | `{{ .Pages }}` | []PageMeta | All non-draft pages, sorted by date desc then title |

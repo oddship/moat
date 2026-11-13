@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ block "title" . }}{{ .Title }} — {{ .SiteName }}{{ end }}</title>
   {{ if .Description }}<meta name="description" content="{{ .Description }}">{{ end }}
+  {{ if .MarkdownURL }}<link rel="alternate" type="text/markdown" href="{{ .MarkdownURL }}">{{ end }}
+  {{ if .LLMsURL }}<link rel="describedby" href="{{ .LLMsURL }}">{{ end }}
   {{ if .Favicon }}<link rel="icon" href="{{ siteURL .BasePath .Favicon }}">{{ end }}
   {{ if .FeedEnabled }}<link rel="alternate" type="application/rss+xml" title="{{ .SiteName }}" href="{{ siteURL .BasePath "feed.xml" }}">{{ end }}
   <link rel="stylesheet" href="https://unpkg.com/@knadh/oat/oat.min.css">
@@ -56,6 +58,30 @@
       });
     });
   </script>
+  {{ if .MarkdownURL }}
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var button = document.querySelector('[data-copy-page]');
+      var status = document.querySelector('[data-copy-status]');
+      if (!button || !status) return;
+      button.addEventListener('click', async function() {
+        button.disabled = true;
+        status.textContent = '';
+        try {
+          var response = await fetch(button.getAttribute('data-markdown-url'));
+          if (!response.ok) throw new Error('Markdown request failed');
+          var markdown = await response.text();
+          await navigator.clipboard.writeText(markdown);
+          status.textContent = 'Copied!';
+        } catch (error) {
+          status.textContent = 'Could not copy. Use View Markdown to copy the page manually.';
+        } finally {
+          button.disabled = false;
+        }
+      });
+    });
+  </script>
+  {{ end }}
   {{ if .SearchEnabled }}
   <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -502,6 +528,13 @@
 
   <main>
     <div class="container">
+      {{ if .MarkdownURL }}
+      <div class="hstack gap-2 mt-4 mb-4" aria-label="Page actions" role="group">
+        <button type="button" class="small outline" data-copy-page data-markdown-url="{{ .MarkdownURL }}">Copy page</button>
+        <a href="{{ .MarkdownURL }}">View Markdown</a>
+        <small role="status" data-copy-status></small>
+      </div>
+      {{ end }}
       {{ block "content" . }}
       <article>
         {{ if .Date }}<p><small class="text-light">{{ formatDate .Date }}</small></p>{{ end }}

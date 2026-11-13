@@ -24,6 +24,7 @@ type Config struct {
 	CurrentVersion      string          `toml:"current_version"`
 	Versions            []VersionConfig `toml:"versions"`
 	Search              SearchConfig    `toml:"search"`
+	Agents              AgentsConfig    `toml:"agents"`
 	Feed                FeedConfig      `toml:"feed"`
 	Extra               map[string]any  `toml:"extra"`
 }
@@ -71,6 +72,17 @@ type HighlightConfig struct {
 // SearchConfig controls built-in client-side search.
 type SearchConfig struct {
 	Enabled *bool `toml:"enabled"`
+}
+
+// AgentsConfig controls static Markdown exports and their built-in page actions.
+type AgentsConfig struct {
+	Enabled *bool `toml:"enabled"`
+	Full    bool  `toml:"full"`
+}
+
+// AgentsEnabled defaults to true, including on sites with custom layouts.
+func (c Config) AgentsEnabled() bool {
+	return c.Agents.Enabled == nil || *c.Agents.Enabled
 }
 
 // SearchEnabled returns the effective search setting.

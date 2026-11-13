@@ -42,6 +42,12 @@ dark  = "github-dark"     # Used when [data-theme="dark"]
 # [search]
 # enabled = false
 
+# Static agent exports and Copy page / View Markdown actions (enabled by default).
+# Optional full documentation bundle is disabled by default.
+# [agents]
+# enabled = true
+# full = false
+
 # Sidebar links — rendered above the page navigation
 # [[links]]
 # title = "GitHub"
