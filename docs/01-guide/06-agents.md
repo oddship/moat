@@ -11,8 +11,9 @@ hosts without a backend or API key.
 
 ## Copy or view a page
 
-The built-in layout includes **Copy page** and **View Markdown** actions above
-the content. Copy page copies the exported Markdown rather than navigation,
+The built-in layout includes a compact **Copy page** control beside the heading,
+with **View Markdown** in its dropdown menu. On small screens, the copy control
+uses an icon to leave room for the title. Copy page copies the exported Markdown rather than navigation,
 footer text, or the page's HTML layout. Clipboard access requires HTTPS or
 localhost and browser permission; if copying fails, View Markdown remains
 available for manual copying.

@@ -64,8 +64,17 @@
       var button = document.querySelector('[data-copy-page]');
       var status = document.querySelector('[data-copy-status]');
       if (!button || !status) return;
+      var statusTimeout;
+      var menu = document.getElementById('page-actions-menu');
+      if (menu) menu.addEventListener('toggle', function(event) {
+        if (event.newState === 'open') {
+          clearTimeout(statusTimeout);
+          status.textContent = '';
+        }
+      });
       button.addEventListener('click', async function() {
         button.disabled = true;
+        clearTimeout(statusTimeout);
         status.textContent = '';
         try {
           var response = await fetch(button.getAttribute('data-markdown-url'));
@@ -73,8 +82,9 @@
           var markdown = await response.text();
           await navigator.clipboard.writeText(markdown);
           status.textContent = 'Copied!';
+          statusTimeout = setTimeout(function() { status.textContent = ''; }, 2500);
         } catch (error) {
-          status.textContent = 'Could not copy. Use View Markdown to copy the page manually.';
+          status.textContent = 'Could not copy. Use View Markdown in the menu.';
         } finally {
           button.disabled = false;
         }
@@ -284,6 +294,66 @@
     aside footer button { width: 100%; }
     main article {
       min-width: 0;
+    }
+    .page-actions {
+      position: relative;
+      float: inline-end;
+      margin: var(--space-1) 0 var(--space-3) var(--space-4);
+    }
+    .page-actions-controls {
+      display: flex;
+      align-items: stretch;
+    }
+    .page-actions-controls > button {
+      border-start-start-radius: var(--radius-large);
+      border-end-start-radius: var(--radius-large);
+      border-start-end-radius: 0;
+      border-end-end-radius: 0;
+    }
+    .page-actions-controls > ot-dropdown {
+      display: flex;
+    }
+    .page-actions-controls > ot-dropdown > button {
+      margin-inline-start: -1px;
+      border-start-start-radius: 0;
+      border-end-start-radius: 0;
+      border-start-end-radius: var(--radius-large);
+      border-end-end-radius: var(--radius-large);
+    }
+    .page-actions button {
+      height: 2rem;
+      color: var(--foreground);
+      font-size: var(--text-7);
+    }
+    .page-actions menu [role="menuitem"] {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .page-copy-status:not(:empty) {
+      position: absolute;
+      inset-inline-end: 0;
+      top: calc(100% + var(--space-2));
+      z-index: 1;
+      width: max-content;
+      max-width: min(20rem, calc(100vw - 2rem));
+      padding: var(--space-2) var(--space-3);
+      background: var(--background);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-small);
+    }
+    .page-copy-status:empty {
+      display: none;
+    }
+    main .container::after {
+      content: "";
+      display: block;
+      clear: both;
+    }
+    @media (max-width: 600px) {
+      .page-copy-label {
+        display: none;
+      }
     }
     main article :is(img, video, iframe) {
       max-width: 100%;
@@ -529,10 +599,25 @@
   <main>
     <div class="container">
       {{ if .MarkdownURL }}
-      <div class="hstack gap-2 mt-4 mb-4" aria-label="Page actions" role="group">
-        <button type="button" class="small outline" data-copy-page data-markdown-url="{{ .MarkdownURL }}">Copy page</button>
-        <a href="{{ .MarkdownURL }}">View Markdown</a>
-        <small role="status" data-copy-status></small>
+      <div class="page-actions" aria-label="Page actions" role="group">
+        <div class="page-actions-controls">
+          <button type="button" class="small outline" aria-label="Copy page" title="Copy page as Markdown" data-copy-page data-markdown-url="{{ .MarkdownURL }}">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span class="page-copy-label">Copy page</span>
+          </button>
+          <ot-dropdown>
+            <button type="button" popovertarget="page-actions-menu" class="outline small icon" aria-label="More page actions" aria-haspopup="menu" aria-expanded="false" aria-controls="page-actions-menu">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <menu popover id="page-actions-menu" aria-label="Page actions">
+              <a href="{{ .MarkdownURL }}" role="menuitem">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h6"/></svg>
+                View Markdown
+              </a>
+            </menu>
+          </ot-dropdown>
+        </div>
+        <small class="page-copy-status" role="status" data-copy-status></small>
       </div>
       {{ end }}
       {{ block "content" . }}

@@ -16,7 +16,7 @@ test.describe("Agent-friendly pages", () => {
         },
       });
     });
-    const markdownURL = await page.getByRole("link", { name: "View Markdown", exact: true }).getAttribute("href");
+    const markdownURL = await page.locator("#page-actions-menu a").getAttribute("href");
     const response = await page.request.get(new URL(markdownURL, page.url()).href);
     expect(response.ok()).toBe(true);
     const markdown = await response.text();
@@ -32,12 +32,23 @@ test.describe("Agent-friendly pages", () => {
     await page.getByRole("button", { name: "Copy page", exact: true }).click();
     await expect(page.locator("[data-copy-status]")).toContainText("Use View Markdown");
     await expect(page.getByRole("button", { name: "Copy page", exact: true })).toBeEnabled();
-    await expect(page.getByRole("link", { name: "View Markdown", exact: true })).toBeVisible();
+    await page.getByRole("button", { name: "More page actions", exact: true }).click();
+    await expect(page.getByRole("menuitem", { name: "View Markdown", exact: true })).toBeVisible();
   });
 
   test("opens the page export through View Markdown", async ({ page }) => {
-    await page.getByRole("link", { name: "View Markdown", exact: true }).click();
+    await page.getByRole("button", { name: "More page actions", exact: true }).click();
+    await page.getByRole("menuitem", { name: "View Markdown", exact: true }).click();
     await expect(page).toHaveURL(/\/guide\/quickstart\/index\.md$/);
     await expect(page.locator("body")).toContainText("# Quick start");
+  });
+
+  test("closes the page menu with Escape and restores focus", async ({ page }) => {
+    const trigger = page.getByRole("button", { name: "More page actions", exact: true });
+    await trigger.click();
+    await expect(trigger).toHaveAttribute("aria-expanded", "true");
+    await page.keyboard.press("Escape");
+    await expect(trigger).toHaveAttribute("aria-expanded", "false");
+    await expect(trigger).toBeFocused();
   });
 });
