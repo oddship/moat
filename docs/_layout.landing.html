@@ -1,0 +1,24 @@
+{{ define "title" }}{{ .SiteName }}{{ if index .Site "tagline" }} · {{ index .Site "tagline" }}{{ end }}{{ end }}
+
+{{ define "head" }}
+{{ if .UIEnabled }}
+<link rel="stylesheet" href="{{ navURL .BasePath (print .UIAssetBase "agent-prompt.css") }}">
+<link rel="stylesheet" href="{{ navURL .BasePath (print .UIAssetBase "icon.css") }}">
+<link rel="stylesheet" href="{{ navURL .BasePath (print .UIAssetBase "copy-button.css") }}">
+<link rel="stylesheet" href="{{ navURL .BasePath (print .UIAssetBase "code-block.css") }}">
+{{ if .UIScript }}<script src="{{ navURL .BasePath (print .UIAssetBase "copy-button.js") }}" defer></script>{{ end }}
+{{ end }}
+<style>
+  .hero { margin-bottom: var(--space-12); }
+  .hero h1 { margin-bottom: var(--space-2); }
+  .hero .tagline { font-weight: normal; margin: 0 0 var(--space-8) 0; }
+  .features { display: grid; gap: var(--space-6); grid-template-columns: repeat(2, 1fr); margin-bottom: var(--space-12); }
+  @media (max-width: 600px) { .features { grid-template-columns: 1fr; } }
+</style>
+{{ end }}
+
+{{ define "content" }}
+<section class="hero">
+  {{ .Content }}
+</section>
+{{ end }}

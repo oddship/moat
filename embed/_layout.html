@@ -9,7 +9,11 @@
   {{ if .LLMsURL }}<link rel="describedby" href="{{ .LLMsURL }}">{{ end }}
   {{ if .Favicon }}<link rel="icon" href="{{ siteURL .BasePath .Favicon }}">{{ end }}
   {{ if .FeedEnabled }}<link rel="alternate" type="application/rss+xml" title="{{ .SiteName }}" href="{{ siteURL .BasePath "feed.xml" }}">{{ end }}
-  <link rel="stylesheet" href="https://unpkg.com/@knadh/oat/oat.min.css">
+  {{ if .UIEnabled }}
+  <link rel="stylesheet" href="{{ navURL .BasePath .UIStylesheet }}">
+  <link rel="stylesheet" href="{{ navURL .BasePath (print .UIAssetBase "prose.css") }}">
+  <link rel="stylesheet" href="{{ navURL .BasePath (print .UIAssetBase "kbd.css") }}">
+  {{ end }}
   <link rel="stylesheet" href="{{ siteURL .BasePath "_syntax.css" }}">
   <script>
     (function() {
@@ -325,7 +329,7 @@
     });
   </script>
   {{ end }}
-  <script src="https://unpkg.com/@knadh/oat/oat.min.js" defer></script>
+  {{ if .UIScript }}<script src="{{ navURL .BasePath .UIScript }}" defer></script>{{ end }}
   <style>
     html[data-theme="dark"] .icon-dark { display: none; }
     html:not([data-theme="dark"]) .icon-light { display: none; }
@@ -393,9 +397,6 @@
         display: none;
       }
     }
-    main article :is(img, video, iframe) {
-      max-width: 100%;
-    }
     main article table {
       display: block;
       max-width: 100%;
@@ -411,6 +412,7 @@
     }
     nav[data-topnav] .row {
       align-items: center;
+      flex-wrap: nowrap;
     }
     nav[data-topnav] .col-4,
     nav[data-topnav] .col-8 {
@@ -432,6 +434,7 @@
       height: 24px;
     }
     nav[data-topnav] .hstack {
+      flex-wrap: nowrap;
       gap: var(--space-6);
     }
     nav[data-topnav] .mobile-topnav-item,
@@ -512,16 +515,6 @@
     .search-result:hover { background-color: var(--accent); }
     .search-result + .search-result { margin-block-start: var(--space-1); }
     .search-result small { line-height: 1.4; }
-    kbd {
-      display: inline-block;
-      padding: 0 var(--space-1);
-      font-size: var(--text-8);
-      font-family: inherit;
-      background: var(--muted);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-small);
-      line-height: 1.4;
-    }
     {{ end }}
   </style>
   {{ block "head" . }}{{ end }}
@@ -659,7 +652,7 @@
       </div>
       {{ end }}
       {{ block "content" . }}
-      <article>
+      <article data-prose>
         {{ if .Date }}<p><small class="text-light">{{ formatDate .Date }}</small></p>{{ end }}
         {{ .Content }}
       </article>

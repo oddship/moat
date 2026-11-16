@@ -17,6 +17,7 @@ type Config struct {
 	Favicon             string          `toml:"favicon"`
 	FooterText          string          `toml:"footer_text"`
 	DisableMoatCitation bool            `toml:"disable_moat_citation"`
+	UI                  UIConfig        `toml:"ui"`
 	Highlight           HighlightConfig `toml:"highlight"`
 	Links               []LinkConfig    `toml:"links"`
 	TopNav              []LinkConfig    `toml:"topnav"`
@@ -27,6 +28,59 @@ type Config struct {
 	Agents              AgentsConfig    `toml:"agents"`
 	Feed                FeedConfig      `toml:"feed"`
 	Extra               map[string]any  `toml:"extra"`
+}
+
+// UIConfig controls the built-in layout's lightweight UI assets.
+type UIConfig struct {
+	Enabled       *bool  `toml:"enabled"`
+	Assets        string `toml:"assets"`
+	Stylesheet    string `toml:"stylesheet"`
+	Script        string `toml:"script"`
+	DisableScript bool   `toml:"disable_script"`
+}
+
+func (c Config) UIEnabled() bool { return c.UI.Enabled == nil || *c.UI.Enabled }
+
+func (c Config) validateUI() error {
+	if c.UI.Assets != "" && c.UI.Assets != "vendored" && c.UI.Assets != "cdn" {
+		return fmt.Errorf("ui.assets must be vendored or cdn")
+	}
+	return nil
+}
+
+// The CDN and embedded copies identify the same immutable upstream revision.
+// Switch this to an npm version only after that version is published and verified.
+func (c Config) UIAssetBase() string {
+	if c.UI.Assets == "cdn" {
+		return "https://cdn.jsdelivr.net/gh/oddship/oatbase@b41384474ca58877b26dbb34eed5f99b4cbbb03f/dist/"
+	}
+	return "_static/oatbase/"
+}
+
+func (c Config) UIStylesheet() string {
+	if !c.UIEnabled() {
+		return ""
+	}
+	if c.UI.Stylesheet != "" {
+		return c.UI.Stylesheet
+	}
+	if c.UI.Assets == "cdn" {
+		return c.UIAssetBase() + "foundation.css"
+	}
+	return c.UIAssetBase() + "foundation.min.css"
+}
+
+func (c Config) UIScript() string {
+	if !c.UIEnabled() || c.UI.DisableScript {
+		return ""
+	}
+	if c.UI.Script != "" {
+		return c.UI.Script
+	}
+	if c.UI.Assets == "cdn" {
+		return c.UIAssetBase() + "foundation.js"
+	}
+	return c.UIAssetBase() + "foundation.min.js"
 }
 
 // VersionConfig links to another independently built version of a site.

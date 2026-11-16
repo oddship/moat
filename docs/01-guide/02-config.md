@@ -87,7 +87,7 @@ For backward compatibility, the built-in layout still falls back to `[extra].foo
 
 ## Built-in search
 
-moat generates a static `_search.json` file during `build` and the built-in oat layout renders modal search in the top navigation automatically.
+moat generates a static `_search.json` file during `build` and the built-in Oatbase layout renders modal search in the top navigation automatically.
 
 ```toml
 [search]
@@ -272,3 +272,41 @@ the publishing workflow manages the content and output directories.
 
 Custom layouts can use `.CurrentVersion` and `.Versions` to render the same
 configuration.
+
+## UI assets
+
+The default is `assets = "vendored"`: Moat embeds a lightweight Oatbase foundation
+and copies it into `_static/oatbase/` in the generated site. The foundation
+contains pinned Oat and Oatbase's existing compatibility fixes. It does not load
+extension components. All default UI assets are served locally, including Prose
+and Kbd on documentation pages and the focused Copy/Agent Prompt assets on the
+Moat homepage. No npm install or frontend build is required.
+
+```toml
+[ui]
+assets = "vendored" # default; "cdn" selects a pinned CDN
+# enabled = false # omit built-in UI asset tags and automatic vendor copies
+# disable_script = true # retain CSS; omit foundation and prompt scripts
+```
+
+CDN mode loads the same files from an immutable upstream commit on jsDelivr.
+The source revision and file checksums are recorded in the embedded vendor
+manifest. This foundation is not in npm 0.2.0; the CDN uses the verified source
+commit until the next npm release is published. It never follows `latest` or
+`main`. CDN mode requires network access in visitors' browsers; builds remain
+offline. Unknown asset modes fail the build. Files you provide under `_static/`
+are still copied normally in every mode.
+
+To provide your own foundation, set `stylesheet` and `script` under `[ui]`.
+Local paths use `base_path`; absolute HTTP(S) URLs are used as given. Omitted or
+empty URLs select the chosen mode's defaults. Focused component files still
+come from the selected mode, so supply a compatible Oat foundation.
+
+Disabling assets or scripts leaves native content readable. Enhanced dropdowns,
+mobile navigation, and copy actions need JavaScript; supply your own behavior
+when disabling it. Search and Markdown exports have separate `[search]` and
+`[agents]` switches. Custom layouts can use `.UIStylesheet`, `.UIScript`,
+`.UIAssetBase`, and `.UIEnabled`, or own their assets entirely.
+
+Do not load Oat separately or combine the foundation with the complete Oatbase
+bundle. Optional components should load only on the pages that use them.

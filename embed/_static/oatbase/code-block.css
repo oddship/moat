@@ -1,0 +1,52 @@
+/* src/css/components/code-block.css */
+@layer components {
+  [data-code-block] {
+    display: block;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-medium);
+    background: var(--card);
+    color: var(--card-foreground);
+    overflow: hidden;
+    min-inline-size: 0;
+    margin: 0;
+  }
+
+  [data-code-block] > :where(header, figcaption) {
+    display: flex;
+    justify-content: space-between;
+    align-items:  center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    border-block-end: 1px solid var(--border);
+    font-size: var(--text-7);
+    flex-wrap: wrap;
+  }
+
+  [data-code-block] > pre {
+    padding: var(--space-4);
+    overflow: auto;
+    color: inherit;
+    background: none;
+    border: 0;
+    border-radius: 0;
+    max-block-size: 24rem;
+    margin: 0;
+  }
+
+  [data-code-block] > pre > code {
+    color: inherit;
+    font-family: var(--font-mono);
+    font-size: var(--text-7);
+    background: none;
+    padding: 0;
+  }
+
+  [data-code-block][data-wrap] > pre {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  [data-code-block][hidden] {
+    display: none;
+  }
+}

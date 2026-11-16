@@ -35,6 +35,10 @@ type PageMeta struct {
 
 // TemplateData is passed to the layout template.
 type TemplateData struct {
+	UIEnabled      bool
+	UIAssetBase    string
+	UIStylesheet   string
+	UIScript       string
 	Title          string
 	Description    string
 	Date           string // Page date from frontmatter (raw string, e.g. "2026-03-18 14:30")
@@ -62,6 +66,9 @@ type TemplateData struct {
 
 // Build reads markdown from src, renders HTML, and writes to dst.
 func Build(src, dst string, cfg Config) error {
+	if err := cfg.validateUI(); err != nil {
+		return err
+	}
 	if err := cfg.validateVersions(); err != nil {
 		return err
 	}
@@ -204,6 +211,10 @@ func Build(src, dst string, cfg Config) error {
 		}
 
 		data := TemplateData{
+			UIEnabled:      cfg.UIEnabled(),
+			UIAssetBase:    cfg.UIAssetBase(),
+			UIStylesheet:   cfg.UIStylesheet(),
+			UIScript:       cfg.UIScript(),
 			CurrentVersion: cfg.CurrentVersion,
 			Versions:       cfg.Versions,
 			Title:          title,
@@ -298,6 +309,17 @@ func Build(src, dst string, cfg Config) error {
 	} else {
 		if err := removeFeed(dst); err != nil {
 			return fmt.Errorf("removing feed: %w", err)
+		}
+	}
+
+	// Embedded public UI assets make default sites independent of a CDN.
+	if cfg.UIEnabled() && cfg.UI.Assets != "cdn" {
+		assets, err := fs.Sub(embeddedFS, "embed/_static")
+		if err != nil {
+			return fmt.Errorf("opening UI assets: %w", err)
+		}
+		if err := os.CopyFS(filepath.Join(dst, "_static"), assets); err != nil {
+			return fmt.Errorf("copying UI assets: %w", err)
 		}
 	}
 

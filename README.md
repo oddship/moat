@@ -6,7 +6,7 @@
   </picture>
 </p>
 
-<p align="center">Markdown + <a href="https://oat.ink">oat</a>. A static site generator in one Go binary.</p>
+<p align="center">Markdown + <a href="https://oddship.github.io/oatbase/">Oatbase</a>. A static site generator in one Go binary.</p>
 
 **[Documentation](https://oddship.github.io/moat/)**
 
@@ -18,7 +18,7 @@ moat build docs/ _site/
 moat serve _site/
 ```
 
-That's it. No layout files needed — moat has a built-in oat layout with sidebar nav, modal search, dark mode, and syntax highlighting.
+That's it. No layout files needed — moat has a built-in Oatbase layout with sidebar nav, modal search, dark mode, and syntax highlighting.
 
 ## Install
 
@@ -30,7 +30,7 @@ Or grab a binary from [releases](https://github.com/oddship/moat/releases).
 
 ## Features
 
-- **Zero config** — built-in oat layout, just write markdown and build
+- **Zero config** — built-in Oatbase layout, just write markdown and build
 - **Convention-based** — directory structure is the config, number prefixes control ordering
 - **Built-in search** — client-side `_search.json` index with modal search in the built-in topnav (`/` to open)
 - **Agent-friendly docs** — `llms.txt`, per-page Markdown, and Copy page / View Markdown actions; optional `llms-full.txt`
@@ -116,7 +116,7 @@ icon = "github"
 tagline = "Build something great"
 ```
 
-By default, `moat build` also emits `_search.json`, and the built-in oat layout wires up modal search in the topnav. Press `/` to open it. Disable it with:
+By default, `moat build` also emits `_search.json`, and the built-in Oatbase layout wires up modal search in the topnav. Press `/` to open it. Disable it with:
 
 ```toml
 [search]
@@ -182,9 +182,18 @@ jobs:
 - [yaml.v3](https://pkg.go.dev/gopkg.in/yaml.v3) — YAML frontmatter
 - [toml](https://github.com/BurntSushi/toml) — Config file
 
-## Why oat?
+## UI foundation
 
-[oat](https://oat.ink) is an ultra-lightweight (~8KB) semantic HTML/CSS UI library — buttons, forms, cards, sidebar layouts, dark mode, all with zero dependencies. moat ships a built-in layout designed for oat, but you can use any CSS — just provide your own `_layout.html`.
+Moat embeds a lightweight [Oatbase](https://oddship.github.io/oatbase/)
+foundation and copies its assets into generated sites by default. It includes
+pinned Oat and Oatbase compatibility fixes. Documentation pages add Prose and Kbd;
+the homepage adds only Copy, Code Block, Agent Prompt, and icon styles.
+No npm install, bundler, or CDN connection is needed for the default site.
+
+Set `[ui] assets = "cdn"` to use the same files from a pinned CDN revision.
+Set `enabled = false` to omit built-in UI assets, or `disable_script = true` to
+keep styling while omitting enhancement scripts. Custom `_layout.html` files
+continue to own their asset tags. See Configuration for details.
 
 ## License
 

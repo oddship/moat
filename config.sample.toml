@@ -80,3 +80,11 @@ dark  = "github-dark"     # Used when [data-theme="dark"]
 # [extra]
 # tagline = "My project tagline"
 # footer = '<a href="https://example.com">Legacy footer HTML</a>'  # Backward-compatible fallback
+
+# UI files are embedded and served locally by default.
+# [ui]
+# assets = "vendored" # or "cdn" for the same files at a pinned revision
+# enabled = false # omit all built-in UI assets
+# disable_script = true # keep styles but omit enhancement scripts
+# stylesheet = "_static/custom-foundation.css"
+# script = "_static/custom-foundation.js"

@@ -1,0 +1,17 @@
+{
+  "repository": "https://github.com/oddship/oatbase",
+  "revision": "b41384474ca58877b26dbb34eed5f99b4cbbb03f",
+  "sha256": {
+    "LICENSE": "3923ab0ca7cc024ae4e7c0d878e4693b7c4ed8f8432069bc0ba289789dba1ef5",
+    "THIRD_PARTY_NOTICES.md": "b50f82555eea5e5283db78dfd18d95f4f21d50ed533e958a14414caba6161689",
+    "agent-prompt.css": "e6542d1ec36774b8b833beec09e46f483153ac5cebd90250cbe44c0b9e4eb0c1",
+    "code-block.css": "9ecbc3f0d2904b6f580fbe0405ed3f15603263fe6fc6f5eb54214f33916d4f21",
+    "copy-button.css": "127140d81a7f876aac97f8958e0b71b0b7bf416f98abd740b0e6f8f6c7dea769",
+    "copy-button.js": "2f10bc7b4e623a06d4729bdcf9a7a289d0f28d3f5dfae214e0b7f2ea684c26a3",
+    "foundation.min.css": "4aa1397e5694bd382368d2f496dc530a5240094d0e087a49fc0f92e3bca950df",
+    "foundation.min.js": "f5ec82701d11f1c4ebac4ea9fef159823f5435ffccd963cd02398c7e1c2461de",
+    "icon.css": "1ff683210c93a035d230e7fc1181cfc055344c92a4e25e1e5c8243189359a42e",
+    "kbd.css": "7e84c552f7419e83c8cad7badc537f5653c072bed3cae66861f7d3ec7e68b364",
+    "prose.css": "830caf91ebf204243b53441bc217c20511f414354884075b8f653145182951e8"
+  }
+}
