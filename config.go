@@ -52,7 +52,7 @@ func (c Config) validateUI() error {
 // Switch this to an npm version only after that version is published and verified.
 func (c Config) UIAssetBase() string {
 	if c.UI.Assets == "cdn" {
-		return "https://cdn.jsdelivr.net/gh/oddship/oatbase@0e4b8945c97fec72e050a0ca5d8b6c5b0de38206/dist/"
+		return "https://cdn.jsdelivr.net/gh/oddship/oatbase@b41384474ca58877b26dbb34eed5f99b4cbbb03f/dist/"
 	}
 	return "_static/oatbase/"
 }
