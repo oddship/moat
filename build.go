@@ -314,22 +314,11 @@ func Build(src, dst string, cfg Config) error {
 
 	// Embedded public UI assets make default sites independent of a CDN.
 	if cfg.UIEnabled() && cfg.UI.Assets != "cdn" {
-		err := fs.WalkDir(embeddedFS, "embed/_static", func(path string, d fs.DirEntry, err error) error {
-			if err != nil || d.IsDir() {
-				return err
-			}
-			rel := strings.TrimPrefix(path, "embed/")
-			out := filepath.Join(dst, filepath.FromSlash(rel))
-			if err := os.MkdirAll(filepath.Dir(out), 0755); err != nil {
-				return err
-			}
-			data, err := embeddedFS.ReadFile(path)
-			if err != nil {
-				return err
-			}
-			return os.WriteFile(out, data, 0644)
-		})
+		assets, err := fs.Sub(embeddedFS, "embed/_static")
 		if err != nil {
+			return fmt.Errorf("opening UI assets: %w", err)
+		}
+		if err := os.CopyFS(filepath.Join(dst, "_static"), assets); err != nil {
 			return fmt.Errorf("copying UI assets: %w", err)
 		}
 	}

@@ -13,7 +13,7 @@ To customize, create `_layout.html` in your docs directory. It completely replac
 
 The built-in layout provides:
 
-- oat CSS from CDN
+- Lightweight Oatbase foundation and focused styles, served locally by default
 - Modal search backed by `_search.json` (`/` opens it in the built-in layout)
 - Sidebar navigation with collapsible sections
 - Dark/light theme toggle
@@ -37,7 +37,10 @@ Create `_layout.html` with Go template syntax. Use `{{ block "name" . }}` to def
 <html>
 <head>
   {{ block "title" . }}<title>{{ .Title }}</title>{{ end }}
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@oddship/oatbase@0.2.0/dist/oatbase.min.css">
+  {{ if .UIEnabled }}
+  <link rel="stylesheet" href="{{ navURL .BasePath .UIStylesheet }}">
+  {{ end }}
+  {{ if .UIScript }}<script src="{{ navURL .BasePath .UIScript }}" defer></script>{{ end }}
   <link rel="stylesheet" href="{{ .BasePath }}/_static/theme.css">
   <link rel="stylesheet" href="{{ .BasePath }}/_syntax.css">
   {{ block "head" . }}{{ end }}

@@ -1,7 +1,7 @@
 # Proposed support for Oatbase documentation
 
-The Moat homepage uses the built-in Oatbase foundation, with its copy behavior. The homepage loads the optional Agent Prompt and icon
-stylesheets separately.
+The Moat homepage uses the lightweight Oatbase foundation and focused Copy,
+Code Block, Agent Prompt, and icon assets.
 
 Before moving Oatbase's documentation shell to Moat, consider literal shortcode
 text support. UI foundation configuration is implemented as described below.
