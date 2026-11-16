@@ -30,29 +30,57 @@ type Config struct {
 	Extra               map[string]any  `toml:"extra"`
 }
 
-// UIConfig replaces the built-in layout's complete Oatbase assets.
-// Local paths are resolved under BasePath. Empty URLs use pinned CDN defaults.
+// UIConfig controls the built-in layout's lightweight UI assets.
 type UIConfig struct {
+	Enabled       *bool  `toml:"enabled"`
+	Assets        string `toml:"assets"`
 	Stylesheet    string `toml:"stylesheet"`
 	Script        string `toml:"script"`
 	DisableScript bool   `toml:"disable_script"`
 }
 
+func (c Config) UIEnabled() bool { return c.UI.Enabled == nil || *c.UI.Enabled }
+
+func (c Config) validateUI() error {
+	if c.UI.Assets != "" && c.UI.Assets != "vendored" && c.UI.Assets != "cdn" {
+		return fmt.Errorf("ui.assets must be vendored or cdn")
+	}
+	return nil
+}
+
+// The CDN and embedded copies identify the same immutable upstream revision.
+// Switch this to an npm version only after that version is published and verified.
+func (c Config) UIAssetBase() string {
+	if c.UI.Assets == "cdn" {
+		return "https://cdn.jsdelivr.net/gh/oddship/oatbase@0e4b8945c97fec72e050a0ca5d8b6c5b0de38206/dist/"
+	}
+	return "_static/oatbase/"
+}
+
 func (c Config) UIStylesheet() string {
+	if !c.UIEnabled() {
+		return ""
+	}
 	if c.UI.Stylesheet != "" {
 		return c.UI.Stylesheet
 	}
-	return "https://cdn.jsdelivr.net/npm/@oddship/oatbase@0.2.0/dist/oatbase.min.css"
+	if c.UI.Assets == "cdn" {
+		return c.UIAssetBase() + "foundation.css"
+	}
+	return c.UIAssetBase() + "foundation.min.css"
 }
 
 func (c Config) UIScript() string {
-	if c.UI.DisableScript {
+	if !c.UIEnabled() || c.UI.DisableScript {
 		return ""
 	}
 	if c.UI.Script != "" {
 		return c.UI.Script
 	}
-	return "https://cdn.jsdelivr.net/npm/@oddship/oatbase@0.2.0/dist/oatbase.min.js"
+	if c.UI.Assets == "cdn" {
+		return c.UIAssetBase() + "foundation.js"
+	}
+	return c.UIAssetBase() + "foundation.min.js"
 }
 
 // VersionConfig links to another independently built version of a site.

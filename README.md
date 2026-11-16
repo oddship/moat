@@ -184,12 +184,16 @@ jobs:
 
 ## UI foundation
 
-The built-in layout uses [Oatbase](https://oddship.github.io/oatbase/) 0.2.0,
-which includes Oat's semantic foundation and optional components such as the
-copyable agent prompt. Moat loads one complete stylesheet and script from
-jsDelivr. No npm install or JavaScript build is needed to generate a site.
-For self-hosted assets, configure `[ui]` as described in the documentation.
-Custom `_layout.html` files continue to own their assets.
+Moat embeds a lightweight [Oatbase](https://oddship.github.io/oatbase/)
+foundation and copies its assets into generated sites by default. It includes
+pinned Oat and Oatbase compatibility fixes. Documentation pages add Prose and Kbd;
+the homepage adds only Copy, Code Block, Agent Prompt, and icon styles.
+No npm install, bundler, or CDN connection is needed for the default site.
+
+Set `[ui] assets = "cdn"` to use the same files from a pinned CDN revision.
+Set `enabled = false` to omit built-in UI assets, or `disable_script = true` to
+keep styling while omitting enhancement scripts. Custom `_layout.html` files
+continue to own their asset tags. See Configuration for details.
 
 ## License
 

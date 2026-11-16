@@ -42,8 +42,10 @@ dark  = "github-dark"
 # tagline = "My project tagline"
 # footer = '&copy; <a href="https://example.com">You</a>'
 
-# Optional self-hosted replacement for the complete Oatbase foundation.
+# UI files are embedded and served locally by default.
 # [ui]
-# stylesheet = "_static/vendor/oatbase/oatbase.min.css"
-# script = "_static/vendor/oatbase/oatbase.min.js"
-# disable_script = false
+# assets = "vendored" # or "cdn" for the same files at a pinned revision
+# enabled = false # omit all built-in UI assets
+# disable_script = true # keep styles but omit enhancement scripts
+# stylesheet = "_static/custom-foundation.css"
+# script = "_static/custom-foundation.js"

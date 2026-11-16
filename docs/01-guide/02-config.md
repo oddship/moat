@@ -275,25 +275,38 @@ configuration.
 
 ## UI assets
 
-The built-in layout loads the complete Oatbase 0.2.0 CSS and JavaScript from
-jsDelivr. Oat is included; do not load a second Oat bundle. The homepage also loads the optional Agent Prompt and icon stylesheets.
-
-To self-host, copy `dist/oatbase.min.css` and `dist/oatbase.min.js` from
-`@oddship/oatbase@0.2.0` into `_static/vendor/oatbase/`, retaining its license and
-third-party notices, and configure:
+The default is `assets = "vendored"`: Moat embeds a lightweight Oatbase foundation
+and copies it into `_static/oatbase/` in the generated site. The foundation
+contains pinned Oat and Oatbase's existing compatibility fixes. It does not load
+extension components. All default UI assets are served locally, including Prose
+and Kbd on documentation pages and the focused Copy/Agent Prompt assets on the
+Moat homepage. No npm install or frontend build is required.
 
 ```toml
 [ui]
-stylesheet = "_static/vendor/oatbase/oatbase.min.css"
-script = "_static/vendor/oatbase/oatbase.min.js"
+assets = "vendored" # default; "cdn" selects a pinned CDN
+# enabled = false # omit built-in UI asset tags and automatic vendor copies
+# disable_script = true # retain CSS; omit foundation and prompt scripts
 ```
 
-Local paths use the site's `base_path`; absolute HTTP(S) URLs are used as given.
-Omitted or empty URLs use the pinned CDN defaults. `disable_script = true` omits
-the UI script explicitly; enhanced dropdowns, mobile navigation, and copy prompts
-then need your own implementation. Custom layouts can use `.UIStylesheet` and
-`.UIScript` with `navURL`, or supply their own asset tags.
+CDN mode loads the same files from an immutable upstream commit on jsDelivr.
+The source revision and file checksums are recorded in the embedded vendor
+manifest. This foundation is not in npm 0.2.0; the CDN uses the verified source
+commit until the next npm release is published. It never follows `latest` or
+`main`. CDN mode requires network access in visitors' browsers; builds remain
+offline. Unknown asset modes fail the build. Files you provide under `_static/`
+are still copied normally in every mode.
 
-The complete bundle supports all Oatbase components without a frontend build.
-Sites that need fewer components can supply their own compatible bundle through
-these settings. Moat still owns documentation search, page exports, and routing.
+To provide your own foundation, set `stylesheet` and `script` under `[ui]`.
+Local paths use `base_path`; absolute HTTP(S) URLs are used as given. Omitted or
+empty URLs select the chosen mode's defaults. Focused component files still
+come from the selected mode, so supply a compatible Oat foundation.
+
+Disabling assets or scripts leaves native content readable. Enhanced dropdowns,
+mobile navigation, and copy actions need JavaScript; supply your own behavior
+when disabling it. Search and Markdown exports have separate `[search]` and
+`[agents]` switches. Custom layouts can use `.UIStylesheet`, `.UIScript`,
+`.UIAssetBase`, and `.UIEnabled`, or own their assets entirely.
+
+Do not load Oat separately or combine the foundation with the complete Oatbase
+bundle. Optional components should load only on the pages that use them.

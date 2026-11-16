@@ -35,6 +35,8 @@ type PageMeta struct {
 
 // TemplateData is passed to the layout template.
 type TemplateData struct {
+	UIEnabled      bool
+	UIAssetBase    string
 	UIStylesheet   string
 	UIScript       string
 	Title          string
@@ -64,6 +66,9 @@ type TemplateData struct {
 
 // Build reads markdown from src, renders HTML, and writes to dst.
 func Build(src, dst string, cfg Config) error {
+	if err := cfg.validateUI(); err != nil {
+		return err
+	}
 	if err := cfg.validateVersions(); err != nil {
 		return err
 	}
@@ -206,6 +211,8 @@ func Build(src, dst string, cfg Config) error {
 		}
 
 		data := TemplateData{
+			UIEnabled:      cfg.UIEnabled(),
+			UIAssetBase:    cfg.UIAssetBase(),
 			UIStylesheet:   cfg.UIStylesheet(),
 			UIScript:       cfg.UIScript(),
 			CurrentVersion: cfg.CurrentVersion,
@@ -302,6 +309,28 @@ func Build(src, dst string, cfg Config) error {
 	} else {
 		if err := removeFeed(dst); err != nil {
 			return fmt.Errorf("removing feed: %w", err)
+		}
+	}
+
+	// Embedded public UI assets make default sites independent of a CDN.
+	if cfg.UIEnabled() && cfg.UI.Assets != "cdn" {
+		err := fs.WalkDir(embeddedFS, "embed/_static", func(path string, d fs.DirEntry, err error) error {
+			if err != nil || d.IsDir() {
+				return err
+			}
+			rel := strings.TrimPrefix(path, "embed/")
+			out := filepath.Join(dst, filepath.FromSlash(rel))
+			if err := os.MkdirAll(filepath.Dir(out), 0755); err != nil {
+				return err
+			}
+			data, err := embeddedFS.ReadFile(path)
+			if err != nil {
+				return err
+			}
+			return os.WriteFile(out, data, 0644)
+		})
+		if err != nil {
+			return fmt.Errorf("copying UI assets: %w", err)
 		}
 	}
 

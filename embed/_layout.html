@@ -9,7 +9,11 @@
   {{ if .LLMsURL }}<link rel="describedby" href="{{ .LLMsURL }}">{{ end }}
   {{ if .Favicon }}<link rel="icon" href="{{ siteURL .BasePath .Favicon }}">{{ end }}
   {{ if .FeedEnabled }}<link rel="alternate" type="application/rss+xml" title="{{ .SiteName }}" href="{{ siteURL .BasePath "feed.xml" }}">{{ end }}
+  {{ if .UIEnabled }}
   <link rel="stylesheet" href="{{ navURL .BasePath .UIStylesheet }}">
+  <link rel="stylesheet" href="{{ navURL .BasePath (print .UIAssetBase "prose.css") }}">
+  <link rel="stylesheet" href="{{ navURL .BasePath (print .UIAssetBase "kbd.css") }}">
+  {{ end }}
   <link rel="stylesheet" href="{{ siteURL .BasePath "_syntax.css" }}">
   <script>
     (function() {

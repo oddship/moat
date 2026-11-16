@@ -11,11 +11,14 @@ func TestUIAssets(t *testing.T) {
 	for _, tc := range []struct {
 		name, base, config, css, js string
 	}{
-		{"default", "", "", "https://cdn.jsdelivr.net/npm/@oddship/oatbase@0.2.0/dist/oatbase.min.css", "https://cdn.jsdelivr.net/npm/@oddship/oatbase@0.2.0/dist/oatbase.min.js"},
+		{"default", "", "", "/_static/oatbase/foundation.min.css", "/_static/oatbase/foundation.min.js"},
+		{"disabled", "", "[ui]\nenabled = false", "", ""},
+		{"CDN", "/project", "[ui]\nassets = 'cdn'", Config{UI: UIConfig{Assets: "cdn"}}.UIStylesheet(), Config{UI: UIConfig{Assets: "cdn"}}.UIScript()},
+		{"vendored project", "/project", "", "/project/_static/oatbase/foundation.min.css", "/project/_static/oatbase/foundation.min.js"},
 		{"local root", "", "[ui]\nstylesheet = '_static/ui.css'\nscript = '_static/ui.js'", "/_static/ui.css", "/_static/ui.js"},
 		{"local project", "/project", "[ui]\nstylesheet = '_static/ui.css'\nscript = '_static/ui.js'", "/project/_static/ui.css", "/project/_static/ui.js"},
 		{"remote", "/project", "[ui]\nstylesheet = 'https://example.org/ui.css'\nscript = 'https://example.org/ui.js'", "https://example.org/ui.css", "https://example.org/ui.js"},
-		{"script disabled", "", "[ui]\ndisable_script = true", "https://cdn.jsdelivr.net/npm/@oddship/oatbase@0.2.0/dist/oatbase.min.css", ""},
+		{"script disabled", "", "[ui]\ndisable_script = true", "/_static/oatbase/foundation.min.css", ""},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			src, dst := t.TempDir(), t.TempDir()
@@ -39,7 +42,7 @@ func TestUIAssets(t *testing.T) {
 				t.Fatal(err)
 			}
 			html := string(b)
-			if !strings.Contains(html, `href="`+tc.css+`"`) {
+			if tc.css != "" && !strings.Contains(html, `href="`+tc.css+`"`) {
 				t.Fatal("missing stylesheet")
 			}
 			if tc.js != "" && strings.Count(html, `src="`+tc.js+`"`) != 1 {
@@ -48,6 +51,16 @@ func TestUIAssets(t *testing.T) {
 			if tc.js == "" && strings.Contains(html, `<script src=`) {
 				t.Fatal("UI script must be omitted")
 			}
+			_, assetErr := os.Stat(filepath.Join(dst, "_static/oatbase/foundation.min.css"))
+			if cfg.UIEnabled() && cfg.UI.Assets != "cdn" && assetErr != nil {
+				t.Fatal("missing vendored foundation")
+			}
+			if (!cfg.UIEnabled() || cfg.UI.Assets == "cdn") && !os.IsNotExist(assetErr) {
+				t.Fatal("unwanted vendored assets")
+			}
+			if !cfg.UIEnabled() && strings.Contains(html, "foundation.min") {
+				t.Fatal("UI disabled but foundation included")
+			}
 			if strings.Contains(html, "@knadh/oat") {
 				t.Fatal("duplicate Oat foundation")
 			}
@@ -55,5 +68,11 @@ func TestUIAssets(t *testing.T) {
 				t.Fatal("missing Oatbase prose")
 			}
 		})
+	}
+}
+
+func TestRejectUnknownUIAssetMode(t *testing.T) {
+	if err := Build(t.TempDir(), t.TempDir(), Config{UI: UIConfig{Assets: "typo"}}); err == nil {
+		t.Fatal("unknown asset modes must fail")
 	}
 }

@@ -1,0 +1,39 @@
+/* src/css/components/kbd.css */
+@layer components {
+  kbd {
+    display: inline-flex;
+    min-width: var(--space-6);
+    min-height: var(--space-6);
+    padding: 0 var(--space-1);
+    font-family: var(--font-mono);
+    font-size: var(--text-8);
+    color: var(--muted-foreground);
+    background: var(--faint);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    box-shadow: var(--shadow-small);
+    white-space: nowrap;
+    border-block-end-width: 2px;
+    justify-content: center;
+    align-items:  center;
+    line-height: 1;
+  }
+
+  kbd[data-variant="inline"] {
+    color: var(--muted-foreground);
+    box-shadow: none;
+    letter-spacing: normal;
+    background: none;
+    border: 0;
+    border-radius: 0;
+    min-width: auto;
+    min-height: auto;
+    padding: 0;
+  }
+
+  .kbd-group {
+    display: inline-flex;
+    align-items:  center;
+    gap: var(--space-1);
+  }
+}

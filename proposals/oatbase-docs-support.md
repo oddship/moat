@@ -28,10 +28,10 @@ wiki-link behavior remains unchanged; literal HTML escaping uses html/template.
 
 ## UI foundation assets (implemented)
 
-Moat's built-in layout uses Oatbase 0.2.0 as its complete foundation. `[ui]`
-accepts local or HTTP(S) stylesheet and script URLs and explicit script disabling.
-Local asset URLs use `base_path`. The homepage loads only the optional Agent Prompt and icon stylesheets in
-addition to the foundation. See the Configuration guide for self-hosting instructions.
+Moat embeds the lightweight Oatbase foundation and focused components. Local
+assets are the default; `[ui] assets = "cdn"` selects the same files at a pinned
+upstream commit. Assets and enhancement scripts can be disabled independently.
+Local asset paths respect `base_path`. See Configuration for the loading contract.
 
 ## Documentation migration boundary
 
