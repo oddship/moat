@@ -1,10 +1,10 @@
 # Proposed support for Oatbase documentation
 
-The Moat homepage's agent prompt works with the existing landing-layout hook and
-focused Oatbase assets. It does not require a Moat core change.
+The Moat homepage uses the built-in Oatbase foundation, including its agent
+prompt, copy behavior, and optional SVG styling.
 
-Before moving Oatbase's documentation shell to Moat, consider these two additions.
-This document proposes them; neither changes Moat's runtime or shortcode API.
+Before moving Oatbase's documentation shell to Moat, consider literal shortcode
+text support. UI foundation configuration is implemented as described below.
 
 ## Literal text in shortcodes
 
@@ -26,21 +26,12 @@ Acceptance: clipboard text matches the authored source for blank lines, lists,
 backticks, quotes, HTML-like strings, and Unicode; existing rendered-inner and
 wiki-link behavior remains unchanged; literal HTML escaping uses html/template.
 
-## Configurable UI foundation assets
+## UI foundation assets (implemented)
 
-Allow the built-in layout's Oat stylesheet and script URLs to be replaced with
-local, vendored assets. Keep the current defaults when configuration is absent.
-Apply Moat's base-path handling to local URLs. Disabling the default script should
-be explicit and documented because some built-in controls depend on it.
-
-The current `head` block can add Oatbase extensions, as the homepage does. A complete
-Oatbase bundle already contains Oat. Replacing the foundation through configuration
-would let Oatbase's docs reuse Moat's navigation and search without loading Oat
-twice or copying the entire built-in layout merely to change its asset URLs.
-
-Acceptance: project Pages paths and custom domains both load local assets; the
-configured UI script loads once; default sites retain their existing controls;
-stylesheet and script attributes remain correctly escaped.
+Moat's built-in layout uses Oatbase 0.2.0 as its complete foundation. `[ui]`
+accepts local or HTTP(S) stylesheet and script URLs and explicit script disabling.
+Local asset URLs use `base_path`. The homepage needs no additional Oat or Oatbase
+assets. See the Configuration guide for self-hosting instructions.
 
 ## Documentation migration boundary
 

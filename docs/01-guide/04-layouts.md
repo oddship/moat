@@ -5,7 +5,7 @@ description: Built-in defaults with optional customization via block inheritance
 
 # Layouts
 
-moat ships with a built-in layout that uses [oat](https://oat.ink) for styling — sidebar nav, modal search, dark mode toggle, and a responsive topnav. You don't need to create any layout files to get started.
+moat ships with a built-in layout that uses [Oatbase](https://oddship.github.io/oatbase/) for styling — sidebar nav, modal search, dark mode toggle, and a responsive topnav. You don't need to create any layout files to get started.
 
 To customize, create `_layout.html` in your docs directory. It completely replaces the built-in layout. See [[Shortcodes]] for reusable components you can call from inside markdown.
 
@@ -37,7 +37,7 @@ Create `_layout.html` with Go template syntax. Use `{{ block "name" . }}` to def
 <html>
 <head>
   {{ block "title" . }}<title>{{ .Title }}</title>{{ end }}
-  <link rel="stylesheet" href="https://unpkg.com/@knadh/oat/oat.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@oddship/oatbase@0.2.0/dist/oatbase.min.css">
   <link rel="stylesheet" href="{{ .BasePath }}/_static/theme.css">
   <link rel="stylesheet" href="{{ .BasePath }}/_syntax.css">
   {{ block "head" . }}{{ end }}
@@ -57,7 +57,7 @@ The `{{ block "name" . }}...{{ end }}` sections have default content that varian
 
 ## Custom styling
 
-The built-in layout uses [oat](https://oat.ink), whose theme is controlled by CSS variables. Create `_static/theme.css` and load it after oat's stylesheet so your values take precedence:
+The built-in layout uses [Oatbase](https://oddship.github.io/oatbase/), whose theme is controlled by CSS variables. Create `_static/theme.css` and load it after Oatbase's stylesheet so your values take precedence:
 
 ```css
 :root {

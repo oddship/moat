@@ -35,6 +35,8 @@ type PageMeta struct {
 
 // TemplateData is passed to the layout template.
 type TemplateData struct {
+	UIStylesheet   string
+	UIScript       string
 	Title          string
 	Description    string
 	Date           string // Page date from frontmatter (raw string, e.g. "2026-03-18 14:30")
@@ -204,6 +206,8 @@ func Build(src, dst string, cfg Config) error {
 		}
 
 		data := TemplateData{
+			UIStylesheet:   cfg.UIStylesheet(),
+			UIScript:       cfg.UIScript(),
 			CurrentVersion: cfg.CurrentVersion,
 			Versions:       cfg.Versions,
 			Title:          title,

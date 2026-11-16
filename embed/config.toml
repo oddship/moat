@@ -41,3 +41,9 @@ dark  = "github-dark"
 # [extra]
 # tagline = "My project tagline"
 # footer = '&copy; <a href="https://example.com">You</a>'
+
+# Optional self-hosted replacement for the complete Oatbase foundation.
+# [ui]
+# stylesheet = "_static/vendor/oatbase/oatbase.min.css"
+# script = "_static/vendor/oatbase/oatbase.min.js"
+# disable_script = false

@@ -28,7 +28,7 @@ docs/
 
 ## Rules
 
-- `_layout.html` is optional — provide it to override the built-in oat layout
+- `_layout.html` is optional — provide it to override the built-in Oatbase layout
 - `_static/` is copied to the output directory as-is (CSS, images, etc.)
 - Files and directories prefixed with `_` or `.` are skipped
 - `index.md` at any level becomes the directory's root page

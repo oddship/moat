@@ -80,3 +80,9 @@ dark  = "github-dark"     # Used when [data-theme="dark"]
 # [extra]
 # tagline = "My project tagline"
 # footer = '<a href="https://example.com">Legacy footer HTML</a>'  # Backward-compatible fallback
+
+# The default layout loads Oatbase 0.2.0 from jsDelivr.
+# [ui]
+# stylesheet = "_static/vendor/oatbase/oatbase.min.css"
+# script = "_static/vendor/oatbase/oatbase.min.js"
+# disable_script = false

@@ -17,6 +17,7 @@ type Config struct {
 	Favicon             string          `toml:"favicon"`
 	FooterText          string          `toml:"footer_text"`
 	DisableMoatCitation bool            `toml:"disable_moat_citation"`
+	UI                  UIConfig        `toml:"ui"`
 	Highlight           HighlightConfig `toml:"highlight"`
 	Links               []LinkConfig    `toml:"links"`
 	TopNav              []LinkConfig    `toml:"topnav"`
@@ -27,6 +28,31 @@ type Config struct {
 	Agents              AgentsConfig    `toml:"agents"`
 	Feed                FeedConfig      `toml:"feed"`
 	Extra               map[string]any  `toml:"extra"`
+}
+
+// UIConfig replaces the built-in layout's complete Oatbase assets.
+// Local paths are resolved under BasePath. Empty URLs use pinned CDN defaults.
+type UIConfig struct {
+	Stylesheet    string `toml:"stylesheet"`
+	Script        string `toml:"script"`
+	DisableScript bool   `toml:"disable_script"`
+}
+
+func (c Config) UIStylesheet() string {
+	if c.UI.Stylesheet != "" {
+		return c.UI.Stylesheet
+	}
+	return "https://cdn.jsdelivr.net/npm/@oddship/oatbase@0.2.0/dist/oatbase.min.css"
+}
+
+func (c Config) UIScript() string {
+	if c.UI.DisableScript {
+		return ""
+	}
+	if c.UI.Script != "" {
+		return c.UI.Script
+	}
+	return "https://cdn.jsdelivr.net/npm/@oddship/oatbase@0.2.0/dist/oatbase.min.js"
 }
 
 // VersionConfig links to another independently built version of a site.

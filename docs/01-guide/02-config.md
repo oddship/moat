@@ -87,7 +87,7 @@ For backward compatibility, the built-in layout still falls back to `[extra].foo
 
 ## Built-in search
 
-moat generates a static `_search.json` file during `build` and the built-in oat layout renders modal search in the top navigation automatically.
+moat generates a static `_search.json` file during `build` and the built-in Oatbase layout renders modal search in the top navigation automatically.
 
 ```toml
 [search]
@@ -272,3 +272,29 @@ the publishing workflow manages the content and output directories.
 
 Custom layouts can use `.CurrentVersion` and `.Versions` to render the same
 configuration.
+
+## UI assets
+
+The built-in layout loads the complete Oatbase 0.2.0 CSS and JavaScript from
+jsDelivr. Oat is included; do not load a second Oat bundle. The homepage agent
+prompt uses the same assets as the documentation pages.
+
+To self-host, copy `dist/oatbase.min.css` and `dist/oatbase.min.js` from
+`@oddship/oatbase@0.2.0` into `_static/vendor/oatbase/`, retaining its license and
+third-party notices, and configure:
+
+```toml
+[ui]
+stylesheet = "_static/vendor/oatbase/oatbase.min.css"
+script = "_static/vendor/oatbase/oatbase.min.js"
+```
+
+Local paths use the site's `base_path`; absolute HTTP(S) URLs are used as given.
+Omitted or empty URLs use the pinned CDN defaults. `disable_script = true` omits
+the UI script explicitly; enhanced dropdowns, mobile navigation, and copy prompts
+then need your own implementation. Custom layouts can use `.UIStylesheet` and
+`.UIScript` with `navURL`, or supply their own asset tags.
+
+The complete bundle supports all Oatbase components without a frontend build.
+Sites that need fewer components can supply their own compatible bundle through
+these settings. Moat still owns documentation search, page exports, and routing.

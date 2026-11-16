@@ -1,12 +1,12 @@
 ---
 title: moat
 layout: landing
-description: A static site generator in one Go binary. Markdown + oat.
+description: A static site generator in one Go binary. Markdown + Oatbase.
 ---
 
 # moat
 
-<h3 class="tagline text-light">Markdown + <a href="https://oat.ink">oat</a>. A static site generator in one Go binary.</h3>
+<h3 class="tagline text-light">Markdown + <a href="https://oddship.github.io/oatbase/">Oatbase</a>. A static site generator in one Go binary.</h3>
 
 <div class="hstack">
   <a href="guide/quickstart/" class="button">Get started</a>
@@ -35,7 +35,7 @@ description: A static site generator in one Go binary. Markdown + oat.
 <article class="card">
 <header><h3>Zero config</h3></header>
 
-Built-in oat layout with sidebar nav, dark mode, and syntax highlighting.
+Built-in Oatbase layout with sidebar nav, dark mode, and syntax highlighting.
 Just write markdown and build. No layout files needed.
 </article>
 
@@ -89,4 +89,4 @@ docs/
     └── 02-config.md      # → /guide/config/
 ```
 
-Ships with a built-in [oat](https://oat.ink) layout — sidebar, dark mode, semantic HTML. Or provide your own `_layout.html` with any CSS you want.
+Ships with a built-in [Oatbase](https://oddship.github.io/oatbase/) layout — sidebar, dark mode, semantic HTML. Or provide your own `_layout.html` with any CSS you want.

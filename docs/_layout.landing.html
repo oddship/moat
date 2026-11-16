@@ -1,11 +1,6 @@
 {{ define "title" }}{{ .SiteName }}{{ if index .Site "tagline" }} · {{ index .Site "tagline" }}{{ end }}{{ end }}
 
 {{ define "head" }}
-<link rel="stylesheet" href="{{ siteURL .BasePath "_static/vendor/oatbase/agent-prompt.css" }}">
-<link rel="stylesheet" href="{{ siteURL .BasePath "_static/vendor/oatbase/icon.css" }}">
-<link rel="stylesheet" href="{{ siteURL .BasePath "_static/vendor/oatbase/copy-button.css" }}">
-<link rel="stylesheet" href="{{ siteURL .BasePath "_static/vendor/oatbase/code-block.css" }}">
-<script src="{{ siteURL .BasePath "_static/vendor/oatbase/copy-button.js" }}" defer></script>
 <style>
   .hero { margin-bottom: var(--space-12); }
   .hero h1 { margin-bottom: var(--space-2); }

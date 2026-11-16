@@ -62,7 +62,7 @@ By default, `moat build` also generates `_search.json` for built-in client-side 
 enabled = false
 ```
 
-If no `_layout.html` exists in the source directory, moat uses its built-in oat layout.
+If no `_layout.html` exists in the source directory, moat uses its built-in Oatbase layout.
 
 ## `moat serve`
 
