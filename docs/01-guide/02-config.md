@@ -276,8 +276,7 @@ configuration.
 ## UI assets
 
 The built-in layout loads the complete Oatbase 0.2.0 CSS and JavaScript from
-jsDelivr. Oat is included; do not load a second Oat bundle. The homepage agent
-prompt uses the same assets as the documentation pages.
+jsDelivr. Oat is included; do not load a second Oat bundle. The homepage also loads the optional Agent Prompt and icon stylesheets.
 
 To self-host, copy `dist/oatbase.min.css` and `dist/oatbase.min.js` from
 `@oddship/oatbase@0.2.0` into `_static/vendor/oatbase/`, retaining its license and

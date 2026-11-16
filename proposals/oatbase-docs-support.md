@@ -1,7 +1,7 @@
 # Proposed support for Oatbase documentation
 
-The Moat homepage uses the built-in Oatbase foundation, including its agent
-prompt, copy behavior, and optional SVG styling.
+The Moat homepage uses the built-in Oatbase foundation, with its copy behavior. The homepage loads the optional Agent Prompt and icon
+stylesheets separately.
 
 Before moving Oatbase's documentation shell to Moat, consider literal shortcode
 text support. UI foundation configuration is implemented as described below.
@@ -30,8 +30,8 @@ wiki-link behavior remains unchanged; literal HTML escaping uses html/template.
 
 Moat's built-in layout uses Oatbase 0.2.0 as its complete foundation. `[ui]`
 accepts local or HTTP(S) stylesheet and script URLs and explicit script disabling.
-Local asset URLs use `base_path`. The homepage needs no additional Oat or Oatbase
-assets. See the Configuration guide for self-hosting instructions.
+Local asset URLs use `base_path`. The homepage loads only the optional Agent Prompt and icon stylesheets in
+addition to the foundation. See the Configuration guide for self-hosting instructions.
 
 ## Documentation migration boundary
 

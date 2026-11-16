@@ -1,6 +1,8 @@
 {{ define "title" }}{{ .SiteName }}{{ if index .Site "tagline" }} · {{ index .Site "tagline" }}{{ end }}{{ end }}
 
 {{ define "head" }}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@oddship/oatbase@0.2.0/dist/agent-prompt.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@oddship/oatbase@0.2.0/dist/icon.css">
 <style>
   .hero { margin-bottom: var(--space-12); }
   .hero h1 { margin-bottom: var(--space-2); }
