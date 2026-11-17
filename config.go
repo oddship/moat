@@ -48,11 +48,10 @@ func (c Config) validateUI() error {
 	return nil
 }
 
-// The CDN and embedded copies identify the same immutable upstream revision.
-// Switch this to an npm version only after that version is published and verified.
+// The CDN and embedded copies use the same pinned npm release.
 func (c Config) UIAssetBase() string {
 	if c.UI.Assets == "cdn" {
-		return "https://cdn.jsdelivr.net/gh/oddship/oatbase@b41384474ca58877b26dbb34eed5f99b4cbbb03f/dist/"
+		return "https://cdn.jsdelivr.net/npm/@oddship/oatbase@0.3.0/dist/"
 	}
 	return "_static/oatbase/"
 }
@@ -64,9 +63,6 @@ func (c Config) UIStylesheet() string {
 	if c.UI.Stylesheet != "" {
 		return c.UI.Stylesheet
 	}
-	if c.UI.Assets == "cdn" {
-		return c.UIAssetBase() + "foundation.css"
-	}
 	return c.UIAssetBase() + "foundation.min.css"
 }
 
@@ -76,9 +72,6 @@ func (c Config) UIScript() string {
 	}
 	if c.UI.Script != "" {
 		return c.UI.Script
-	}
-	if c.UI.Assets == "cdn" {
-		return c.UIAssetBase() + "foundation.js"
 	}
 	return c.UIAssetBase() + "foundation.min.js"
 }

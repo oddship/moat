@@ -289,13 +289,11 @@ assets = "vendored" # default; "cdn" selects a pinned CDN
 # disable_script = true # retain CSS; omit foundation and prompt scripts
 ```
 
-CDN mode loads the same files from an immutable upstream commit on jsDelivr.
-The source revision and file checksums are recorded in the embedded vendor
-manifest. This foundation is not in npm 0.2.0; the CDN uses the verified source
-commit until the next npm release is published. It never follows `latest` or
-`main`. CDN mode requires network access in visitors' browsers; builds remain
-offline. Unknown asset modes fail the build. Files you provide under `_static/`
-are still copied normally in every mode.
+CDN mode loads the same files from `@oddship/oatbase@0.3.0` on jsDelivr.
+The vendored manifest records the package version, source revision, and file
+checksums. Neither mode follows `latest` or `main`. CDN mode requires network
+access in visitors' browsers; builds remain offline. Unknown asset modes fail
+the build. Files you provide under `_static/` are copied normally in every mode.
 
 To provide your own foundation, set `stylesheet` and `script` under `[ui]`.
 Local paths use `base_path`; absolute HTTP(S) URLs are used as given. Omitted or
