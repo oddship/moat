@@ -6,9 +6,13 @@
 <link rel="stylesheet" href="{{ navURL .BasePath (print .UIAssetBase "icon.css") }}">
 <link rel="stylesheet" href="{{ navURL .BasePath (print .UIAssetBase "copy-button.css") }}">
 <link rel="stylesheet" href="{{ navURL .BasePath (print .UIAssetBase "code-block.css") }}">
-{{ if .UIScript }}<script src="{{ navURL .BasePath (print .UIAssetBase "copy-button.js") }}" defer></script>{{ end }}
+{{ if .UIScript }}
+<script src="{{ navURL .BasePath (print .UIAssetBase "copy-button.js") }}" defer></script>
+<script src="{{ siteURL .BasePath "_static/migration-prompt.js" }}" defer></script>
+{{ end }}
 {{ end }}
 <style>
+  [data-prompt-target] { width: auto; max-inline-size: 100%; margin: 0; }
   .hero { margin-bottom: var(--space-12); }
   .hero h1 { margin-bottom: var(--space-2); }
   .hero .tagline { font-weight: normal; margin: 0 0 var(--space-8) 0; }
